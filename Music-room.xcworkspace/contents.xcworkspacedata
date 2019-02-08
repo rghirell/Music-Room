@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/rghirell/School-42/Music-room/Music-room/UserHomeTableViewController.swift">
-   </FileRef>
-   <FileRef
       location = "group:Music-room.xcodeproj">
    </FileRef>
    <FileRef

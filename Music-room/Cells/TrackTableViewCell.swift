@@ -1,27 +1,18 @@
 //
-//  ArtistTableViewCell.swift
+//  TrackTableViewCell.swift
 //  Music-room
 //
-//  Created by raphael ghirelli on 2/5/19.
+//  Created by raphael ghirelli on 2/8/19.
 //  Copyright © 2019 raphael ghirelli. All rights reserved.
 //
 
 import UIKit
 
-
-
-fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
-class ArtistTableViewCell: UITableViewCell {
-
-     var artist: Artist! {
-        didSet {
-            artistLabel.text = artist.name
-        }
-    }
+class TrackTableViewCell: UITableViewCell {
     
     var urlString: String?
-
-    let artistLabel: UILabel = {
+    
+    let trackLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -30,14 +21,14 @@ class ArtistTableViewCell: UITableViewCell {
         return label
     }()
     
-    let artistPlaceholder: UILabel = {
+    let trackPlaceholder: UILabel = {
         let label = UILabel()
         label.font = label.font.withSize(12)
         label.textColor = UIColor.gray
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 1
-        label.text = "Artist"
-
+        label.text = "Title "
+        
         return label
     }()
     
@@ -46,7 +37,7 @@ class ArtistTableViewCell: UITableViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = imageView.frame.height / 2
+        
         return imageView
     }()
     
@@ -59,12 +50,12 @@ class ArtistTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-
+    
     func setupLayout() {
         selectionStyle = .none
         
-        addSubview(artistLabel)
-        addSubview(artistPlaceholder)
+        addSubview(trackLabel)
+        addSubview(trackPlaceholder)
         addSubview(thumbnail)
         
         NSLayoutConstraint.activate([
@@ -72,19 +63,13 @@ class ArtistTableViewCell: UITableViewCell {
             thumbnail.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
             thumbnail.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -24),
             thumbnail.widthAnchor.constraint(equalTo: thumbnail.heightAnchor, multiplier: 1),
-            artistLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
-            artistLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            artistLabel.topAnchor.constraint(equalTo: thumbnail.topAnchor, constant: 6),
-            artistPlaceholder.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
-            artistPlaceholder.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            artistPlaceholder.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: -6),
+            trackLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
+            trackLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+            trackLabel.topAnchor.constraint(equalTo: thumbnail.topAnchor, constant: 6),
+            trackPlaceholder.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
+            trackPlaceholder.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+            trackPlaceholder.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: -6),
             ])
-    }
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        self.thumbnail.layer.masksToBounds = true
-        self.thumbnail.layer.cornerRadius = CGFloat(roundf(Float(self.thumbnail.frame.size.width/2.0)))
     }
 
 }

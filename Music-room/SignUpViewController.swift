@@ -67,6 +67,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             Helpers.dismissHud(self.hud, text: "Success", detailText: "Successfully signed in with Facebook", delay: 3)
             DispatchQueue.main.async {
                 self.dismiss(animated: true, completion: nil)
+                self.toUserHomeController()
             }
         }
     }
@@ -247,6 +248,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     func toUserHomeController() {
         let mainStoryboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         let vc : UINavigationController = mainStoryboard.instantiateViewController(withIdentifier: "navUserHome") as! UINavigationController
+    
         self.present(vc, animated: true, completion: nil)
     }
     

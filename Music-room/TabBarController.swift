@@ -12,7 +12,7 @@ class TabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let searchViewController = UserHomeTableViewController()
+        let searchViewController = SearchTableViewController()
         searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
         let tabBarList = [ searchViewController ]
         viewControllers = tabBarList
