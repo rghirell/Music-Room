@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 
-class PlayerViewController: UIViewController {
+class PlayerViewController: UIViewController , AVAudioPlayerDelegate{
 
     var songPlayer = AVAudioPlayer()
     var isPlaying = false
@@ -95,13 +95,14 @@ class PlayerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        view.backgroundColor = .white
+//        songPlayer.delegate = self
+        view.backgroundColor = .red
         setupLayout()
     }
     
     fileprivate func downloadSong() {
         let url = URL(string: songURL!)
-        let task = URLSession.shared.dataTask(with: url!) { (data, response, err) in
+        URLSession.shared.dataTask(with: url!) { (data, response, err) in
             if err != nil {
                 print(err)
                 return
@@ -113,6 +114,7 @@ class PlayerViewController: UIViewController {
     }
     
     @objc func playPauseAction() {
+        print("playpause")
         if isPlaying {
             playPauseButton.setImage(playImage, for: .normal)
             songPlayer.pause()
@@ -130,6 +132,7 @@ class PlayerViewController: UIViewController {
     fileprivate func playSong(data: Data) {
         do {
             songPlayer = try AVAudioPlayer(data: data)
+            songPlayer.delegate = self
             //8 - Prepare the song to be played
             songPlayer.prepareToPlay()
             
@@ -153,8 +156,27 @@ class PlayerViewController: UIViewController {
     }
     
     @objc func refreshStatusBar() {
-        print(songPlayer.currentTime)
-        timeSlider.value = Float(songPlayer.currentTime)
+//        print(songPlayer.currentTime)
+        self.timeSlider.value = Float(self.songPlayer.currentTime)
+        
+    }
+    
+    @objc func changedTimer() {
+        timer?.invalidate()
+    }
+    
+    @objc func updateTimer() {
+        songPlayer.currentTime = Double(timeSlider.value)
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
+    }
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        print("hello there")
+        playPauseButton.setImage(playImage, for: .normal)
+        timeSlider.value = 0
+        isPlaying = false
+        timeSlider.cancelTracking(with: nil)
+        timer?.invalidate()
     }
     
     
@@ -167,7 +189,9 @@ class PlayerViewController: UIViewController {
         var minimumSpaceConstant = screenSize.height * 0.065
         var imageConstraintMultiplier = CGFloat(0.84)
         print(screenSize)
-   
+        timeSlider.minimumTrackTintColor = .white
+        timeSlider.setThumbImage(UIImage(named: "icon"), for: .normal)
+//        timeSlider.thumbTintColor = .red
         view.addSubview(playPauseButton)
         view.addSubview(prevButton)
         view.addSubview(nextButton)
@@ -188,6 +212,10 @@ class PlayerViewController: UIViewController {
         nextButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
         playPauseButton.imageEdgeInsets = UIEdgeInsets(top: buttonSize, left:buttonSize, bottom: buttonSize, right: buttonSize)
         timeSlider.maximumValue = 30
+        timeSlider.addTarget(self, action: #selector(changedTimer), for: .touchDown)
+        timeSlider.addTarget(self, action: #selector(updateTimer), for: .touchUpInside)
+        timeSlider.addTarget(self, action: #selector(updateTimer), for: .touchUpOutside)
+    
 
         NSLayoutConstraint.activate([
             playPauseButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),

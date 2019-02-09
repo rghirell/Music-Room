@@ -16,6 +16,7 @@
 		4A16E5BC220DBD8C0054A670 /* TrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */; };
 		4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */; };
 		4A16E5C2220F010F0054A670 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5C1220F010F0054A670 /* PlayerViewController.swift */; };
+		4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A3F320B220F6446003F7E40 /* Assets.xcassets */; };
 		4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */; };
 		4ABBB6D12207392700C40A53 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D02207392700C40A53 /* CoreAudio.framework */; };
 		4ABBB6D32207392F00C40A53 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */; };
@@ -24,7 +25,6 @@
 		4ABBB6D92207397200C40A53 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D82207397200C40A53 /* MediaPlayer.framework */; };
 		4AC3FE5021FB2291002E1BAB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC3FE4F21FB2291002E1BAB /* AppDelegate.swift */; };
 		4AC3FE5521FB2291002E1BAB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AC3FE5321FB2291002E1BAB /* Main.storyboard */; };
-		4AC3FE5721FB2294002E1BAB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AC3FE5621FB2294002E1BAB /* Assets.xcassets */; };
 		4AC3FE5A21FB2294002E1BAB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AC3FE5821FB2294002E1BAB /* LaunchScreen.storyboard */; };
 		4AC3FE6221FB22E2002E1BAB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4AC3FE6121FB22E2002E1BAB /* GoogleService-Info.plist */; };
 		4AC9D59322086CC300751FAA /* deezer.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4AC9D59222086CC300751FAA /* deezer.xcconfig */; };
@@ -52,6 +52,7 @@
 		4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5C1220F010F0054A670 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
+		4A3F320B220F6446003F7E40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewController.swift; sourceTree = "<group>"; };
 		4ABBB6D02207392700C40A53 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -61,7 +62,6 @@
 		4AC3FE4C21FB2291002E1BAB /* Music-room.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Music-room.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AC3FE4F21FB2291002E1BAB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4AC3FE5421FB2291002E1BAB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		4AC3FE5621FB2294002E1BAB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4AC3FE5921FB2294002E1BAB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4AC3FE5B21FB2294002E1BAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4AC3FE6121FB22E2002E1BAB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -204,8 +204,8 @@
 				4AE5FD9E21FB454E00F1FEF8 /* SignUpViewController.swift */,
 				4AE5FDAA21FE17A300F1FEF8 /* SearchTableViewController.swift */,
 				4AC3FE5321FB2291002E1BAB /* Main.storyboard */,
-				4AC3FE5621FB2294002E1BAB /* Assets.xcassets */,
 				4AC9D67F220B536100751FAA /* TabBarController.swift */,
+				4A3F320B220F6446003F7E40 /* Assets.xcassets */,
 				4AC3FE5821FB2294002E1BAB /* LaunchScreen.storyboard */,
 				4AC3FE5B21FB2294002E1BAB /* Info.plist */,
 				4AC3FE6121FB22E2002E1BAB /* GoogleService-Info.plist */,
@@ -359,10 +359,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				4AC3FE5A21FB2294002E1BAB /* LaunchScreen.storyboard in Resources */,
-				4AC3FE5721FB2294002E1BAB /* Assets.xcassets in Resources */,
 				4AC9D5D122089D9700751FAA /* DZRResources.bundle in Resources */,
 				4AC3FE5521FB2291002E1BAB /* Main.storyboard in Resources */,
 				4AC3FE6221FB22E2002E1BAB /* GoogleService-Info.plist in Resources */,
+				4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */,
 				4AC9D59322086CC300751FAA /* deezer.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
