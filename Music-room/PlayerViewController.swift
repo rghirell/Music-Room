@@ -55,7 +55,7 @@ class PlayerViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(playPauseAction), for: .touchUpInside)
-        let image = UIImage(named: "play")
+        let image = UIImage(named: "pause")
         button.setImage(image, for: .normal)
         return button
     }()
