@@ -15,6 +15,7 @@
 		4A16E5BA220DB6340054A670 /* MixedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5B9220DB6340054A670 /* MixedModel.swift */; };
 		4A16E5BC220DBD8C0054A670 /* TrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */; };
 		4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */; };
+		4A16E5C2220F010F0054A670 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5C1220F010F0054A670 /* PlayerViewController.swift */; };
 		4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */; };
 		4ABBB6D12207392700C40A53 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D02207392700C40A53 /* CoreAudio.framework */; };
 		4ABBB6D32207392F00C40A53 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */; };
@@ -50,6 +51,7 @@
 		4A16E5B9220DB6340054A670 /* MixedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixedModel.swift; sourceTree = "<group>"; };
 		4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTableViewCell.swift; sourceTree = "<group>"; };
+		4A16E5C1220F010F0054A670 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewController.swift; sourceTree = "<group>"; };
 		4ABBB6D02207392700C40A53 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -209,6 +211,7 @@
 				4AC3FE6121FB22E2002E1BAB /* GoogleService-Info.plist */,
 				4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */,
 				4AC9D59822086D2600751FAA /* bridging-header.h */,
+				4A16E5C1220F010F0054A670 /* PlayerViewController.swift */,
 			);
 			path = "Music-room";
 			sourceTree = "<group>";
@@ -324,6 +327,11 @@
 				TargetAttributes = {
 					4AC3FE4B21FB2291002E1BAB = {
 						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -472,6 +480,7 @@
 				4AC9D680220B536200751FAA /* TabBarController.swift in Sources */,
 				4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */,
 				4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */,
+				4A16E5C2220F010F0054A670 /* PlayerViewController.swift in Sources */,
 				4AC9D5DB2209B15300751FAA /* ArtistModel.swift in Sources */,
 				4AE5FDA321FB729800F1FEF8 /* JSONCodable.swift in Sources */,
 				4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */,
