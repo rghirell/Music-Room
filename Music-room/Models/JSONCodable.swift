@@ -62,6 +62,7 @@ struct TrackCodable : Codable {
     var type : String
     var album : AlbumCodable
     var artist : ArtistCodable
+    var duration : Int?
 }
 
 

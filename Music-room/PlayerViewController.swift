@@ -15,6 +15,7 @@ class PlayerViewController: UIViewController {
     var isPlaying = false
     let playImage = UIImage(named: "play")
     let pauseImage = UIImage(named: "pause")
+    private var timer: Timer?
     
     var songURL: String? {
         didSet {
@@ -60,11 +61,10 @@ class PlayerViewController: UIViewController {
         return button
     }()
     
-    let placeHolder: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "placeholder"
-        return label
+    let timeSlider: UISlider = {
+        let slider = UISlider()
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        return slider
     }()
     
     let artistLabel: UILabel = {
@@ -116,10 +116,12 @@ class PlayerViewController: UIViewController {
         if isPlaying {
             playPauseButton.setImage(playImage, for: .normal)
             songPlayer.pause()
+            timer?.invalidate()
             isPlaying = false
         } else {
             playPauseButton.setImage(pauseImage, for: .normal)
             songPlayer.play()
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
              isPlaying = true
         }
         
@@ -138,6 +140,7 @@ class PlayerViewController: UIViewController {
                 try audioSession.setCategory(.playback, mode: .default, options: [.mixWithOthers])
                 try AVAudioSession.sharedInstance().setActive(true)
                 songPlayer.play()
+                timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
                 isPlaying = true
                 //11 -
             } catch let sessionError {
@@ -147,6 +150,11 @@ class PlayerViewController: UIViewController {
         } catch let songPlayerError {
             print(songPlayerError)
         }
+    }
+    
+    @objc func refreshStatusBar() {
+        print(songPlayer.currentTime)
+        timeSlider.value = Float(songPlayer.currentTime)
     }
     
     
@@ -163,7 +171,7 @@ class PlayerViewController: UIViewController {
         view.addSubview(playPauseButton)
         view.addSubview(prevButton)
         view.addSubview(nextButton)
-        view.addSubview(placeHolder)
+        view.addSubview(timeSlider)
         view.addSubview(trackLabel)
         view.addSubview(artistLabel)
         view.addSubview(coverView)
@@ -179,7 +187,7 @@ class PlayerViewController: UIViewController {
         prevButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
         nextButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
         playPauseButton.imageEdgeInsets = UIEdgeInsets(top: buttonSize, left:buttonSize, bottom: buttonSize, right: buttonSize)
-    
+        timeSlider.maximumValue = 30
 
         NSLayoutConstraint.activate([
             playPauseButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
@@ -188,10 +196,11 @@ class PlayerViewController: UIViewController {
             prevButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
             nextButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
             nextButton.leadingAnchor.constraint(equalTo: playPauseButton.trailingAnchor, constant: 40),
-            placeHolder.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            placeHolder.bottomAnchor.constraint(equalTo: playPauseButton.topAnchor, constant: -40),
+            timeSlider.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            timeSlider.bottomAnchor.constraint(equalTo: playPauseButton.topAnchor, constant: -40),
+            timeSlider.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -24),
             artistLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            artistLabel.bottomAnchor.constraint(equalTo: placeHolder.topAnchor, constant: -5),
+            artistLabel.bottomAnchor.constraint(equalTo: timeSlider.topAnchor, constant: -5),
             trackLabel.bottomAnchor.constraint(equalTo: artistLabel.topAnchor, constant: -5),
             trackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             coverView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
