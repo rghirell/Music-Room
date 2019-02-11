@@ -9,32 +9,27 @@
 import UIKit
 import AVFoundation
 
+protocol PlayerDelegate: class {
+    func updateView()
+}
+
 class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     var songPlayer = AVAudioPlayer()
     var isPlaying = false
     let playImage = UIImage(named: "play")
     let pauseImage = UIImage(named: "pause")
+    weak var delegate: PlayerDelegate?
     private var timer: Timer?
     private let reuseIdentifier = "DateCell"
     var songArray: [MixedModel] = [] {
         didSet {
+            displayInfo()
             downloadSong()
         }
     }
-    
-    var songIndex: Int = 2
-    var songURL: String?
-    
 
-    let coverView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.contentMode = .scaleAspectFit
-        imageView.layer.masksToBounds = true
-        imageView.backgroundColor = .red
-        return imageView
-    }()
+    var songIndex: Int = 2
     
     let nextButton : UIButton = {
         let button = UIButton()
@@ -49,7 +44,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         let button = UIButton()
         let image = UIImage(named: "previous")
         button.setImage(image, for: .normal)
-//        button.addTarget(self, action: <#T##Selector#>, for: <#T##UIControl.Event#>)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.imageView?.contentMode = .scaleAspectFit
         return button
@@ -92,6 +86,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     let albumLabel: UILabel = {
         let label = UILabel()
         label.text = "album"
+        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -104,9 +99,24 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         collectionView.delegate = self
         collectionView.dataSource = self
         previousPage = songIndex
-        setCollectionPosition()
         collectionView.register(CoverCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
+        view.addGestureRecognizer(swipeGesture)
+        swipeGesture.direction = .down
         setupLayout()
+
+    }
+    
+    @objc func swipeDown() {
+        print("swiped down")
+        delegate?.updateView()
+        UIView.animate(withDuration: 1) {
+            self.view.alpha = 0
+        }
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        setCollectionPosition()
     }
     
     fileprivate func downloadSong() {
@@ -163,6 +173,12 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         } catch let songPlayerError {
             print(songPlayerError)
         }
+    }
+    
+    fileprivate func displayInfo() {
+        albumLabel.text = songArray[songIndex].album?.title
+        artistLabel.text = songArray[songIndex].artist?.name
+        trackLabel.text = songArray[songIndex].name
     }
     
     @objc func refreshStatusBar() {
@@ -226,7 +242,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
 
         NSLayoutConstraint.activate([
             playPauseButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            playPauseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+            playPauseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
             prevButton.trailingAnchor.constraint(equalTo: playPauseButton.leadingAnchor, constant: -40),
             prevButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
             nextButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
@@ -239,6 +255,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             trackLabel.bottomAnchor.constraint(equalTo: artistLabel.topAnchor, constant: -5),
             trackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             albumLabel.bottomAnchor.constraint(greaterThanOrEqualTo: collectionView.topAnchor, constant: -(minimumSpaceConstant + 5)),
+            albumLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 24),
             albumLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1),
@@ -257,7 +274,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! CoverCollectionViewCell
 //        cell.backgroundColor = .blue
-        cell.coverCollectionView.image = songArray[songIndex].picture
+        cell.coverCollectionView.image = songArray[indexPath.row].picture
         return cell
     }
     
@@ -272,9 +289,11 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         return cv
     }()
     
-    override func viewDidAppear(_ animated: Bool) {
-        setCollectionPosition()
+    var safeAreaLayoutGuide: UILayoutGuide {
+        return UILayoutGuide()
     }
+    
+
     
 
     
@@ -290,18 +309,20 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         let x = Int(self.collectionView.contentOffset.x / self.collectionView.frame.size.width)
         if previousPage != x {
             print(x)
+            songPlayer.pause()
+            timer?.invalidate()
             songIndex = x
             timeSlider.value = 0
-            refreshStatusBar()
+            displayInfo()
             downloadSong()
             previousPage = x
         }
     }
 
     func setCollectionPosition() {
-        let contentOffset = CGFloat(floor(collectionView.contentOffset.x + collectionView.frame.size.width)) * CGFloat(songIndex)
-        print(collectionView.frame.size, contentOffset)
+        let contentOffset = CGFloat(floor(0 + UIScreen.main.bounds.width)) * CGFloat(songIndex)
         collectionView.contentOffset = CGPoint(x: contentOffset, y: 0)
+        print(contentOffset)
     }
     
 

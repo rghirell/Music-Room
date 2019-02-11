@@ -10,6 +10,8 @@ import UIKit
 
 class TabBarController: UITabBarController {
 
+    
+    let vc = PlayerViewController()
     override func viewDidLoad() {
         super.viewDidLoad()
         let searchViewController = SearchTableViewController()
