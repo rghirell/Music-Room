@@ -11,6 +11,7 @@ import AVFoundation
 
 protocol PlayerDelegate: class {
     func updateView()
+    func test(ratio: CGFloat)
 }
 
 class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -91,8 +92,12 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         return label
     }()
     
+    var panGesture = UIPanGestureRecognizer()
+    var viewY: CGFloat = 0
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.layer.cornerRadius = 8
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(draggedView))
         // Do any additional setup after loading the view.
 //        songPlayer.delegate = self
         view.backgroundColor = .red
@@ -100,20 +105,43 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         collectionView.dataSource = self
         previousPage = songIndex
         collectionView.register(CoverCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
-        view.addGestureRecognizer(swipeGesture)
-        swipeGesture.direction = .down
         setupLayout()
-
+        view.addGestureRecognizer(panGesture)
+        viewY = view.frame.minY
+    }
+    
+    @objc func draggedView(sender:UIPanGestureRecognizer) {
+        let translation = sender.translation(in: self.view)
+        let velocity = sender.velocity(in: self.view)
+        if (translation.y < 0) {
+            self.view.frame = CGRect(x: self.view.frame.minX, y: self.viewY, width: self.view.frame.width, height: self.view.frame.height)
+            return
+        }
+        if (sender.state == .ended && velocity.y >= 1200.0) {
+            swipeDown()
+            return
+        }
+        else if (sender.state == .ended) {
+            UIView.animate(withDuration: 0.3) {
+            self.view.frame = CGRect(x: self.view.frame.minX, y: self.viewY, width: self.view.frame.width, height: self.view.frame.height)
+            }
+            delegate?.test(ratio: 0.0)
+            return
+        }
+        self.view.frame = CGRect(x: view.frame.minX, y: viewY + translation.y, width: view.frame.width, height: view.frame.height)
+        let ratio =  translation.y / UIScreen.main.bounds.height
+        delegate?.test(ratio: ratio)
+        print(translation)
     }
     
     @objc func swipeDown() {
         print("swiped down")
         delegate?.updateView()
-        UIView.animate(withDuration: 1) {
-            self.view.alpha = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame = CGRect(x: self.view.frame.minX, y: UIScreen.main.bounds.height, width: self.view.frame.width, height: self.view.frame.height)
         }
     }
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setCollectionPosition()
@@ -130,6 +158,12 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
                 self.playSong(data: data!)
             }
         }.resume()
+    }
+    
+    func showView() {
+        UIView.animate(withDuration: 0.3) {
+            self.view.frame = CGRect(x: self.view.frame.minX, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        }
     }
     
     @objc func playPauseAction() {
