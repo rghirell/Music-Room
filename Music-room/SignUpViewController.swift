@@ -158,7 +158,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-           
         originY = view.frame.origin.y
         textFieldArray = [userNameTextField, passwordTextField, emailTextField]
         setUpLayers()

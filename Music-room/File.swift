@@ -9,6 +9,9 @@
 import Foundation
 
 
+struct keys {
+    static let currentTrackViewHeight: CGFloat = 50
+}
 
 
 //    fileprivate func cancelDownloadingImage(forItemAtIndex index: Int) {

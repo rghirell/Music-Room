@@ -11,7 +11,11 @@ import AVFoundation
 
 protocol PlayerDelegate: class {
     func updateView()
-    func test(ratio: CGFloat)
+}
+
+protocol PlayerTabBarDelegate: class {
+    func updateTabBarRatio(ratio: CGFloat)
+    func displayTabBar()
 }
 
 class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -23,6 +27,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     let pauseImage = UIImage(named: "pause")
     var albumName: String?
     weak var delegate: PlayerDelegate?
+    weak var tabBarDelegate: PlayerTabBarDelegate!
     private var timer: Timer?
     private let reuseIdentifier = "DateCell"
     var coverImage: UIImage?
@@ -154,17 +159,18 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             UIView.animate(withDuration: 0.3) {
             self.view.frame = CGRect(x: self.view.frame.minX, y: self.viewY, width: self.view.frame.width, height: self.view.frame.height)
             }
-            delegate?.test(ratio: 0.0)
+            tabBarDelegate.updateTabBarRatio(ratio: 0.0)
             isPanActivated = false
             return
         }
         self.view.frame = CGRect(x: view.frame.minX, y: viewY + translation.y, width: view.frame.width, height: view.frame.height)
         let ratio = translation.y / UIScreen.main.bounds.height
-        delegate?.test(ratio: ratio)
+        tabBarDelegate.updateTabBarRatio(ratio: ratio)
     }
     
     @objc func swipeDown() {
         delegate?.updateView()
+        tabBarDelegate.displayTabBar()
         UIView.animate(withDuration: 0.3) {
             self.view.frame = CGRect(x: self.view.frame.minX, y: UIScreen.main.bounds.height, width: self.view.frame.width, height: self.view.frame.height)
         }

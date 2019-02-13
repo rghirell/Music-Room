@@ -13,6 +13,7 @@ import Firebase
 
 protocol TrackDelegate: class {
     func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
+    func hideTabBar()
 }
 
 class SearchTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,  UISearchBarDelegate, UISearchResultsUpdating {
@@ -48,6 +49,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     var runningGroup = 0
 
 
+
     // MARK: -
     // MARK: View Layout
     
@@ -68,12 +70,29 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     }
 
     var tabBar: TabBarController?
+    
     func setupViews() {
-        let displayWidth: CGFloat = self.view.frame.width
-        let displayHeight: CGFloat = self.view.frame.height
         tabBar = self.tabBarController as! TabBarController?
         tabBar!.vc.delegate = self
         tabBar!.vc.view.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        trackDelegate = tabBar
+        setupTableView()
+        setupAlbumView()
+        view.addSubview(tabBar!.vc.view)
+        view.addSubview(albumView.view)
+     
+    }
+    
+    func setupAlbumView() {
+        albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: 0, width: view.frame.width, height: view.frame.height)
+        albumView.tabBar = tabBar
+        albumView.delegate = self
+        albumView.albumLoadDelegate = tabBar
+    }
+    
+    func setupTableView() {
+        let displayWidth: CGFloat = self.view.frame.width
+        let displayHeight: CGFloat = self.view.frame.height
         tableView = UITableView(frame: CGRect(x: 0, y: 0, width: displayWidth, height: displayHeight))
         tableView.delegate = self
         tableView.dataSource = self
@@ -82,14 +101,9 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         tableView.register(AlbumTableViewCell.self, forCellReuseIdentifier: albumCellIdentifier)
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
-        albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: 0, width: view.frame.width, height: view.frame.height)
-        albumView.tabBar = tabBar
-        albumView.delegate = self
-        albumView.albumLoadDelegate = tabBar
-        trackDelegate = tabBar
-        view.addSubview(tabBar!.vc.view)
+        
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         view.addSubview(tableView)
-        view.addSubview(albumView.view)
     }
 
     func setUpSearchBar() {
@@ -316,9 +330,6 @@ extension SearchTableViewController: PlayerDelegate, AlbumDelegate {
     
     
     func updateView() {
-        UIView.animate(withDuration: 0.2) {
-            self.tabBar?.tabBar.frame = CGRect(x: (self.tabBar?.tabBar.frame.minX)!, y: self.tabBarY, width: (self.tabBar?.tabBar.frame.width)!, height: (self.tabBar?.tabBar.frame.height)!)
-        }
         setNeedsStatusBarAppearanceUpdate()
         navigationController?.navigationBar.isHidden = false
         self.searchController.searchBar.isHidden = false
@@ -334,9 +345,8 @@ extension SearchTableViewController: PlayerDelegate, AlbumDelegate {
         self.searchController.searchBar.isHidden = true
         navigationController?.navigationBar.isHidden = true
         self.view.bringSubviewToFront(self.tabBar!.vc.view)
-        UIView.animate(withDuration: 0.2) {
-            self.tabBar?.tabBar.frame = CGRect(x: (self.tabBar?.tabBar.frame.minX)!, y: UIScreen.main.bounds.height, width: (self.tabBar?.tabBar.frame.width)!, height: (self.tabBar?.tabBar.frame.height)!)
-        }
+        trackDelegate.hideTabBar()
+    
     }
 
    @objc func backButton() {
@@ -354,28 +364,19 @@ extension SearchTableViewController: PlayerDelegate, AlbumDelegate {
         view.bringSubviewToFront(albumView.view)
         updateLeftBarButton(hide: false)
         let x = (tabBar?.tabBar.frame.height)! + (self.navigationController?.navigationBar.frame.height)! + UIApplication.shared.statusBarFrame.height
-        self.albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: x, right: 0)
+        self.albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: x + keys.currentTrackViewHeight, right: 0)
         UIView.animate(withDuration: 0.2) {
             self.searchController.isActive = false
             self.albumView.view.frame = CGRect(x: 0, y: (self.navigationController?.navigationBar.frame.height)! + UIApplication.shared.statusBarFrame.height, width: self.view.frame.width, height: self.view.frame.height)
         }
         self.searchController.searchBar.isHidden = true
-
     }
 
     func displayArtist() {
         print("Artist")
     }
 
-    func test(ratio: CGFloat) {
-        if ratio == 0.0 {
-            UIView.animate(withDuration: 0.2) {
-                self.tabBar?.tabBar.frame = CGRect(x: (self.tabBar?.tabBar.frame.minX)!, y: UIScreen.main.bounds.height, width: (self.tabBar?.tabBar.frame.width)!, height: (self.tabBar?.tabBar.frame.height)!)
-            }
-        }
-        let x = UIScreen.main.bounds.height - tabBarY
-        self.tabBar?.tabBar.frame = CGRect(x: (self.tabBar?.tabBar.frame.minX)!, y: UIScreen.main.bounds.height - (x * ratio), width: (self.tabBar?.tabBar.frame.width)!, height: (self.tabBar?.tabBar.frame.height)!)
-    }
+
 }
 
 
