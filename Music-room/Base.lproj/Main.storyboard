@@ -166,94 +166,12 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="Ddz-NE-X2u" kind="relationship" relationship="rootViewController" id="cor-fr-qdT"/>
+                        <segue destination="Ddz-NE-X2u" kind="relationship" relationship="rootViewController" id="EpM-9l-KD4"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QY9-dQ-1Rf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-855" y="132"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="WnW-X1-ejo">
-            <objects>
-                <navigationController storyboardIdentifier="navUserHome" id="toC-u3-Ajm" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="S4B-P3-BD1">
-                        <rect key="frame" x="0.0" y="44" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="NLC-ai-gXE" kind="relationship" relationship="rootViewController" id="iRe-tn-WGH"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YaA-32-fMv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="182" y="997"/>
-        </scene>
-        <!--Search Table View Controller-->
-        <scene sceneID="FM3-t0-tHS">
-            <objects>
-                <viewController id="NLC-ai-gXE" customClass="SearchTableViewController" customModule="Music_room" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="QWX-YF-RaH">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="qo4-XP-nTo"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="Qd9-NN-Fep"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ltE-27-h9h" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1225" y="1210"/>
-        </scene>
-        <!--Song Table View Controller-->
-        <scene sceneID="oCX-gd-cZk">
-            <objects>
-                <tableViewController storyboardIdentifier="SongTableViewController" id="LZp-C4-iHG" customClass="SongTableViewController" customModule="Music_room" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="tdr-TX-yFg">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="songCell" rowHeight="127" id="N5f-8z-vJB">
-                                <rect key="frame" x="0.0" y="28" width="375" height="127"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="N5f-8z-vJB" id="ubi-od-FCy">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="126.66666666666667"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2fh-sV-FTn">
-                                            <rect key="frame" x="8" y="15" width="96.666666666666671" height="96.666666666666671"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" secondItem="2fh-sV-FTn" secondAttribute="height" id="cQQ-Md-fsN"/>
-                                            </constraints>
-                                        </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Labelfwefwferferferferferferferfreef" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qCR-D9-keA" userLabel="Artist">
-                                            <rect key="frame" x="112.33333333333333" y="26" width="250.66666666666669" height="23"/>
-                                            <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="19"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="2fh-sV-FTn" firstAttribute="centerY" secondItem="ubi-od-FCy" secondAttribute="centerY" id="6X6-oa-FHG"/>
-                                        <constraint firstItem="2fh-sV-FTn" firstAttribute="top" secondItem="qCR-D9-keA" secondAttribute="bottom" constant="-34" id="JKf-Hx-Ssc"/>
-                                        <constraint firstItem="qCR-D9-keA" firstAttribute="leading" secondItem="2fh-sV-FTn" secondAttribute="trailing" constant="7.5" id="R7b-Ub-jjy"/>
-                                        <constraint firstAttribute="trailing" secondItem="qCR-D9-keA" secondAttribute="trailing" constant="12" id="UZG-GV-ozR"/>
-                                        <constraint firstItem="2fh-sV-FTn" firstAttribute="leading" secondItem="ubi-od-FCy" secondAttribute="leading" constant="8" id="j3P-Yf-Im4"/>
-                                        <constraint firstItem="2fh-sV-FTn" firstAttribute="height" secondItem="ubi-od-FCy" secondAttribute="height" constant="-30" id="ob0-Sw-Zjx"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="LZp-C4-iHG" id="XUX-FD-dDH"/>
-                            <outlet property="delegate" destination="LZp-C4-iHG" id="Wkz-n8-x2l"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gUq-2K-ZYa" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1976.8" y="998.95052473763121"/>
         </scene>
     </scenes>
 </document>

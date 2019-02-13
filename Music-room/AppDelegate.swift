@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         db.settings = settings
         
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = UINavigationController(rootViewController: TabBarController())
+        window?.rootViewController = TabBarController()
         window?.makeKeyAndVisible()
         
         return true

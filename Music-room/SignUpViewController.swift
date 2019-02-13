@@ -168,7 +168,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         stackViewContainerHeight = stackViewContainerHeight.setMultiplier(multiplier: newMultiplier)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-       
         navigationController?.navigationBar.topItem?.title = "Login"
         // Do any additional setup after loading the view.
     }

@@ -15,8 +15,10 @@ struct MixedModel {
     var preview: String?
     var album: AlbumCodable?
     var artist: ArtistCodable?
+    var track: TrackCodable?
     var picture: UIImage
     var recordType: String?
+    var tracklist: String?
   
     init(type: String, name: String, picture: UIImage) {
         self.type = type
@@ -24,17 +26,19 @@ struct MixedModel {
         self.picture = picture
     }
     
-    init(type: String, name: String, picture: UIImage, preview: String, album: AlbumCodable, artist: ArtistCodable) {
+    init(type: String, name: String, picture: UIImage, preview: String, album: AlbumCodable, artist: ArtistCodable, track: TrackCodable) {
         self.init(type: type, name: name, picture: picture)
         self.album = album
         self.artist = artist
         self.preview = preview
+        self.track = track
     }
     
-    init(type: String, name: String, picture: UIImage, artist: ArtistCodable, recordType: String) {
+    init(type: String, name: String, picture: UIImage, artist: ArtistCodable, recordType: String, tracklist: String) {
         self.init(type: type, name: name, picture: picture)
         self.artist = artist
         self.recordType = recordType
+        self.tracklist = tracklist
     }
     
 }

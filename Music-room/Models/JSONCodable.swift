@@ -45,8 +45,7 @@ struct ArtistArray : Codable {
 
 struct ArtistCodable : Codable {
     var name: String
-    var picture_small: String
-    var picture_medium: String
+    var picture_medium: String?
     var type : String
 }
 
@@ -60,7 +59,7 @@ struct TrackCodable : Codable {
     var title: String
     var preview: String
     var type : String
-    var album : AlbumCodable
+    var album : AlbumCodable?
     var artist : ArtistCodable
     var duration : Int?
 }
@@ -73,7 +72,7 @@ struct AlbumArray : Codable {
 
 struct AlbumCodable : Codable {
     var title: String
-    var cover_xl: String
+    var cover_xl: String?
     var tracklist: String
     var record_type: String?
     var type: String

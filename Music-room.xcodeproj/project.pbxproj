@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3127CDCC67576D95C941F7E9 /* Pods_Music_room.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C75A5893CD98B82BAA59909 /* Pods_Music_room.framework */; };
+		4A0E7F4322142945007C20A5 /* AlbumTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0E7F4222142945007C20A5 /* AlbumTableViewController.swift */; };
 		4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5A8220B67F80054A670 /* FacebookManager.swift */; };
 		4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AC220B67F80054A670 /* SparkExtensions.swift */; };
 		4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AD220B67F80054A670 /* Helpers.swift */; };
@@ -16,7 +17,9 @@
 		4A16E5BC220DBD8C0054A670 /* TrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */; };
 		4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */; };
 		4A16E5C2220F010F0054A670 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5C1220F010F0054A670 /* PlayerViewController.swift */; };
+		4A32B8F2220F7F40000089A0 /* CoverCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */; };
 		4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A3F320B220F6446003F7E40 /* Assets.xcassets */; };
+		4A4E7670221490180066D179 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E766F221490180066D179 /* File.swift */; };
 		4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */; };
 		4ABBB6D12207392700C40A53 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D02207392700C40A53 /* CoreAudio.framework */; };
 		4ABBB6D32207392F00C40A53 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */; };
@@ -44,6 +47,7 @@
 /* Begin PBXFileReference section */
 		0C75A5893CD98B82BAA59909 /* Pods_Music_room.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Music_room.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D778FED955355D2722C280C /* Pods-Music-room.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Music-room.release.xcconfig"; path = "Target Support Files/Pods-Music-room/Pods-Music-room.release.xcconfig"; sourceTree = "<group>"; };
+		4A0E7F4222142945007C20A5 /* AlbumTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTableViewController.swift; sourceTree = "<group>"; };
 		4A16E5A8220B67F80054A670 /* FacebookManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookManager.swift; sourceTree = "<group>"; };
 		4A16E5AC220B67F80054A670 /* SparkExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkExtensions.swift; sourceTree = "<group>"; };
 		4A16E5AD220B67F80054A670 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -52,7 +56,9 @@
 		4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5C1220F010F0054A670 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
+		4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverCollectionViewCell.swift; sourceTree = "<group>"; };
 		4A3F320B220F6446003F7E40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4A4E766F221490180066D179 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewController.swift; sourceTree = "<group>"; };
 		4ABBB6D02207392700C40A53 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -108,7 +114,7 @@
 		4AE5FDA021FB686E00F1FEF8 /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 		4AE5FDA221FB729800F1FEF8 /* JSONCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONCodable.swift; sourceTree = "<group>"; };
 		4AE5FDA421FB86B100F1FEF8 /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
-		4AE5FDAA21FE17A300F1FEF8 /* SearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SearchTableViewController.swift; path = "/Users/rghirell/School-42/Music-room/Music-room/SearchTableViewController.swift"; sourceTree = "<absolute>"; };
+		4AE5FDAA21FE17A300F1FEF8 /* SearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SearchTableViewController.swift; path = "/Users/rghirell/Music-room/Music-room/SearchTableViewController.swift"; sourceTree = "<absolute>"; };
 		D3ADC57DD7E8D051F159E14B /* Pods-Music-room.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Music-room.debug.xcconfig"; path = "Target Support Files/Pods-Music-room/Pods-Music-room.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -202,7 +208,9 @@
 				4AC9D5D222089E6800751FAA /* bridge.h */,
 				4AC3FE4F21FB2291002E1BAB /* AppDelegate.swift */,
 				4AE5FD9E21FB454E00F1FEF8 /* SignUpViewController.swift */,
+				4A0E7F4222142945007C20A5 /* AlbumTableViewController.swift */,
 				4AE5FDAA21FE17A300F1FEF8 /* SearchTableViewController.swift */,
+				4A4E766F221490180066D179 /* File.swift */,
 				4AC3FE5321FB2291002E1BAB /* Main.storyboard */,
 				4AC9D67F220B536100751FAA /* TabBarController.swift */,
 				4A3F320B220F6446003F7E40 /* Assets.xcassets */,
@@ -278,6 +286,7 @@
 				4AC9D5D72209A35400751FAA /* ArtistTableViewCell.swift */,
 				4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */,
 				4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */,
+				4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -475,16 +484,19 @@
 			files = (
 				4AE5FDA121FB686E00F1FEF8 /* utils.swift in Sources */,
 				4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */,
+				4A32B8F2220F7F40000089A0 /* CoverCollectionViewCell.swift in Sources */,
 				4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */,
 				4A16E5BA220DB6340054A670 /* MixedModel.swift in Sources */,
 				4AC9D680220B536200751FAA /* TabBarController.swift in Sources */,
 				4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */,
 				4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */,
 				4A16E5C2220F010F0054A670 /* PlayerViewController.swift in Sources */,
+				4A4E7670221490180066D179 /* File.swift in Sources */,
 				4AC9D5DB2209B15300751FAA /* ArtistModel.swift in Sources */,
 				4AE5FDA321FB729800F1FEF8 /* JSONCodable.swift in Sources */,
 				4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */,
 				4AE5FDA521FB86B100F1FEF8 /* extensions.swift in Sources */,
+				4A0E7F4322142945007C20A5 /* AlbumTableViewController.swift in Sources */,
 				4AC9D5D82209A35400751FAA /* ArtistTableViewCell.swift in Sources */,
 				4AC9D5D52209965F00751FAA /* FirebaseManager.swift in Sources */,
 				4A16E5B5220C95660054A670 /* SparkKeys.swift in Sources */,

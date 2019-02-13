@@ -17,20 +17,25 @@ protocol PlayerDelegate: class {
 class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     var songPlayer = AVAudioPlayer()
+    var isPanActivated = false
     var isPlaying = false
     let playImage = UIImage(named: "play")
     let pauseImage = UIImage(named: "pause")
+    var albumName: String?
     weak var delegate: PlayerDelegate?
     private var timer: Timer?
     private let reuseIdentifier = "DateCell"
-    var songArray: [MixedModel] = [] {
+    var coverImage: UIImage?
+    var songArray: [TrackCodable] = [] {
         didSet {
             displayInfo()
             downloadSong()
         }
     }
-
-    var songIndex: Int = 2
+    var songIndex: Int = 0
+    
+    // MARK: -
+    // MARK: View Element
     
     let nextButton : UIButton = {
         let button = UIButton()
@@ -94,31 +99,55 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     var panGesture = UIPanGestureRecognizer()
     var viewY: CGFloat = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.layer.cornerRadius = 8
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(draggedView))
-        // Do any additional setup after loading the view.
-//        songPlayer.delegate = self
-        view.backgroundColor = .red
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        previousPage = songIndex
-        collectionView.register(CoverCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        setupGesture()
+        setupCollectionView()
         setupLayout()
-        view.addGestureRecognizer(panGesture)
-        viewY = view.frame.minY
+        previousPage = songIndex
     }
     
+    fileprivate func setupGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(draggedView))
+        view.addGestureRecognizer(panGesture)
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+    }
+    
+    fileprivate func setupCollectionView() {
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(CoverCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+    }
+    
+    @objc func willEnterBackground() {
+        if isPanActivated {
+            isPanActivated = false
+            swipeDown()
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("SongPlayer Disappear")
+        setCollectionPosition()
+    }
+ 
+    
     @objc func draggedView(sender:UIPanGestureRecognizer) {
+        isPanActivated = true
         let translation = sender.translation(in: self.view)
         let velocity = sender.velocity(in: self.view)
         if (translation.y < 0) {
             self.view.frame = CGRect(x: self.view.frame.minX, y: self.viewY, width: self.view.frame.width, height: self.view.frame.height)
+            isPanActivated = false
             return
         }
         if (sender.state == .ended && velocity.y >= 1200.0) {
             swipeDown()
+            isPanActivated = false
             return
         }
         else if (sender.state == .ended) {
@@ -126,29 +155,24 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             self.view.frame = CGRect(x: self.view.frame.minX, y: self.viewY, width: self.view.frame.width, height: self.view.frame.height)
             }
             delegate?.test(ratio: 0.0)
+            isPanActivated = false
             return
         }
         self.view.frame = CGRect(x: view.frame.minX, y: viewY + translation.y, width: view.frame.width, height: view.frame.height)
-        let ratio =  translation.y / UIScreen.main.bounds.height
+        let ratio = translation.y / UIScreen.main.bounds.height
         delegate?.test(ratio: ratio)
-        print(translation)
     }
     
     @objc func swipeDown() {
-        print("swiped down")
         delegate?.updateView()
         UIView.animate(withDuration: 0.3) {
             self.view.frame = CGRect(x: self.view.frame.minX, y: UIScreen.main.bounds.height, width: self.view.frame.width, height: self.view.frame.height)
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        setCollectionPosition()
-    }
     
     fileprivate func downloadSong() {
-        let url = URL(string: songArray[songIndex].preview!)
+        let url = URL(string: songArray[songIndex].preview)
         URLSession.shared.dataTask(with: url!) { (data, response, err) in
             if err != nil {
                 print(err)
@@ -162,7 +186,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     func showView() {
         UIView.animate(withDuration: 0.3) {
-            self.view.frame = CGRect(x: self.view.frame.minX, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+            self.view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         }
     }
     
@@ -210,9 +234,9 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     fileprivate func displayInfo() {
-        albumLabel.text = songArray[songIndex].album?.title
-        artistLabel.text = songArray[songIndex].artist?.name
-        trackLabel.text = songArray[songIndex].name
+        albumLabel.text = songArray[songIndex].album?.title ?? albumName
+        artistLabel.text = songArray[songIndex].artist.name
+        trackLabel.text = songArray[songIndex].title
     }
     
     @objc func refreshStatusBar() {
@@ -241,6 +265,9 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     
     fileprivate func setupLayout() {
+        view.layer.cornerRadius = 8
+        view.backgroundColor = .gray
+        viewY = view.frame.minY
         let stackView = UIStackView(arrangedSubviews: [prevButton, playPauseButton, nextButton])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         let screenSize = UIScreen.main.bounds
@@ -260,7 +287,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         view.addSubview(collectionView)
 
         if screenSize.height <= 700 {
-            print("hello")
             minimumSpaceConstant = screenSize.height * 0.04
             imageConstraintMultiplier = CGFloat(0.7)
         }
@@ -307,8 +333,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! CoverCollectionViewCell
-//        cell.backgroundColor = .blue
-        cell.coverCollectionView.image = songArray[indexPath.row].picture
+        cell.coverCollectionView.image = coverImage
         return cell
     }
     
@@ -326,10 +351,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     var safeAreaLayoutGuide: UILayoutGuide {
         return UILayoutGuide()
     }
-    
-
-    
-
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: collectionView.frame.height)
@@ -356,10 +377,5 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     func setCollectionPosition() {
         let contentOffset = CGFloat(floor(0 + UIScreen.main.bounds.width)) * CGFloat(songIndex)
         collectionView.contentOffset = CGPoint(x: contentOffset, y: 0)
-        print(contentOffset)
     }
-    
-
-
-
 }

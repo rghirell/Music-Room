@@ -11,6 +11,8 @@ import UIKit
 class TrackTableViewCell: UITableViewCell {
     
     var urlString: String?
+    var trackLabelToThumbnailConstraint: NSLayoutConstraint!
+    var trackLabelToViewConstraint: NSLayoutConstraint!
     
     let trackLabel: UILabel = {
         let label = UILabel()
@@ -58,18 +60,37 @@ class TrackTableViewCell: UITableViewCell {
         addSubview(trackPlaceholder)
         addSubview(thumbnail)
         
+        trackLabelToThumbnailConstraint = trackLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12)
+        trackLabelToViewConstraint = trackLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12)
+        trackLabelToThumbnailConstraint.priority = UILayoutPriority.defaultHigh
+        trackLabelToViewConstraint.priority = UILayoutPriority.defaultLow
+        
         NSLayoutConstraint.activate([
             thumbnail.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             thumbnail.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
             thumbnail.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -24),
             thumbnail.widthAnchor.constraint(equalTo: thumbnail.heightAnchor, multiplier: 1),
-            trackLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
+            trackLabelToThumbnailConstraint,
+            trackLabelToViewConstraint,
             trackLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            trackLabel.topAnchor.constraint(equalTo: thumbnail.topAnchor, constant: 6),
-            trackPlaceholder.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
+            trackLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 18),
+            trackPlaceholder.leadingAnchor.constraint(equalTo: trackLabel.leadingAnchor),
             trackPlaceholder.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            trackPlaceholder.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: -6),
+            trackPlaceholder.topAnchor.constraint(equalTo: trackLabel.bottomAnchor, constant: 10),
+            
             ])
+    }
+    
+    func hideImageView(isHidden: Bool = false) {
+        if (isHidden) {
+            trackLabelToThumbnailConstraint.priority = UILayoutPriority.defaultLow
+            trackLabelToViewConstraint.priority = UILayoutPriority.defaultHigh
+            thumbnail.isHidden = true
+        } else {
+            trackLabelToThumbnailConstraint.priority = UILayoutPriority.defaultHigh
+            trackLabelToViewConstraint.priority = UILayoutPriority.defaultLow
+            thumbnail.isHidden = false
+        }
     }
 
 }
