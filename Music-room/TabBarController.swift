@@ -27,12 +27,12 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
 
     func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable]) {
         vc.songIndex = songIndex
-        vc.setCollectionPosition()
         vc.coverImage = cover
-        vc.collectionView.reloadData()
-        displayCurrentTrackView()
         vc.albumName = albumName
         vc.songArray = songArray
+        vc.setCollectionPosition()
+        vc.collectionView.reloadData()
+        displayCurrentTrackView()
     }
     
     var currentTrackIsHidden = true
@@ -94,7 +94,6 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
         print("should display play")
          changeCurrentTrackViewDisplay()
         currentTrackButton.setImage(UIImage(named:"outline_play"), for: .normal)
-        
     }
     @objc func toPauseButton() {
         print("should display pause")
