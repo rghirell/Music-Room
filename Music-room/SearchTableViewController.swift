@@ -13,11 +13,9 @@ import Firebase
 
 protocol TrackDelegate: class {
     func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
-    func hideTabBar()
 }
 
 class SearchTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,  UISearchBarDelegate, UISearchResultsUpdating {
-    
     func updateSearchResults(for searchController: UISearchController) {
     }
     
@@ -52,7 +50,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     
     // MARK: -
     // MARK: View Layout
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         let button = UIBarButtonItem(image: UIImage(named: "back"), style: .plain, target: self, action: #selector(backButton))
@@ -65,23 +62,15 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController!.navigationBar.topItem!.title = "Search"
-        //        self.navigationItem.backBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(backButton))
-        tabBarY = (tabBar?.tabBar.frame.minY)!
     }
     
     var tabBar: TabBarController?
-    
     func setupViews() {
         tabBar = self.tabBarController as! TabBarController?
-        tabBar!.vc.delegate = self
-        tabBar!.vc.view.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         trackDelegate = tabBar
         setupTableView()
         setupAlbumView()
-        //        overlay
-        view.addSubview(tabBar!.vc.view)
         view.addSubview(albumView.view)
-        
     }
     
     func setupAlbumView() {
@@ -101,7 +90,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         tableView.register(AlbumTableViewCell.self, forCellReuseIdentifier: albumCellIdentifier)
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
-        
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         view.addSubview(tableView)
     }
@@ -131,58 +119,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             if self.fetchedArtist != nil && self.fetchedTracks != nil && self.fetchedAlbums != nil {
                 self.runningGroup += 1
                 self.createResultArray(runningGroup: self.runningGroup)
-            }
-        }
-    }
-    
-    func createResultArray(runningGroup: Int) {
-        var i = 0
-        var final : [MixedModel] = []
-        for element in (fetchedArtist?.data)! {
-            dispatchGroup.enter()
-            downloadImage(urlImage: element.picture_medium!) { (image) in
-                final.append(MixedModel(type: element.type, name: element.name, picture: image))
-                self.dispatchGroup.leave()
-            }
-            i += 1
-            if i > 2 {
-                print("Job done artist")
-                break
-            }
-        }
-        i = 0
-        for element in (fetchedTracks?.data)! {
-            dispatchGroup.enter()
-            downloadImage(urlImage: element.album!.cover_xl) { (image) in
-                final.append(MixedModel(type: element.type, name: element.title, picture: image, preview: element.preview, album: element.album!, artist: element.artist, track: element))
-                self.dispatchGroup.leave()
-            }
-            i += 1
-            if i > 2 {
-                print("Job done tracks")
-                break
-            }
-        }
-        i = 0
-        for element in (fetchedAlbums?.data)! {
-            dispatchGroup.enter()
-            
-            downloadImage(urlImage: element.cover_xl ?? element.artist?.picture_medium) { (image) in
-                final.append(MixedModel(type: element.type, name: element.title, picture: image, artist: element.artist!, recordType: element.record_type!, tracklist: element.tracklist))
-                self.dispatchGroup.leave()
-            }
-            i += 1
-            if i > 2 {
-                print("Job done album")
-                break
-            }
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            print("here")
-            if runningGroup == self.runningGroup && self.search.count > 0 {
-                self.finalResult = final
-                self.tableView.reloadData()
             }
         }
     }
@@ -226,7 +162,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
-    var tabBarY: CGFloat = 0
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let final = finalResult[indexPath.row]
         switch final.type {
@@ -239,7 +174,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         default:
             return
         }
-        
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -318,24 +252,10 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         }
         task.resume()
     }
-    
-    
-    
 }
 
-extension SearchTableViewController: PlayerDelegate {
-    func hideNavBar() {
-        navigationController?.navigationBar.layer.zPosition = -1
-                self.searchController.isActive = false
-                self.searchController.searchBar.isHidden = true
-    }
-    
-    func updateView() {
-        setNeedsStatusBarAppearanceUpdate()
-        navigationController?.navigationBar.layer.zPosition = 0
-        self.searchController.searchBar.isHidden = false
-    }
-    
+extension SearchTableViewController {
+
     func updateLeftBarButton(hide: Bool) {
         navigationItem.leftBarButtonItem?.tintColor = hide ? .clear : .black
         navigationItem.leftBarButtonItem?.isEnabled = hide ? false : true
@@ -343,8 +263,6 @@ extension SearchTableViewController: PlayerDelegate {
     
     func playTracks(index: Int) {
         trackDelegate.loadTrack(songIndex: 0, cover: finalResult[index].picture, songArray: [finalResult[index].track!])
-//        self.view.bringSubviewToFront(self.tabBar!.vc.view)
-//        trackDelegate.hideTabBar()
     }
     
     @objc func backButton() {
@@ -354,7 +272,6 @@ extension SearchTableViewController: PlayerDelegate {
             self.albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         }
         updateLeftBarButton(hide: true)
-//        self.searchController.searchBar.isHidden = false
     }
     
     func displayAlbum(index: Int) {
@@ -381,6 +298,57 @@ extension SearchTableViewController: PlayerDelegate {
     }
     
     
+    func createResultArray(runningGroup: Int) {
+        var i = 0
+        var final : [MixedModel] = []
+        for element in (fetchedArtist?.data)! {
+            dispatchGroup.enter()
+            downloadImage(urlImage: element.picture_medium!) { (image) in
+                final.append(MixedModel(type: element.type, name: element.name, picture: image))
+                self.dispatchGroup.leave()
+            }
+            i += 1
+            if i > 2 {
+                print("Job done artist")
+                break
+            }
+        }
+        i = 0
+        for element in (fetchedTracks?.data)! {
+            dispatchGroup.enter()
+            downloadImage(urlImage: element.album!.cover_xl) { (image) in
+                final.append(MixedModel(type: element.type, name: element.title, picture: image, preview: element.preview, album: element.album!, artist: element.artist, track: element))
+                self.dispatchGroup.leave()
+            }
+            i += 1
+            if i > 2 {
+                print("Job done tracks")
+                break
+            }
+        }
+        i = 0
+        for element in (fetchedAlbums?.data)! {
+            dispatchGroup.enter()
+            
+            downloadImage(urlImage: element.cover_xl ?? element.artist?.picture_medium) { (image) in
+                final.append(MixedModel(type: element.type, name: element.title, picture: image, artist: element.artist!, recordType: element.record_type!, tracklist: element.tracklist))
+                self.dispatchGroup.leave()
+            }
+            i += 1
+            if i > 2 {
+                print("Job done album")
+                break
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            print("here")
+            if runningGroup == self.runningGroup && self.search.count > 0 {
+                self.finalResult = final
+                self.tableView.reloadData()
+            }
+        }
+    }
 }
 
 

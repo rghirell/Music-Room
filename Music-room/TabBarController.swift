@@ -22,6 +22,7 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
         vc.setCollectionPosition()
         vc.collectionView.reloadData()
         displayCurrentTrackView()
+
     }
 
     func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable]) {
@@ -38,8 +39,25 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
     let currentTrackView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .blue
+        view.backgroundColor = .black
         return view
+    }()
+    
+    let currentTrackButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.imageView?.contentMode = .scaleAspectFit
+        button.setImage(UIImage(named: "outline_pause"), for: .normal)
+        return button
+    }()
+    
+    let currentTrackLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "erfgerferferbferhfvehrfvhrvfekfvrferfe"
+        label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
+        return label
     }()
 
     
@@ -61,33 +79,76 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
         let tabBarList = [ searchViewController ]
         viewControllers = tabBarList.map { UINavigationController(rootViewController: $0) }
         setupCurrentTrackView()
-        
-        
+        vc.view.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        view.addSubview(vc.view)
+        NotificationCenter.default.addObserver(self, selector: #selector(toPauseButton), name: .songPlay, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(toPlayButton), name: .songPause, object: nil)
         // Do any additional setup after loading the view.
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-       tabBarY = tabBar.frame.minY
+        tabBarY = tabBar.frame.minY
+    }
+  
+    @objc func toPlayButton() {
+        print("should display play")
+         changeCurrentTrackViewDisplay()
+        currentTrackButton.setImage(UIImage(named:"outline_play"), for: .normal)
+        
+    }
+    @objc func toPauseButton() {
+        print("should display pause")
+         changeCurrentTrackViewDisplay()
+        currentTrackButton.setImage(UIImage(named:"outline_pause"), for: .normal)
     }
     
     func setupCurrentTrackView() {
-        currentTrackHeightConstraint = currentTrackView.heightAnchor.constraint(equalToConstant: 800)
+        currentTrackHeightConstraint = currentTrackView.heightAnchor.constraint(equalToConstant: 0)
+        currentTrackButton.addTarget(self, action: #selector(pauseSong), for: .touchUpInside)
+        currentTrackButton.isHidden = true
+        currentTrackLabel.isHidden = true
+        currentTrackView.addSubview(currentTrackButton)
+        currentTrackView.addSubview(currentTrackLabel)
         view.addSubview(currentTrackView)
         NSLayoutConstraint.activate([
             currentTrackView.widthAnchor.constraint(equalTo: view.widthAnchor),
             currentTrackView.bottomAnchor.constraint(equalTo: tabBar.topAnchor),
             currentTrackHeightConstraint,
-            currentTrackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            currentTrackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        
+            currentTrackButton.trailingAnchor.constraint(equalTo: currentTrackView.trailingAnchor, constant: -12),
+            currentTrackButton.centerYAnchor.constraint(equalTo: currentTrackView.centerYAnchor),
+            currentTrackButton.heightAnchor.constraint(equalToConstant: 40),
+            currentTrackButton.widthAnchor.constraint(equalToConstant: 40),
+            
+            currentTrackLabel.trailingAnchor.constraint(equalTo: currentTrackButton.leadingAnchor, constant: -12),
+            currentTrackLabel.heightAnchor.constraint(equalToConstant: 20),
+            currentTrackLabel.centerYAnchor.constraint(equalTo: currentTrackView.centerYAnchor),
+            currentTrackLabel.leadingAnchor.constraint(equalTo: currentTrackView.leadingAnchor, constant: 64),
             ])
+    }
+    
+    @objc func pauseSong() {
+        vc.playPauseAction()
     }
     
     func displayCurrentTrackView() {
         if currentTrackIsHidden {
+            currentTrackButton.isHidden = false
+            currentTrackLabel.isHidden = false
+            changeCurrentTrackViewDisplay()
             UIView.animate(withDuration: 2) {
                 self.currentTrackHeightConstraint.constant = keys.currentTrackViewHeight
             }
             currentTrackIsHidden = false
         }
+    }
+    
+    func changeCurrentTrackViewDisplay() {
+        let track = vc.songArray[vc.songIndex]
+        let attributedText = NSMutableAttributedString(string: "\(track.title) • ", attributes: [.font: UIFont.boldSystemFont(ofSize: 12), .foregroundColor: UIColor.white])
+        attributedText.append(NSAttributedString(string: "\(track.artist.name)", attributes: [.font: UIFont.boldSystemFont(ofSize: 12),.foregroundColor: UIColor.gray]))
+        currentTrackLabel.attributedText = attributedText
     }
     
     func updateTabBarRatio(ratio: CGFloat) {

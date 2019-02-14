@@ -12,7 +12,6 @@ import UIKit
 
 protocol AlbumLoadDelegate : class {
     func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable])
-    func hideTabBar()
 }
 
 class AlbumTableViewController: UITableViewController {
@@ -77,7 +76,6 @@ class AlbumTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         albumLoadDelegate.loadAlbum(songIndex: indexPath.row, cover: finalResult?.picture, albumName: finalResult?.name, songArray: (albumTracks?.data)!)
-//        albumLoadDelegate.hideTabBar()
         view.superview!.bringSubviewToFront(self.tabBar!.vc.view)
 //        UIView.animate(withDuration: 0.2) {
 //            self.tabBar?.tabBar.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: (self.tabBar?.tabBar.frame.width)!, height: (self.tabBar?.tabBar.frame.height)!)

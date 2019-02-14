@@ -9,11 +9,6 @@
 import UIKit
 import AVFoundation
 
-protocol PlayerDelegate: class {
-    func updateView()
-    func hideNavBar()
-}
-
 protocol PlayerTabBarDelegate: class {
     func updateTabBarRatio(ratio: CGFloat)
     func displayTabBar()
@@ -23,11 +18,14 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     var songPlayer = AVAudioPlayer()
     var isPanActivated = false
-    var isPlaying = false
+    private var state = State.pause {
+        didSet {
+            stateChanged()
+        }
+    }
     let playImage = UIImage(named: "play")
     let pauseImage = UIImage(named: "pause")
     var albumName: String?
-    weak var delegate: PlayerDelegate?
     weak var tabBarDelegate: PlayerTabBarDelegate!
     private var timer: Timer?
     private let reuseIdentifier = "DateCell"
@@ -39,6 +37,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         }
     }
     var songIndex: Int = 0
+    private let notificationCenter: NotificationCenter = .default
     
     // MARK: -
     // MARK: View Element
@@ -114,6 +113,16 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         previousPage = songIndex
     }
     
+    fileprivate func stateChanged() {
+        print(state)
+        switch state {
+        case .play:
+            notificationCenter.post(name: .songPlay, object: true)
+        case .pause:
+            notificationCenter.post(name: .songPause, object: false)
+        }
+    }
+    
     fileprivate func setupGesture() {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(draggedView))
         view.addGestureRecognizer(panGesture)
@@ -170,7 +179,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     @objc func swipeDown() {
-        delegate?.updateView()
         tabBarDelegate.displayTabBar()
         UIView.animate(withDuration: 0.3) {
             self.view.frame = CGRect(x: self.view.frame.minX, y: UIScreen.main.bounds.height, width: self.view.frame.width, height: self.view.frame.height)
@@ -192,26 +200,25 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     func showView() {
-        delegate?.hideNavBar()
         UIView.animate(withDuration: 0.3) {
             self.view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         }
     }
     
     @objc func playPauseAction() {
-        print("playpause")
-        if isPlaying {
+        print("playpause", state)
+        switch state {
+        case .play:
             playPauseButton.setImage(playImage, for: .normal)
             songPlayer.pause()
             timer?.invalidate()
-            isPlaying = false
-        } else {
+            state = .pause
+        case .pause:
             playPauseButton.setImage(pauseImage, for: .normal)
             songPlayer.play()
             timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
-             isPlaying = true
+            state = .play
         }
-        
     }
     
     fileprivate func playSong(data: Data) {
@@ -220,7 +227,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             songPlayer.delegate = self
             //8 - Prepare the song to be played
             songPlayer.prepareToPlay()
-            
             //9 - Create an audio session
             let audioSession = AVAudioSession.sharedInstance()
             do {
@@ -229,7 +235,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
                 try AVAudioSession.sharedInstance().setActive(true)
                 songPlayer.play()
                 timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
-                isPlaying = true
+                state = .play
                 playPauseButton.setImage(pauseImage, for: .normal)
                 //11 -
             } catch let sessionError {
@@ -266,7 +272,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         print("hello there")
         playPauseButton.setImage(playImage, for: .normal)
         timeSlider.value = 0
-        isPlaying = false
+        state = .pause
         timeSlider.cancelTracking(with: nil)
         timer?.invalidate()
     }
@@ -310,7 +316,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
 
         NSLayoutConstraint.activate([
             playPauseButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            playPauseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
+            playPauseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -70),
             prevButton.trailingAnchor.constraint(equalTo: playPauseButton.leadingAnchor, constant: -40),
             prevButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
             nextButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
@@ -373,6 +379,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         if previousPage != x {
             print(x)
             songPlayer.pause()
+            state = .pause
             timer?.invalidate()
             songIndex = x
             timeSlider.value = 0
@@ -386,4 +393,21 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         let contentOffset = CGFloat(floor(0 + UIScreen.main.bounds.width)) * CGFloat(songIndex)
         collectionView.contentOffset = CGPoint(x: contentOffset, y: 0)
     }
+}
+
+private extension PlayerViewController {
+    enum State {
+        case play
+        case pause
+    }
+}
+
+extension Notification.Name {
+    static var songPlay: Notification.Name {
+        return .init(rawValue: "Player.plays")
+    }
+    static var songPause: Notification.Name {
+        return .init(rawValue: "Player.pauses")
+    }
+
 }
