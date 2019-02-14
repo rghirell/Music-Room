@@ -17,19 +17,19 @@ protocol TrackDelegate: class {
 }
 
 class SearchTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,  UISearchBarDelegate, UISearchResultsUpdating {
-
+    
     func updateSearchResults(for searchController: UISearchController) {
     }
-
+    
     let dispatchGroup = DispatchGroup()
     let albumView = AlbumTableViewController()
-
+    
     // MARK: -
     // MARK: CELL IDENTIFIER
     let artistCellIdentifier = "artistCell"
     let trackCellIdentifier = "trackCell"
     let albumCellIdentifier = "albumCell"
-
+    
     // MARK: -
     // MARK: API FETCH
     var fetchedAlbums: AlbumArray?
@@ -37,19 +37,19 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     var fetchedArtist: ArtistArray?
     var finalResult: [MixedModel] = []
     var trackDelegate: TrackDelegate!
-
+    
     fileprivate var tasks = [URLSessionTask]()
     fileprivate var APItasks = [URLSessionTask]()
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     private var tableView: UITableView!
-
+    
     // MARK: -
     var searchController: UISearchController!
     var search = ""
     var runningGroup = 0
-
-
-
+    
+    
+    
     // MARK: -
     // MARK: View Layout
     
@@ -61,14 +61,14 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         setupViews()
         setUpSearchBar()
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.navigationController!.navigationBar.topItem!.title = "Hello"
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(backButton))
+        self.navigationController!.navigationBar.topItem!.title = "Search"
+        //        self.navigationItem.backBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(backButton))
         tabBarY = (tabBar?.tabBar.frame.minY)!
     }
-
+    
     var tabBar: TabBarController?
     
     func setupViews() {
@@ -78,15 +78,15 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         trackDelegate = tabBar
         setupTableView()
         setupAlbumView()
+        //        overlay
         view.addSubview(tabBar!.vc.view)
         view.addSubview(albumView.view)
-     
+        
     }
     
     func setupAlbumView() {
         albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: 0, width: view.frame.width, height: view.frame.height)
         albumView.tabBar = tabBar
-        albumView.delegate = self
         albumView.albumLoadDelegate = tabBar
     }
     
@@ -105,7 +105,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         view.addSubview(tableView)
     }
-
+    
     func setUpSearchBar() {
         navigationItem.hidesSearchBarWhenScrolling = false
         searchController = UISearchController(searchResultsController: nil)
@@ -117,7 +117,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         definesPresentationContext = true
         tableView.tableHeaderView = searchController.searchBar
     }
-
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.search = searchText
         finalResult = []
@@ -134,7 +134,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             }
         }
     }
-
+    
     func createResultArray(runningGroup: Int) {
         var i = 0
         var final : [MixedModel] = []
@@ -166,7 +166,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         i = 0
         for element in (fetchedAlbums?.data)! {
             dispatchGroup.enter()
-
+            
             downloadImage(urlImage: element.cover_xl ?? element.artist?.picture_medium) { (image) in
                 final.append(MixedModel(type: element.type, name: element.title, picture: image, artist: element.artist!, recordType: element.record_type!, tracklist: element.tracklist))
                 self.dispatchGroup.leave()
@@ -177,7 +177,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
                 break
             }
         }
-
+        
         dispatchGroup.notify(queue: .main) {
             print("here")
             if runningGroup == self.runningGroup && self.search.count > 0 {
@@ -186,17 +186,17 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             }
         }
     }
-
+    
     // MARK: -
     // MARK: - Table view data source
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return finalResult.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if finalResult.count <= 0 {
             return UITableViewCell()
@@ -225,7 +225,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             return UITableViewCell()
         }
     }
-
+    
     var tabBarY: CGFloat = 0
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let final = finalResult[indexPath.row]
@@ -239,13 +239,13 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         default:
             return
         }
-
+        
     }
-
+    
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         searchController.searchBar.resignFirstResponder()
     }
-
+    
     // MARK: -
     // MARK: APICalls
     fileprivate func fetchFromAPI(searchType: String, cancelPreviousSearch: Bool) {
@@ -271,7 +271,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         var request = URLRequest(url: url!)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "GET"
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if error != nil {
                 self.dispatchGroup.leave()
@@ -284,7 +284,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         task.resume()
         APItasks.append(task)
     }
-
+    
     func getResult(searchType: String, data: Data?) {
         do {
             switch searchType {
@@ -304,7 +304,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             print(searchType,error, data)
         }
     }
-
+    
     fileprivate func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
         let url = URL(string: urlImage!)
         let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
@@ -318,20 +318,21 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         }
         task.resume()
     }
-
-
-
+    
+    
+    
 }
 
-extension SearchTableViewController: PlayerDelegate, AlbumDelegate {
-    func hidenavBar() {
-        navigationController?.navigationBar.isHidden = true
+extension SearchTableViewController: PlayerDelegate {
+    func hideNavBar() {
+        navigationController?.navigationBar.layer.zPosition = -1
+                self.searchController.isActive = false
+                self.searchController.searchBar.isHidden = true
     }
-    
     
     func updateView() {
         setNeedsStatusBarAppearanceUpdate()
-        navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.layer.zPosition = 0
         self.searchController.searchBar.isHidden = false
     }
     
@@ -342,41 +343,44 @@ extension SearchTableViewController: PlayerDelegate, AlbumDelegate {
     
     func playTracks(index: Int) {
         trackDelegate.loadTrack(songIndex: 0, cover: finalResult[index].picture, songArray: [finalResult[index].track!])
-        self.searchController.searchBar.isHidden = true
-        navigationController?.navigationBar.isHidden = true
-        self.view.bringSubviewToFront(self.tabBar!.vc.view)
-        trackDelegate.hideTabBar()
+//        self.view.bringSubviewToFront(self.tabBar!.vc.view)
+//        trackDelegate.hideTabBar()
+    }
     
+    @objc func backButton() {
+        self.navigationController!.navigationBar.topItem!.title = "Search"
+        albumView.albumTracks = nil
+        UIView.animate(withDuration: 0.2) {
+            self.albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        }
+        updateLeftBarButton(hide: true)
+//        self.searchController.searchBar.isHidden = false
     }
-
-   @objc func backButton() {
-    UIView.animate(withDuration: 0.2) {
-        self.albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: 0, width: self.view.frame.width, height: self.view.frame.height)
-    }
-    updateLeftBarButton(hide: true)
-     self.searchController.searchBar.isHidden = false
-    }
-
-
+    
     func displayAlbum(index: Int) {
         albumView.finalResult = finalResult[index]
         albumView.downloadTracks()
         view.bringSubviewToFront(albumView.view)
         updateLeftBarButton(hide: false)
+        self.navigationController!.navigationBar.topItem!.title = "Album"
         let x = (tabBar?.tabBar.frame.height)! + (self.navigationController?.navigationBar.frame.height)! + UIApplication.shared.statusBarFrame.height
         self.albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: x + keys.currentTrackViewHeight, right: 0)
-        UIView.animate(withDuration: 0.2) {
-            self.searchController.isActive = false
-            self.albumView.view.frame = CGRect(x: 0, y: (self.navigationController?.navigationBar.frame.height)! + UIApplication.shared.statusBarFrame.height, width: self.view.frame.width, height: self.view.frame.height)
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseIn
+            , animations: {
+                self.searchController.isActive = false
+                self.albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: (self.navigationController?.navigationBar.frame.height)! + UIApplication.shared.statusBarFrame.height, width: self.view.frame.width, height: self.view.frame.height)
+        }) { (bool) in
+            UIView.animate(withDuration: 0.3, animations: {
+                self.albumView.view.frame = CGRect(x: 0, y: (self.navigationController?.navigationBar.frame.height)! + UIApplication.shared.statusBarFrame.height, width: self.view.frame.width, height: self.view.frame.height)
+            })
         }
-        self.searchController.searchBar.isHidden = true
     }
-
+    
     func displayArtist() {
         print("Artist")
     }
-
-
+    
+    
 }
 
 

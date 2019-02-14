@@ -246,7 +246,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     func toUserHomeController() {
         let mainStoryboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         let vc : UINavigationController = mainStoryboard.instantiateViewController(withIdentifier: "navUserHome") as! UINavigationController
-    
         self.present(vc, animated: true, completion: nil)
     }
     

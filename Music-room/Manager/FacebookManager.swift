@@ -48,6 +48,7 @@ class FacebookManager {
         }
         let facebookCredential = FacebookAuthProvider.credential(withAccessToken: authenticationToken)
         signIntoFirebase(withFacebookCredential: facebookCredential, completion: completion)
+    
     }
     
     fileprivate static func signIntoFirebase(withFacebookCredential facebookCredential: AuthCredential, completion: @escaping (_ message: String, _ error: Error?, _ facebookReturn: FacebookProfile?) ->()) {

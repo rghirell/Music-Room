@@ -11,6 +11,7 @@ import AVFoundation
 
 protocol PlayerDelegate: class {
     func updateView()
+    func hideNavBar()
 }
 
 protocol PlayerTabBarDelegate: class {
@@ -191,6 +192,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     func showView() {
+        delegate?.hideNavBar()
         UIView.animate(withDuration: 0.3) {
             self.view.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         }

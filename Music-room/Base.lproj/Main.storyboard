@@ -112,12 +112,6 @@
                                     <action selector="fbLogin:" destination="Ddz-NE-X2u" eventType="touchUpInside" id="4SO-oC-RyF"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KBO-iu-Udo">
-                                <rect key="frame" x="0.0" y="151.66666666666666" width="375" height="20.333333333333343"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.2193390429" green="0.51816105840000004" blue="0.96867865320000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
@@ -130,10 +124,7 @@
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="top" secondItem="YUq-8o-2PR" secondAttribute="bottom" constant="12" id="DV3-8X-FVL"/>
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="bottom" secondItem="YUq-8o-2PR" secondAttribute="top" constant="-20" id="Oxg-uh-8YG"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="width" secondItem="YUq-8o-2PR" secondAttribute="width" id="b9K-dj-rB4"/>
-                            <constraint firstItem="KBO-iu-Udo" firstAttribute="width" secondItem="9Nn-ZA-Oxq" secondAttribute="width" id="bE7-Ts-Tgd"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="hAB-Nl-DRo"/>
-                            <constraint firstItem="KBO-iu-Udo" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="icc-lS-UHo"/>
-                            <constraint firstItem="hrL-zw-HKW" firstAttribute="bottom" secondItem="KBO-iu-Udo" secondAttribute="bottom" constant="606" id="ie5-kN-LAT"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="height" secondItem="hrL-zw-HKW" secondAttribute="height" multiplier="0.3" id="kji-E3-1oY"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="nX5-B5-eJb"/>
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="width" secondItem="YUq-8o-2PR" secondAttribute="width" id="xGG-b6-qfG"/>

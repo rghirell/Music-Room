@@ -8,12 +8,11 @@
 
 import UIKit
 
-protocol AlbumDelegate : class {
-    func hidenavBar()
-}
+
 
 protocol AlbumLoadDelegate : class {
     func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable])
+    func hideTabBar()
 }
 
 class AlbumTableViewController: UITableViewController {
@@ -25,9 +24,9 @@ class AlbumTableViewController: UITableViewController {
         }
     }
     
-    var delegate: AlbumDelegate!
     var albumLoadDelegate: AlbumLoadDelegate!
     var finalResult: MixedModel?
+    
     let trackCellIdentifier = "trackCell"
     var tabBar: TabBarController? 
     
@@ -78,11 +77,11 @@ class AlbumTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         albumLoadDelegate.loadAlbum(songIndex: indexPath.row, cover: finalResult?.picture, albumName: finalResult?.name, songArray: (albumTracks?.data)!)
-        delegate.hidenavBar()
+//        albumLoadDelegate.hideTabBar()
         view.superview!.bringSubviewToFront(self.tabBar!.vc.view)
-        UIView.animate(withDuration: 0.2) {
-            self.tabBar?.tabBar.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: (self.tabBar?.tabBar.frame.width)!, height: (self.tabBar?.tabBar.frame.height)!)
-        }
+//        UIView.animate(withDuration: 0.2) {
+//            self.tabBar?.tabBar.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: (self.tabBar?.tabBar.frame.width)!, height: (self.tabBar?.tabBar.frame.height)!)
+//        }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
