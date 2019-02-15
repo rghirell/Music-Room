@@ -20,18 +20,27 @@ struct Playlist : Codable {
     var accessibility : Accessibility
     var creator_name: String
     var follower: [String]
-    var genre: String
+    var genre: String?
+    var distance: Int?
     var owner: String
-    var titles: [String]
-    var id: String
+    var titles: [TitleInfo?]?
 }
 
+struct TitleInfo : Codable {
+    var album : AlbumCodable
+    var artist : ArtistCodable
+    var title: String
+    var title_short: String
+    var type: String
+    var preview: String
+    var in_Event: Bool?
+}
+
+
 struct Accessibility : Codable {
-    var friends: Bool
     var permission: Bool
     
     enum CodingKeys: String, CodingKey {
-        case friends
         case permission = "public"
     }
     

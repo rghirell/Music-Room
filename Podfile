@@ -19,6 +19,7 @@ target 'Music-room' do
   pod 'TinyConstraints'
   pod 'Firebase/Storage'
   pod 'JGProgressHUD'
+  pod 'SwipeCellKit'
 
 
 

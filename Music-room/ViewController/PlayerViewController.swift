@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import MediaPlayer
 
 protocol PlayerTabBarDelegate: class {
     func updateTabBarRatio(ratio: CGFloat)
@@ -16,6 +17,7 @@ protocol PlayerTabBarDelegate: class {
 
 class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
+    var imageView : UIImageView!
     var songPlayer = AVAudioPlayer()
     var isPanActivated = false
     private var state = State.pause {
@@ -23,8 +25,8 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             stateChanged()
         }
     }
-    let playImage = UIImage(named: "play")
-    let pauseImage = UIImage(named: "pause")
+    let playImage = UIImage(named: "white_play_circle")
+    let pauseImage = UIImage(named: "white_pause_circle")
     var albumName: String?
     weak var tabBarDelegate: PlayerTabBarDelegate!
     private var timer: Timer?
@@ -42,18 +44,32 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     // MARK: -
     // MARK: View Element
     
+    
     let nextButton : UIButton = {
         let button = UIButton()
-        let image = UIImage(named: "next")
+        let image = UIImage(named: "skip_next_white")
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
     
+    let viewTest: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .red
+        return view
+    }()
+    let viewTest2: UIView = {
+        let view = UIView()
+//        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .black
+        return view
+    }()
+    
     let prevButton : UIButton = {
         let button = UIButton()
-        let image = UIImage(named: "previous")
+        let image = UIImage(named: "skip_previous_white")
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.imageView?.contentMode = .scaleAspectFit
@@ -65,7 +81,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         button.translatesAutoresizingMaskIntoConstraints = false
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(playPauseAction), for: .touchUpInside)
-        let image = UIImage(named: "pause")
+        let image = UIImage(named: "white_pause_circle")
         button.setImage(image, for: .normal)
         return button
     }()
@@ -111,6 +127,13 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         setupCollectionView()
         setupLayout()
         previousPage = songIndex
+        
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.nextTrackCommand.isEnabled = true
+        commandCenter.pauseCommand.isEnabled = true
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.pauseCommand.addTarget(self, action:#selector(playPauseAction))
+        commandCenter.playCommand.addTarget(self, action:#selector(playPauseAction))
     }
     
     fileprivate func stateChanged() {
@@ -223,6 +246,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     fileprivate func playSong(data: Data) {
         do {
+            
             songPlayer = try AVAudioPlayer(data: data)
             songPlayer.delegate = self
             //8 - Prepare the song to be played
@@ -233,6 +257,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
                 //10 - Set our session category to playback music
                 try audioSession.setCategory(.playback, mode: .default, options: [.mixWithOthers])
                 try AVAudioSession.sharedInstance().setActive(true)
+                imageView.image = coverImage!
                 songPlayer.play()
                 timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
                 state = .play
@@ -280,8 +305,9 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     fileprivate func setupLayout() {
         view.layer.cornerRadius = 8
-        view.backgroundColor = .gray
+        view.clipsToBounds = true
         viewY = view.frame.minY
+        assignBackground()
         let stackView = UIStackView(arrangedSubviews: [prevButton, playPauseButton, nextButton])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         let screenSize = UIScreen.main.bounds
@@ -289,6 +315,13 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         let prevNextSize = 30.0 as CGFloat
         var minimumSpaceConstant = screenSize.height * 0.065
         var imageConstraintMultiplier = CGFloat(0.84)
+        
+        viewTest2.frame = view.bounds
+        viewTest2.clipsToBounds = true
+        viewTest2.layer.masksToBounds = true
+        viewTest2.alpha = 0.75
+      
+        view.addSubview(viewTest2)
         timeSlider.minimumTrackTintColor = .white
         timeSlider.setThumbImage(UIImage(named: "icon"), for: .normal)
         view.addSubview(playPauseButton)
@@ -305,9 +338,9 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             imageConstraintMultiplier = CGFloat(0.7)
         }
         
-        
-        prevButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
-        nextButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
+//
+//        prevButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
+//        nextButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
         playPauseButton.imageEdgeInsets = UIEdgeInsets(top: buttonSize, left:buttonSize, bottom: buttonSize, right: buttonSize)
         timeSlider.maximumValue = 30
         timeSlider.addTarget(self, action: #selector(changedTimer), for: .touchDown)
@@ -328,8 +361,10 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             artistLabel.bottomAnchor.constraint(equalTo: timeSlider.topAnchor, constant: -5),
             trackLabel.bottomAnchor.constraint(equalTo: artistLabel.topAnchor, constant: -5),
             trackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            albumLabel.bottomAnchor.constraint(greaterThanOrEqualTo: collectionView.topAnchor, constant: -(minimumSpaceConstant + 5)),
-            albumLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 24),
+            albumLabel.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -(minimumSpaceConstant + 5)),
+//            albumLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 24),
+            albumLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
+            albumLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -12),
             albumLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1),

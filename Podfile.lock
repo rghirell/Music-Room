@@ -136,6 +136,7 @@ PODS:
   - nanopb/encode (0.3.901)
   - Protobuf (3.6.1)
   - SwiftyJSON (4.2.0)
+  - SwipeCellKit (2.5.1)
   - TinyConstraints (3.3.1)
 
 DEPENDENCIES:
@@ -149,6 +150,7 @@ DEPENDENCIES:
   - Firebase/Storage
   - JGProgressHUD
   - SwiftyJSON
+  - SwipeCellKit
   - TinyConstraints
 
 SPEC REPOS:
@@ -178,6 +180,7 @@ SPEC REPOS:
     - nanopb
     - Protobuf
     - SwiftyJSON
+    - SwipeCellKit
     - TinyConstraints
 
 SPEC CHECKSUMS:
@@ -206,8 +209,9 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
   SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+  SwipeCellKit: 30fd6a4f8a8b8ac864ea389c8b4c8bac5ba5471a
   TinyConstraints: dbf7519aefc01ea59d62244300c7718aec68e280
 
-PODFILE CHECKSUM: b94c7fc57f5d492e8f9836cdcf6dbd716ed11de8
+PODFILE CHECKSUM: fe08602c7950b908bd8a6a09e15fc085bcc90873
 
 COCOAPODS: 1.6.0.beta.2

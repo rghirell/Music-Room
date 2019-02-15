@@ -24,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let settings = db.settings
         settings.areTimestampsInSnapshotsEnabled = true
         db.settings = settings
+        UIApplication.shared.beginReceivingRemoteControlEvents()
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = TabBarController()
@@ -31,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
+
     
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)

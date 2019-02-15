@@ -10,7 +10,7 @@ import Foundation
 
 
 struct keys {
-    static let currentTrackViewHeight: CGFloat = 50
+    static let currentTrackViewHeight: CGFloat = 60
 }
 
 

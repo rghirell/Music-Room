@@ -96,7 +96,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                     })
                     self.present(alert, animated: true)
                 } else {
-                     self.toUserHomeController()
+                    Auth.auth().currentUser?.getIDTokenForcingRefresh(true, completion: { (str, err) in
+                        print(str)
+                    })
+//                     self.toUserHomeController()
+                    
                 }
             }
             UIViewController.removeSpinner(spinner: self.spinner!)

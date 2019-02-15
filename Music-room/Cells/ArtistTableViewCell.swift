@@ -7,11 +7,10 @@
 //
 
 import UIKit
-
-
+import SwipeCellKit
 
 fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
-class ArtistTableViewCell: UITableViewCell {
+class ArtistTableViewCell: SwipeTableViewCell {
 
      var artist: Artist! {
         didSet {

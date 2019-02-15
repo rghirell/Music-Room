@@ -20,6 +20,9 @@
 		4A32B8F2220F7F40000089A0 /* CoverCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */; };
 		4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A3F320B220F6446003F7E40 /* Assets.xcassets */; };
 		4A4E7670221490180066D179 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E766F221490180066D179 /* File.swift */; };
+		4A4E76752216B5A30066D179 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4E76742216B5A30066D179 /* MapKit.framework */; };
+		4A4E76782216B7C80066D179 /* UserAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E76772216B7C80066D179 /* UserAccountViewController.swift */; };
+		4A4E767C2216DBDE0066D179 /* PlaylistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E767B2216DBDE0066D179 /* PlaylistTableViewController.swift */; };
 		4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */; };
 		4ABBB6D12207392700C40A53 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D02207392700C40A53 /* CoreAudio.framework */; };
 		4ABBB6D32207392F00C40A53 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */; };
@@ -60,6 +63,9 @@
 		4A3F320B220F6446003F7E40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4A4E766F221490180066D179 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		4A4E76732215964A0066D179 /* Music-room.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Music-room.entitlements"; sourceTree = "<group>"; };
+		4A4E76742216B5A30066D179 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		4A4E76772216B7C80066D179 /* UserAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountViewController.swift; sourceTree = "<group>"; };
+		4A4E767B2216DBDE0066D179 /* PlaylistTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewController.swift; sourceTree = "<group>"; };
 		4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewController.swift; sourceTree = "<group>"; };
 		4ABBB6D02207392700C40A53 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -126,6 +132,7 @@
 			files = (
 				4ABBB6D92207397200C40A53 /* MediaPlayer.framework in Frameworks */,
 				4ABBB6D72207396800C40A53 /* libicucore.tbd in Frameworks */,
+				4A4E76752216B5A30066D179 /* MapKit.framework in Frameworks */,
 				4ABBB6D52207393900C40A53 /* SystemConfiguration.framework in Frameworks */,
 				4AC9D5D022089D9700751FAA /* libDeezer.a in Frameworks */,
 				4ABBB6D32207392F00C40A53 /* AudioToolbox.framework in Frameworks */,
@@ -149,6 +156,7 @@
 		3D02BB579C18F5EAAB706295 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4A4E76742216B5A30066D179 /* MapKit.framework */,
 				4ABBB6D82207397200C40A53 /* MediaPlayer.framework */,
 				4ABBB6D62207396800C40A53 /* libicucore.tbd */,
 				4ABBB6D42207393900C40A53 /* SystemConfiguration.framework */,
@@ -176,6 +184,21 @@
 				4AE5FDA421FB86B100F1FEF8 /* extensions.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		4A4E76762216B74B0066D179 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				4A0E7F4222142945007C20A5 /* AlbumTableViewController.swift */,
+				4A4E76772216B7C80066D179 /* UserAccountViewController.swift */,
+				4A4E767B2216DBDE0066D179 /* PlaylistTableViewController.swift */,
+				4AE5FD9E21FB454E00F1FEF8 /* SignUpViewController.swift */,
+				4AE5FDAA21FE17A300F1FEF8 /* SearchTableViewController.swift */,
+				4AC9D67F220B536100751FAA /* TabBarController.swift */,
+				4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */,
+				4A16E5C1220F010F0054A670 /* PlayerViewController.swift */,
+			);
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 		4AC3FE4321FB2291002E1BAB = {
@@ -207,21 +230,16 @@
 				4AC9D5D92209B14100751FAA /* Models */,
 				4AC9D5D62209A33400751FAA /* Cells */,
 				4AC9D5D32209964700751FAA /* Manager */,
-				4AC9D5D222089E6800751FAA /* bridge.h */,
 				4AC3FE4F21FB2291002E1BAB /* AppDelegate.swift */,
-				4AE5FD9E21FB454E00F1FEF8 /* SignUpViewController.swift */,
-				4A0E7F4222142945007C20A5 /* AlbumTableViewController.swift */,
-				4AE5FDAA21FE17A300F1FEF8 /* SearchTableViewController.swift */,
+				4AC9D5D222089E6800751FAA /* bridge.h */,
 				4A4E766F221490180066D179 /* File.swift */,
 				4AC3FE5321FB2291002E1BAB /* Main.storyboard */,
-				4AC9D67F220B536100751FAA /* TabBarController.swift */,
 				4A3F320B220F6446003F7E40 /* Assets.xcassets */,
 				4AC3FE5821FB2294002E1BAB /* LaunchScreen.storyboard */,
 				4AC3FE5B21FB2294002E1BAB /* Info.plist */,
 				4AC3FE6121FB22E2002E1BAB /* GoogleService-Info.plist */,
-				4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */,
 				4AC9D59822086D2600751FAA /* bridging-header.h */,
-				4A16E5C1220F010F0054A670 /* PlayerViewController.swift */,
+				4A4E76762216B74B0066D179 /* ViewController */,
 			);
 			path = "Music-room";
 			sourceTree = "<group>";
@@ -346,7 +364,7 @@
 								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
@@ -451,6 +469,7 @@
 				"${BUILT_PRODUCTS_DIR}/JGProgressHUD/JGProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
+				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 				"${BUILT_PRODUCTS_DIR}/TinyConstraints/TinyConstraints.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
@@ -472,6 +491,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JGProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TinyConstraints.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
@@ -493,9 +513,11 @@
 				4AE5FDA121FB686E00F1FEF8 /* utils.swift in Sources */,
 				4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */,
 				4A32B8F2220F7F40000089A0 /* CoverCollectionViewCell.swift in Sources */,
+				4A4E76782216B7C80066D179 /* UserAccountViewController.swift in Sources */,
 				4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */,
 				4A16E5BA220DB6340054A670 /* MixedModel.swift in Sources */,
 				4AC9D680220B536200751FAA /* TabBarController.swift in Sources */,
+				4A4E767C2216DBDE0066D179 /* PlaylistTableViewController.swift in Sources */,
 				4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */,
 				4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */,
 				4A16E5C2220F010F0054A670 /* PlayerViewController.swift in Sources */,
