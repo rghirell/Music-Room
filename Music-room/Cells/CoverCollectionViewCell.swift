@@ -36,6 +36,14 @@ class CoverCollectionViewCell: UICollectionViewCell {
             ])
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        coverCollectionView.layer.masksToBounds = false
+        
+        coverCollectionView.layer.cornerRadius = 8
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("NOT GOOD")
     }

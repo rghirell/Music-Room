@@ -53,16 +53,9 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
-    
-    let viewTest: UIView = {
+
+    let blurryLayer: UIView = {
         let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .red
-        return view
-    }()
-    let viewTest2: UIView = {
-        let view = UIView()
-//        view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .black
         return view
     }()
@@ -105,6 +98,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     let trackLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 24)
+        label.textColor = .white
         label.text = "track"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -114,6 +108,26 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         let label = UILabel()
         label.text = "album"
         label.textAlignment = .center
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    
+    let durationLabel: UILabel = {
+        let label = UILabel()
+        label.text = "-:--"
+        label.font = label.font.withSize(12)
+        label.textColor = .gray
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    let currentDurationLabel: UILabel = {
+        let label = UILabel()
+        label.font = label.font.withSize(12)
+        label.text = "-:--"
+        label.textColor = .gray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -121,8 +135,10 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     var panGesture = UIPanGestureRecognizer()
     var viewY: CGFloat = 0
     
+    var allViews: [UIView]?
     override func viewDidLoad() {
         super.viewDidLoad()
+       
         setupGesture()
         setupCollectionView()
         setupLayout()
@@ -218,6 +234,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             }
             DispatchQueue.main.async {
                 self.playSong(data: data!)
+                self.updateDuration()
             }
         }.resume()
     }
@@ -246,7 +263,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     fileprivate func playSong(data: Data) {
         do {
-            
             songPlayer = try AVAudioPlayer(data: data)
             songPlayer.delegate = self
             //8 - Prepare the song to be played
@@ -260,6 +276,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
                 imageView.image = coverImage!
                 songPlayer.play()
                 timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
+              
                 state = .play
                 playPauseButton.setImage(pauseImage, for: .normal)
                 //11 -
@@ -279,7 +296,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     @objc func refreshStatusBar() {
-//        print(songPlayer.currentTime)
+        updateCurrentDuration()
         self.timeSlider.value = Float(self.songPlayer.currentTime)
         
     }
@@ -290,12 +307,39 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     @objc func updateTimer() {
         songPlayer.currentTime = Double(timeSlider.value)
+        updateCurrentDuration()
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
+    }
+   
+    func updateCurrentDuration() {
+        var secStr = ""
+        let min = songPlayer.currentTime / 60
+        let sec = Int(round(songPlayer.currentTime.truncatingRemainder(dividingBy: 60)))
+        
+        if sec < 10 {
+            secStr = "0\(Int(sec))"
+        } else { secStr = "\(sec)" }
+        currentDurationLabel.text = "\(Int(min)):\(secStr)"
+    }
+    
+    func updateDuration() {
+        guard let duration = songArray[songIndex].duration else { return }
+        if duration > 30 {
+            durationLabel.text = "0:30"
+            timeSlider.maximumValue = 30.0
+            return
+        }
+        var secStr = ""
+        let sec = songArray[songIndex].duration! % 60
+        if sec < 10 {
+            secStr = "0\(Int(sec))"
+        } else { secStr = "\(sec)" }
+        durationLabel.text = "0:\(secStr)"
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        print("hello there")
         playPauseButton.setImage(playImage, for: .normal)
+        currentDurationLabel.text = "0:00"
         timeSlider.value = 0
         state = .pause
         timeSlider.cancelTracking(with: nil)
@@ -308,39 +352,29 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         view.clipsToBounds = true
         viewY = view.frame.minY
         assignBackground()
-        let stackView = UIStackView(arrangedSubviews: [prevButton, playPauseButton, nextButton])
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         let screenSize = UIScreen.main.bounds
-        let buttonSize = 50.0 as CGFloat
-        let prevNextSize = 30.0 as CGFloat
+        let buttonSize = 64.0 as CGFloat
         var minimumSpaceConstant = screenSize.height * 0.065
         var imageConstraintMultiplier = CGFloat(0.84)
         
-        viewTest2.frame = view.bounds
-        viewTest2.clipsToBounds = true
-        viewTest2.layer.masksToBounds = true
-        viewTest2.alpha = 0.75
+        blurryLayer.frame = view.bounds
+        blurryLayer.alpha = 0.75
       
-        view.addSubview(viewTest2)
         timeSlider.minimumTrackTintColor = .white
         timeSlider.setThumbImage(UIImage(named: "icon"), for: .normal)
-        view.addSubview(playPauseButton)
-        view.addSubview(prevButton)
-        view.addSubview(nextButton)
-        view.addSubview(timeSlider)
-        view.addSubview(trackLabel)
-        view.addSubview(artistLabel)
-        view.addSubview(albumLabel)
-        view.addSubview(collectionView)
+        
+     allViews = [blurryLayer,currentDurationLabel, durationLabel, albumLabel, trackLabel, artistLabel, timeSlider, playPauseButton, prevButton, nextButton, collectionView]
+        
+        for x in allViews! {
+            self.view.addSubview(x)
+        }
+
 
         if screenSize.height <= 700 {
             minimumSpaceConstant = screenSize.height * 0.04
             imageConstraintMultiplier = CGFloat(0.7)
         }
         
-//
-//        prevButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
-//        nextButton.imageEdgeInsets = UIEdgeInsets(top: prevNextSize, left: prevNextSize, bottom: prevNextSize, right: prevNextSize)
         playPauseButton.imageEdgeInsets = UIEdgeInsets(top: buttonSize, left:buttonSize, bottom: buttonSize, right: buttonSize)
         timeSlider.maximumValue = 30
         timeSlider.addTarget(self, action: #selector(changedTimer), for: .touchDown)
@@ -350,6 +384,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         NSLayoutConstraint.activate([
             playPauseButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             playPauseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -70),
+            
             prevButton.trailingAnchor.constraint(equalTo: playPauseButton.leadingAnchor, constant: -40),
             prevButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
             nextButton.centerYAnchor.constraint(equalTo: playPauseButton.centerYAnchor),
@@ -362,7 +397,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             trackLabel.bottomAnchor.constraint(equalTo: artistLabel.topAnchor, constant: -5),
             trackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             albumLabel.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -(minimumSpaceConstant + 5)),
-//            albumLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 24),
             albumLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
             albumLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -12),
             albumLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -370,6 +404,10 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1),
             collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: imageConstraintMultiplier),
             collectionView.bottomAnchor.constraint(greaterThanOrEqualTo: trackLabel.topAnchor, constant: -minimumSpaceConstant),
+            currentDurationLabel.topAnchor.constraint(equalTo: timeSlider.bottomAnchor, constant: 4),
+            currentDurationLabel.leadingAnchor.constraint(equalTo: timeSlider.leadingAnchor, constant: 0),
+            durationLabel.topAnchor.constraint(equalTo: timeSlider.bottomAnchor, constant: 4),
+            durationLabel.trailingAnchor.constraint(equalTo: timeSlider.trailingAnchor, constant: 0)
             ])
     }
     
