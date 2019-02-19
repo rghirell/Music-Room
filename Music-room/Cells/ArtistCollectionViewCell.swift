@@ -1,16 +1,14 @@
 //
-//  CoverCollectionViewCell.swift
+//  ArtistCollectionViewCell.swift
 //  Music-room
 //
-//  Created by raphael ghirelli on 2/9/19.
+//  Created by raphael ghirelli on 2/19/19.
 //  Copyright © 2019 raphael ghirelli. All rights reserved.
 //
 
 import UIKit
 
-class CoverCollectionViewCell: UICollectionViewCell {
-    
-   
+class ArtistCollectionViewCell: UICollectionViewCell {
     let coverCollectionView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
@@ -30,7 +28,7 @@ class CoverCollectionViewCell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             coverCollectionView.heightAnchor.constraint(equalTo: self.heightAnchor),
-            coverCollectionView.widthAnchor.constraint(equalTo: self.heightAnchor),
+            coverCollectionView.widthAnchor.constraint(equalTo: self.widthAnchor),
             coverCollectionView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             coverCollectionView.centerXAnchor.constraint(equalTo: self.centerXAnchor)
             ])

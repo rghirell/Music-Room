@@ -19,11 +19,20 @@ struct MixedModel {
     var picture: UIImage
     var recordType: String?
     var tracklist: String?
+    var id: Int?
   
+    
     init(type: String, name: String, picture: UIImage) {
         self.type = type
         self.name = name
         self.picture = picture
+    }
+    
+    init(type: String, name: String, picture: UIImage, id: Int) {
+        self.type = type
+        self.name = name
+        self.picture = picture
+        self.id = id
     }
     
     init(type: String, name: String, picture: UIImage, preview: String, album: AlbumCodable, artist: ArtistCodable, track: TrackCodable) {
