@@ -11,30 +11,24 @@ import Firebase
 //let myGroup = DispatchGroup()
 
 
-protocol TrackDelegate: class {
-    func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
-}
+//protocol TrackDelegate: class {
+//    func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
+//}
 
-class SearchTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,  UISearchBarDelegate, UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-    }
-    
-    let dispatchGroup = DispatchGroup()
+class SearchTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,  UISearchBarDelegate {
    
-    
-    // MARK: -
-    // MARK: CELL IDENTIFIER
-    let artistCellIdentifier = "artistCell"
-    let trackCellIdentifier = "trackCell"
-    let albumCellIdentifier = "albumCell"
+
+    let dispatchGroup = DispatchGroup()
     
     // MARK: -
     // MARK: API FETCH
     var fetchedAlbums: AlbumArray?
     var fetchedTracks: TrackArray?
     var fetchedArtist: ArtistArray?
-    var finalResult: [MixedModel] = []
+    var result: [[String: Any]] = [[String: Any]]()
     var trackDelegate: TrackDelegate!
+    var player: PlayerViewController!
+
     
     fileprivate var tasks = [URLSessionTask]()
     fileprivate var APItasks = [URLSessionTask]()
@@ -42,11 +36,9 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     private var tableView: UITableView!
     
     // MARK: -
-    var searchController: UISearchController!
+    var searchBar: UISearchBar!
     var search = ""
     var runningGroup = 0
-    
-    
     
     // MARK: -
     // MARK: View Layout
@@ -58,22 +50,11 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.navigationController!.navigationBar.topItem!.title = "Search"
+//        self.navigationController!.navigationBar.topItem!.title = "Search"
     }
     
-    var tabBar: TabBarController?
     func setupViews() {
-        tabBar = self.tabBarController as! TabBarController?
-        trackDelegate = tabBar
         setupTableView()
-        setupAlbumView()
-//        view.addSubview(albumView.view)
-    }
-    
-    func setupAlbumView() {
-//        albumView.view.frame = CGRect(x: UIScreen.main.bounds.width, y: 0, width: view.frame.width, height: view.frame.height)
-//        albumView.tabBar = tabBar
-      
     }
     
     func setupTableView() {
@@ -82,9 +63,10 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         tableView = UITableView(frame: CGRect(x: 0, y: 0, width: displayWidth, height: displayHeight))
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(ArtistTableViewCell.self, forCellReuseIdentifier: artistCellIdentifier)
-        tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: trackCellIdentifier)
-        tableView.register(AlbumTableViewCell.self, forCellReuseIdentifier: albumCellIdentifier)
+        tableView.register(ArtistTableViewCell.self, forCellReuseIdentifier: CellIdentifier.artistCell)
+        tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
+        tableView.register(AlbumTableViewCell.self, forCellReuseIdentifier: CellIdentifier.albumCell)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "redirectCell")
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
@@ -92,20 +74,15 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func setUpSearchBar() {
-        navigationItem.hidesSearchBarWhenScrolling = false
-        searchController = UISearchController(searchResultsController: nil)
-        searchController.searchResultsUpdater = self
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search here..."
-        searchController.searchBar.delegate = self
-        searchController.searchBar.sizeToFit()
-//        definesPresentationContext = true
-        tableView.tableHeaderView = searchController.searchBar
+        searchBar = UISearchBar()
+        searchBar.delegate = self
+        searchBar.sizeToFit()
+        navigationItem.titleView = searchBar
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.search = searchText
-        finalResult = []
+        result = []
         dispatchGroup.enter()
         fetchFromAPI(searchType: "artist", cancelPreviousSearch: true)
         dispatchGroup.enter()
@@ -127,32 +104,108 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return finalResult.count
+        if searchBar.text?.count ?? 0 <= 0 {
+            return 0
+        }
+        return result.count + 5
+    }
+    
+    private func specialCell(indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "redirectCell", for: indexPath)
+        let x = result.count + 5
+        switch x - indexPath.row {
+        case 5:
+            cell.textLabel?.text = "All artists"
+        case 4:
+            cell.textLabel?.text = "All titles"
+        case 3:
+            cell.textLabel?.text = "All albums"
+        case 2:
+            cell.textLabel?.text = "All playlists"
+        case 1:
+            cell.textLabel?.text = "All users"
+        default:
+            print("oops")
+        }
+        cell.accessoryType = .disclosureIndicator
+        return cell
+    }
+    
+    private func specialCell(type: Int) {
+        switch type {
+        case 5:
+            let vc = ArtistTableViewController()
+            vc.player = player
+            vc.searchType = "artist"
+            vc.search = searchBar.text
+            show(vc, sender: self)
+        case 4:
+            let vc = TrackTableViewController()
+            vc.player = player
+            vc.searchType = "track"
+            vc.search = searchBar.text
+            show(vc, sender: self)
+        case 3:
+            let vc = AlbumTableViewController()
+            vc.player = player
+            vc.searchType = "album"
+            vc.search = searchBar.text
+            show(vc, sender: self)
+        case 1:
+            let vc = UserSearchTableViewController()
+            vc.search = searchBar.text
+            show(vc, sender: self)
+        default:
+            print("oops")
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if finalResult.count <= 0 {
+        if indexPath.row >= result.count {
+            return specialCell(indexPath: indexPath)
+        }
+        if result.count <= 0 {
             return UITableViewCell()
         }
-        switch finalResult[indexPath.row].type {
+        switch result[indexPath.row]["type"] as? String {
         case "artist":
-            let cell = tableView.dequeueReusableCell(withIdentifier: artistCellIdentifier, for: indexPath) as! ArtistTableViewCell
-            cell.thumbnail.image = nil
-            cell.artistLabel.text = finalResult[indexPath.row].name
-            cell.thumbnail.image = finalResult[indexPath.row].picture
+            let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.artistCell, for: indexPath) as! ArtistTableViewCell
+            cell.accessoryType = .disclosureIndicator
+            let pictureURL = result[indexPath.row]["picture_xl"] as? String
+            downloadImage(urlImage: pictureURL) { (image) in
+                cell.thumbnail.image = nil
+                cell.thumbnail.image = image
+            }
+            cell.artistLabel.text = result[indexPath.row]["name"] as? String
             return cell
         case "track":
-            let cell = tableView.dequeueReusableCell(withIdentifier: trackCellIdentifier, for: indexPath) as! TrackTableViewCell
-            cell.thumbnail.image = nil
-            cell.trackLabel.text = finalResult[indexPath.row].name
-            cell.trackPlaceholder.text = "Title • \(finalResult[indexPath.row].artist!.name)"
-            cell.thumbnail.image = finalResult[indexPath.row].picture
+            let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
+            cell.currentTrack = result[indexPath.row]
+            let artistDic = result[indexPath.row]["artist"] as! NSDictionary
+            let artist = artistDic["name"] as? String
+            let albumDic = result[indexPath.row]["album"] as! NSDictionary
+            let albumURL = albumDic["cover_xl"] as! String
+            downloadImage(urlImage: albumURL) { (image) in
+                cell.thumbnail.image = nil
+                cell.thumbnail.image = image
+            }
+            cell.delegateViewController = self
+            cell.trackLabel.text = result[indexPath.row]["title"] as? String
+            cell.trackPlaceholder.text = "Title • \(artist!)"
             return cell
         case "album":
-            let cell = tableView.dequeueReusableCell(withIdentifier: albumCellIdentifier, for: indexPath) as! AlbumTableViewCell
-            cell.thumbnail.image = finalResult[indexPath.row].picture
-            cell.albumLabel.text = finalResult[indexPath.row].name
-            cell.albumPlaceholder.text = "\(finalResult[indexPath.row].recordType!.capitalized) • \(finalResult[indexPath.row].artist!.name)"
+            let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.albumCell, for: indexPath) as! AlbumTableViewCell
+            cell.accessoryType = .disclosureIndicator
+            let artistDic = result[indexPath.row]["artist"] as! NSDictionary
+            let artist = artistDic["name"] as? String
+            let albumName = result[indexPath.row]["record_type"] as? String
+            let pictureURL = result[indexPath.row]["cover_xl"] as? String
+            downloadImage(urlImage: pictureURL) { (image) in
+                cell.thumbnail.image = nil
+                cell.thumbnail.image = image
+            }
+            cell.albumLabel.text = result[indexPath.row]["title"] as? String
+            cell.albumPlaceholder.text = "\(albumName!.capitalized) • \(artist!)"
             return cell
         default:
             return UITableViewCell()
@@ -160,8 +213,12 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let final = finalResult[indexPath.row]
-        switch final.type {
+        if indexPath.row >= result.count {
+            specialCell(type: (result.count + 5) - indexPath.row)
+            return
+        }
+        let finalType = result[indexPath.row]["type"] as? String
+        switch finalType {
         case "track":
             playTracks(index: indexPath.row)
         case "album":
@@ -174,8 +231,16 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        searchController.searchBar.resignFirstResponder()
-        searchController.isActive = false
+         searchBar.resignFirstResponder()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+    }
+    
+   override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
     
     // MARK: -
@@ -238,6 +303,10 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     fileprivate func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
+        if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
+            completion(imageFromCache)
+            return
+        }
         let url = URL(string: urlImage!)
         let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
             // Perform UI changes only on main thread.
@@ -253,95 +322,97 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
 }
 
 extension SearchTableViewController {
-
     
     func playTracks(index: Int) {
-        trackDelegate.loadTrack(songIndex: 0, cover: finalResult[index].picture, songArray: [finalResult[index].track!])
+        let albumDic = result[index]["album"] as! NSDictionary
+        let albumURL = albumDic["cover_xl"] as! String
+        downloadImage(urlImage: albumURL) { (image) in
+            do {
+                let x = try JSONSerialization.data(withJSONObject: self.result[index])
+                let track = try JSONDecoder().decode(TrackCodable.self, from: x)
+                self.player.loadTrack(songIndex: 0, cover: image, songArray: [track])
+            }
+            catch  {
+                print(error)
+            }
+        }
     }
     
     func displayAlbum(index: Int) {
-        let albumView = AlbumTableViewController()
-        searchController.isActive = false
-        
-        albumView.albumLoadDelegate = tabBar
-        albumView.artistName = finalResult[index].artist?.name
-        albumView.albumCover = finalResult[index].picture
-        albumView.albumName = finalResult[index].name
-        albumView.tracklist = finalResult[index].tracklist
-        albumView.downloadTracks()
+        let albumView = AlbumDetailsTableViewController()
+        let pictureURL = result[index]["cover_xl"] as? String
+        albumView.player = self.player
     
+        downloadImage(urlImage: pictureURL) { (image) in
+            albumView.albumCover = image
+        }
+        do {
+            let x = try JSONSerialization.data(withJSONObject: self.result[index])
+            let album = try JSONDecoder().decode(AlbumCodable.self, from: x)
+            albumView.artistName = album.artist?.name
+            albumView.albumName = album.title
+            albumView.tracklist = album.tracklist
+        }
+        catch  {
+            print(error)
+        }
+        albumView.downloadTracks()
         albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         show(albumView, sender: self)
     }
     
     func displayArtist(index: Int) {
         let vc = ArtistCollectionViewController(collectionViewLayout: StrechyHeader())
-        vc.albumURL = "https://api.deezer.com/artist/\(finalResult[index].id!)/albums"
-        vc.tabBar = tabBar
-        vc.artistName = finalResult[index].name
-        vc.headerImage = finalResult[index].picture
+        vc.player = player
+        vc.albumURL = "https://api.deezer.com/artist/\(result[index]["id"] as! Int)/albums"
+        vc.artistName = result[index]["name"] as? String
+        let pictureURL = result[index]["picture_xl"] as? String
+        downloadImage(urlImage: pictureURL) { (image) in
+            vc.headerImage = image
+        }
         vc.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight + 75, right: 0)
         show(vc, sender: self)
-        print("Artist")
-    
     }
     func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
         return true
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row >= result.count {
+            return 60
+        }
+        return 80
+    }
+    
     
     func createResultArray(runningGroup: Int) {
-        var i = 0
-        var final : [MixedModel] = []
-        for element in (fetchedArtist?.data)! {
-            dispatchGroup.enter()
-            downloadImage(urlImage: element.picture_xl!) { (image) in
-                final.append(MixedModel(type: element.type, name: element.name, picture: image, id: element.id))
-                self.dispatchGroup.leave()
-            }
-            i += 1
-            if i > 2 {
-                print("Job done artist")
+        for (index, element) in (fetchedArtist?.data)!.enumerated() {
+            result.append(element.dictionary)
+            downloadImage(urlImage: element.picture_xl!) { (_) in }
+            print("Index --->", index)
+            if index > 2 {
                 break
             }
         }
-        i = 0
-        for element in (fetchedTracks?.data)! {
-            dispatchGroup.enter()
-            downloadImage(urlImage: element.album!.cover_xl) { (image) in
-                final.append(MixedModel(type: element.type, name: element.title, picture: image, preview: element.preview, album: element.album!, artist: element.artist, track: element))
-                self.dispatchGroup.leave()
-            }
-            i += 1
-            if i > 2 {
-                print("Job done tracks")
+        for (index, element) in (fetchedTracks?.data)!.enumerated() {
+            result.append(element.dictionary)
+            downloadImage(urlImage: element.album!.cover_xl) { (_) in }
+            if index > 2 {
                 break
             }
         }
-        i = 0
-        for element in (fetchedAlbums?.data)! {
-            dispatchGroup.enter()
-            
-            downloadImage(urlImage: element.cover_xl ?? element.artist?.picture_medium) { (image) in
-                final.append(MixedModel(type: element.type, name: element.title, picture: image, artist: element.artist!, recordType: element.record_type!, tracklist: element.tracklist))
-                self.dispatchGroup.leave()
-            }
-            i += 1
-            if i > 2 {
-                print("Job done album")
+        for (index, element) in (fetchedAlbums?.data)!.enumerated() {
+            result.append(element.dictionary)
+            downloadImage(urlImage: element.cover_xl ?? element.artist?.picture_medium) { (_) in }
+            if index > 2 {
                 break
             }
         }
-        
-        dispatchGroup.notify(queue: .main) {
-            print("here")
+        DispatchQueue.main.async {
             if runningGroup == self.runningGroup && self.search.count > 0 {
-                self.finalResult = final
+                print(self.result)
                 self.tableView.reloadData()
             }
         }
     }
 }
-
-
-

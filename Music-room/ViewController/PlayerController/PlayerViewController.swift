@@ -13,6 +13,7 @@ import MediaPlayer
 protocol PlayerTabBarDelegate: class {
     func updateTabBarRatio(ratio: CGFloat)
     func displayTabBar()
+    func displayCurrentTrackView()
 }
 
 class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -345,6 +346,27 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         timeSlider.cancelTracking(with: nil)
         timer?.invalidate()
     }
+    
+    func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable]) {
+        self.songIndex = 0
+        self.songArray = songArray
+        coverImage = cover
+        setCollectionPosition()
+        collectionView.reloadData()
+        tabBarDelegate.displayCurrentTrackView()
+    }
+    
+    func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable]) {
+        self.songIndex = songIndex
+        self.coverImage = cover
+        self.albumName = albumName
+        self.songArray = songArray
+        self.setCollectionPosition()
+        self.collectionView.reloadData()
+        tabBarDelegate.displayCurrentTrackView()
+    }
+    
+    
     
     
     fileprivate func setupLayout() {

@@ -10,14 +10,15 @@ import Foundation
 import Firebase
 import FirebaseStorage
 
- let token = "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijk3ZmNiY2EzNjhmZTc3ODA4ODMwYzgxMDAxMjFlYzdiZGUyMmNmMGUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vbXVzaWMtcm9vbS00MiIsIm5hbWUiOiJsb2xvbG9sb2wiLCJhdWQiOiJtdXNpYy1yb29tLTQyIiwiYXV0aF90aW1lIjoxNTUwMjUzNDY2LCJ1c2VyX2lkIjoiYnRoaWtRbmZ6VGVHSFZPbmh3WEtDck5LWkt5MSIsInN1YiI6ImJ0aGlrUW5melRlR0hWT25od1hLQ3JOS1pLeTEiLCJpYXQiOjE1NTAyNTM0NjgsImV4cCI6MTU1MDI1NzA2OCwiZW1haWwiOiJyZ2hpcmVsbEBzdHVkZW50LjQyLmZyIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsicmdoaXJlbGxAc3R1ZGVudC40Mi5mciJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.ZkdlvzOoi80gn9490-iJCSNTPT-VxqsJUQKDMzgXiJRFUuh2XICVZXA1ZmVrDi1tU7_PIurjQTtDbJIf4G5OSOUQY2ciRt2SPiW31HjaYG0JOhs5cNu_JKrzU0t1UKF9sqr7HKFzXhUZdhGx-7OI8l9sVamG1_LYDCRlonN40gE2lcmjIlrBGUdifyUmeuZgCb6M4nc80e2c9Q5qKZ7sgRmRI_fpTz1iIJM5Mf8eD0UuLW4sVL9L_BZAr1osDY_mya2i00F8RFV9XxHBGCrP6wZAX1DGnbdRIRlPZ0b8olxTrNMq-xhMWFjeeWjFL72_KxA16TdCxD_E6MDxFCGyEw"
+ let token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNiYmQyOGVkYzNkMTBiOTI5ZjU3NWEyY2E2ODU0OWZjYTZkODg5OTMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vbXVzaWMtcm9vbS00MiIsIm5hbWUiOiJyZ2hpcmVsbCIsImF1ZCI6Im11c2ljLXJvb20tNDIiLCJhdXRoX3RpbWUiOjE1NTA4NTM0NjcsInVzZXJfaWQiOiJBREtvMHZNcGEyTWxudE9nNlBHd1Y2Nm1rMU8yIiwic3ViIjoiQURLbzB2TXBhMk1sbnRPZzZQR3dWNjZtazFPMiIsImlhdCI6MTU1MDg1MzQ2OCwiZXhwIjoxNTUwODU3MDY4LCJlbWFpbCI6InJnaGlyZWxsQHN0dWRlbnQuNDIuZnIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJyZ2hpcmVsbEBzdHVkZW50LjQyLmZyIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.SUaLXCB9i4sG2cXNxAWLzWTr0P9Cp9bXbgcKaTyhqXhSBaQmjqfVGUnPirXbhq8PY8QSV78tqi6u8kDivESsWREI5D1M_Wxl0X-IT4ZliBnh-sGbvK-XTJ0M2S7nkJm0gZ5E1FTkK1FISh6JQ_-fFX_WLaSo_qfvYuT-vaTyKSVpqli_4ua_zwPiW1esd37pshFlsW6_tx5ribjuGoBMeI43loK0VWPbxCfjfAZgvzAgZiU_8ASuF9LFt8HTonwq-RGXnSySzq1f3xh_PrDbbBotWbIIg8eY0sLoCrcGZ_gLG80ofeup8EQvgtlwyBVW756IFNf5lpK-lRpXSmkTLQ"
+
 struct FirebaseManager {
-    
-   
     
     struct PlaylistUrl {
         static let event = "https://us-central1-music-room-42.cloudfunctions.net/getAllEvent"
         static let allPlaylist = "https://us-central1-music-room-42.cloudfunctions.net/getAllPlaylist"
+        static let addPlaylist = "https://us-central1-music-room-42.cloudfunctions.net/createPlaylist"
+        static let addEvent = "https://us-central1-music-room-42.cloudfunctions.net/createEvent"
     }
     
     static var firestoreDatabase: Firestore = {
@@ -31,6 +32,7 @@ struct FirebaseManager {
 //    static var playListRequest: URLRequest = {
 //
 //    }()
+    
     
     fileprivate static func requestCompletion<T: Decodable>(data: Data?, response: URLResponse?, err: Error?) -> [T]? {
         if err != nil {
@@ -54,7 +56,7 @@ struct FirebaseManager {
         }
     }
     
-    
+    @discardableResult
     static func getRequestWithToken<T: Decodable>(url: String, queryItem: [URLQueryItem]?, result: @escaping ([T]?) -> Void) -> [T]?  {
         var urlComponents = URLComponents(string: url)
         urlComponents?.queryItems = queryItem
@@ -73,6 +75,35 @@ struct FirebaseManager {
         }
         task.resume()
         return nil
+    }
+    
+    
+    static func postRequestWithToken(url: String, queryItem: [URLQueryItem]?, data: Data?, result: @escaping (Int) -> ()) {
+        var urlComponents = URLComponents(string: url)
+        urlComponents?.queryItems = queryItem
+        let url = urlComponents?.url!
+        guard let urlRequest = url else {
+            print("wrong url")
+            return
+        }
+        var request = URLRequest(url: urlRequest)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"
+        request.httpBody = data
+        let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
+            if err != nil {
+                print(err!)
+                return
+            }
+            guard let httpResponse = response as? HTTPURLResponse else { return }
+            let x = jsonHelper.convertJSONToObject(data: data)
+            if let _ = x {
+                print(x!["message"])
+            }
+            result(httpResponse.statusCode)
+        }
+        task.resume()
     }
 
     

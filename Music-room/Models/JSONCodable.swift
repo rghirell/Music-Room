@@ -36,6 +36,16 @@ struct TitleInfo : Codable {
     var in_Event: Bool?
 }
 
+struct EventPlaylistCreation : Codable {
+    var Name: String
+    var genre: String
+    var start: Int
+    var end: Int
+    var lon: Double
+    var lat: Double
+    var distance: Int
+}
+
 
 struct Accessibility : Codable {
     var permission: Bool
@@ -43,7 +53,6 @@ struct Accessibility : Codable {
     enum CodingKeys: String, CodingKey {
         case permission = "public"
     }
-    
 }
 
 
@@ -55,8 +64,13 @@ struct ArtistArray : Codable {
 struct ArtistCodable : Codable {
     var name: String
     var type: String
+    var link: String?
+    var picture: String?
+    var picture_small: String?
     var picture_medium: String?
+    var picture_big: String?
     var picture_xl: String?
+    var tracklist: String?
     var id: Int
 }
 
@@ -67,12 +81,21 @@ struct TrackArray : Codable {
 }
 
 struct TrackCodable : Codable {
+    var id: Int?
     var title: String
     var preview: String
     var type : String
     var album : AlbumCodable?
     var artist : ArtistCodable
     var duration : Int?
+    var explicit_content_cover: Int?
+    var explicit_content_lyrics: Int?
+    var explicit_lyrics: Bool?
+    var link: String?
+    var rank: Int?
+    var readable: Bool?
+    var title_short: String?
+    var title_version: String?
 }
 
 
@@ -83,9 +106,12 @@ struct AlbumArray : Codable {
 
 struct AlbumCodable : Codable {
     var title: String
+    var cover: String?
+    var cover_small: String?
     var cover_xl: String?
     var cover_medium: String?
     var cover_big: String?
+    var id: Int?
     var tracklist: String
     var record_type: String?
     var type: String

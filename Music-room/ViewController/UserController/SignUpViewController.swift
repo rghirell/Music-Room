@@ -31,6 +31,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     let hud: JGProgressHUD = {
         let hud = JGProgressHUD(style: .dark)
         hud.interactionType = .blockAllTouches
+        hud.parallaxMode = .alwaysOff
         return hud
     }()
     

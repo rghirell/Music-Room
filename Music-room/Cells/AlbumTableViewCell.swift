@@ -64,10 +64,10 @@ class AlbumTableViewCell: UITableViewCell {
             thumbnail.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -24),
             thumbnail.widthAnchor.constraint(equalTo: thumbnail.heightAnchor, multiplier: 1),
             albumLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
-            albumLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+            albumLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -30),
             albumLabel.topAnchor.constraint(equalTo: thumbnail.topAnchor, constant: 6),
             albumPlaceholder.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
-            albumPlaceholder.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+            albumPlaceholder.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -30),
             albumPlaceholder.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: -6),
             ])
     }

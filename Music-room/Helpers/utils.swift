@@ -22,6 +22,34 @@ struct Alert {
         if cancelButton { alert.addAction(cancel) }
         return alert
     }
+    
+    static func alert(style: UIAlertController.Style, title: String?, message: String?, textFields: [UITextField], completion: @escaping ([String]?) -> ()) -> UIAlertController {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: style)
+        
+        for textField in textFields {
+            alert.addTextField(configurationHandler: { (theTextField) in
+                theTextField.placeholder = textField.placeholder
+            })
+        }
+        
+        let textFieldAction = UIAlertAction(title: "Submit", style: .default) { (action) in
+            var textFieldsTexts: [String] = []
+            if let alertTextFields = alert.textFields {
+                for textField in alertTextFields {
+                    if let textFieldText = textField.text {
+                        textFieldsTexts.append(textFieldText)
+                    }
+                }
+                completion(textFieldsTexts)
+            }
+        }
+        alert.addAction(textFieldAction)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        alert.addAction(cancelAction)
+        return alert
+        
+    }
 }
 
 struct jsonHelper {

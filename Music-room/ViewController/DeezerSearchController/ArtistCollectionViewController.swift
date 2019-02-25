@@ -14,7 +14,8 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     fileprivate let headerId = "headerId"
     fileprivate let padding: CGFloat = 16
     var artistName: String?
-    var tabBar: TabBarController!
+    var player: PlayerViewController!
+
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     var albumURL: String? {
         didSet {
@@ -31,8 +32,6 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     }
     var headerImage: UIImage?
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionViewLayout()
@@ -48,6 +47,8 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        print("view will apear", imageCache)
         guard let navigationController = self.navigationController else { return }
         navigationController.navigationBar.alpha = 0.4
     }
@@ -59,8 +60,6 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         collectionView.register(ArtistCollectionViewCell.self, forCellWithReuseIdentifier: cellID)
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
     }
-    
-    
     
     
     fileprivate func downloadAlbums() {
@@ -111,14 +110,13 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         guard let element = albumResult else { print("1")
             return }
         guard let imageFromCache = imageCache.object(forKey: element[indexPath.row].cover_big as AnyObject) as? UIImage  else {
-            print("2")
             return }
         if element.indices.contains(indexPath.row) {
             print("3")
             let el = element[indexPath.row]
-            let vc = AlbumTableViewController()
-            vc.albumLoadDelegate = tabBar
+            let vc = AlbumDetailsTableViewController()
             vc.artistName = self.artistName
+            vc.player = player
             vc.albumCover = imageFromCache
             vc.albumName = el.title
             vc.tracklist = el.tracklist
@@ -146,6 +144,7 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
             print("here")
             completion(imageFromCache)
+            return
         }
         let url = URL(string: urlImage!)
         let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
@@ -159,5 +158,4 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         }
         task.resume()
     }
-
 }

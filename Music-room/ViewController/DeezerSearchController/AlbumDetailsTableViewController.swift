@@ -13,7 +13,7 @@ protocol AlbumLoadDelegate : class {
     func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable])
 }
 
-class AlbumTableViewController: UITableViewController {
+class AlbumDetailsTableViewController: UITableViewController {
    
     var albumTracks: TrackArray? {
         didSet {
@@ -29,7 +29,8 @@ class AlbumTableViewController: UITableViewController {
     var albumName: String?
     var tracklist: String?
     let trackCellIdentifier = "trackCell"
-     let imageView = UIImageView()
+    let imageView = UIImageView()
+    var player: PlayerViewController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,7 +102,7 @@ class AlbumTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        albumLoadDelegate.loadAlbum(songIndex: indexPath.row, cover: albumCover, albumName: albumName, songArray: (albumTracks?.data)!)
+        player.loadAlbum(songIndex: indexPath.row, cover: albumCover, albumName: albumName, songArray: (albumTracks?.data)!)
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {

@@ -46,9 +46,7 @@ class Helpers {
         }
         alert.addAction(textFieldAction)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { (action) in
-            completion(nil)
-        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default)
         alert.addAction(cancelAction)
         
         if let topVC = UIApplication.getTopMostViewController() {

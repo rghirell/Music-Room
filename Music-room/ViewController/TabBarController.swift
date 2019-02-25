@@ -13,7 +13,7 @@ protocol SearchDelegate: class {
     func hideNavBar()
 }
 
-class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, PlayerTabBarDelegate {
+class TabBarController: UITabBarController, PlayerTabBarDelegate {
     
     //MARK: -
     //MARK: View Components
@@ -38,7 +38,7 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
     let currentTrackLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "erfgerferferbferhfvehrfvhrvfekfvrferfe"
+//        label.text = "erfgerferferbferhfvehrfvhrvfekfvrferfe"
         label.textAlignment = .center
         label.lineBreakMode = .byWordWrapping
         return label
@@ -77,6 +77,8 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
         let searchViewController = SearchTableViewController()
         let userAccountVC = UserAccountViewController()
         let playlistTableViewVC = PlaylistTableViewController()
+        searchViewController.player = vc
+        playlistTableViewVC.player = vc
         playlistTableViewVC.tabBarItem =  UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
         searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 1)
         userAccountVC.tabBarItem = UITabBarItem(tabBarSystemItem: .more, tag: 2)
@@ -119,7 +121,6 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
             currentTrackLabel.leadingAnchor.constraint(equalTo: currentTrackIV.leadingAnchor, constant: 12),
             ])
     }
-    
     
     //MARK: -
     //MARK: View Animations
@@ -177,25 +178,7 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
     
     //MARK: -
     //MARK: Player controls
-    func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable]) {
-        vc.songIndex = 0
-        vc.songArray = songArray
-        vc.coverImage = cover
-        vc.setCollectionPosition()
-        vc.collectionView.reloadData()
-        displayCurrentTrackView()
-    }
-    
-    func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable]) {
-        vc.songIndex = songIndex
-        vc.coverImage = cover
-        vc.albumName = albumName
-        vc.songArray = songArray
-        vc.setCollectionPosition()
-        vc.collectionView.reloadData()
-        displayCurrentTrackView()
-    }
-    
+
     @objc func pauseSong() {
         vc.playPauseAction()
     }
@@ -211,12 +194,9 @@ class TabBarController: UITabBarController, AlbumLoadDelegate, TrackDelegate, Pl
         currentTrackButton.setImage(UIImage(named:"outline_pause"), for: .normal)
     }
     
-    
     @objc func displayPlayer() {
         vc.showView()
         hideTabBar()
     }
     
-
-
 }
