@@ -17,8 +17,10 @@ class TrackTableViewController: ParentTableViewController {
 
     private func setupTableView() {
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
-        tableView.rowHeight = 80
+        tableView.rowHeight = 120
         tableView.separatorStyle = .none
+//        tableView.separatorInset = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 50)
+        tableView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 0, right: 20)
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -28,8 +30,8 @@ class TrackTableViewController: ParentTableViewController {
         let artist = artistDic["name"] as? String
         let albumDic = result[indexPath.row]["album"] as! NSDictionary
         let albumURL = albumDic["cover_medium"] as! String
+        cell.thumbnail.image = nil
         downloadImage(urlImage: albumURL) { (image) in
-            cell.thumbnail.image = nil
             cell.thumbnail.image = image
         }
         cell.delegateViewController = self
@@ -52,4 +54,13 @@ class TrackTableViewController: ParentTableViewController {
             }
         }
     }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        // this will turn on `masksToBounds` just before showing the cell
+//        cell.contentView.layer.masksToBounds = true
+//        let radius = cell.contentView.layer.cornerRadius
+//        cell.layer.shadowPath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: radius).cgPath
+    }
+    
+    
 }

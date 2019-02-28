@@ -49,6 +49,19 @@ class ArtistTableViewCell: SwipeTableViewCell {
         return imageView
     }()
     
+    let disclosure: UIImageView = {
+        let image = UIImageView(image: UIImage(named: "disclosure"))
+        image.translatesAutoresizingMaskIntoConstraints = false
+        return image
+    }()
+    
+    let viewContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        return view
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
@@ -61,22 +74,39 @@ class ArtistTableViewCell: SwipeTableViewCell {
 
     func setupLayout() {
         selectionStyle = .none
+        viewContainer.layer.cornerRadius = 10
+        viewContainer.layer.borderColor = UIColor.black.cgColor
+        viewContainer.layer.shadowColor = UIColor.black.cgColor
+        viewContainer.layer.shadowOffset = CGSize(width: 3, height: 3)
+        viewContainer.layer.shadowOpacity = 0.4
+        viewContainer.layer.shadowRadius = 4.0
         
-        addSubview(artistLabel)
-        addSubview(artistPlaceholder)
-        addSubview(thumbnail)
+        addSubview(viewContainer)
+        viewContainer.addSubview(artistLabel)
+        viewContainer.addSubview(artistPlaceholder)
+        viewContainer.addSubview(thumbnail)
+        viewContainer.addSubview(disclosure)
         
         NSLayoutConstraint.activate([
-            thumbnail.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            thumbnail.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
-            thumbnail.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -24),
+            viewContainer.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            viewContainer.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            viewContainer.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -24),
+            viewContainer.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -20),
+            
+            thumbnail.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor),
+            thumbnail.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor, constant: 12),
+            thumbnail.heightAnchor.constraint(equalTo: viewContainer.heightAnchor, constant: -24),
             thumbnail.widthAnchor.constraint(equalTo: thumbnail.heightAnchor, multiplier: 1),
             artistLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
-            artistLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            artistLabel.topAnchor.constraint(equalTo: thumbnail.topAnchor, constant: 6),
+            artistLabel.trailingAnchor.constraint(equalTo: disclosure.leadingAnchor, constant: -12),
+            artistLabel.bottomAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: -5),
             artistPlaceholder.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
-            artistPlaceholder.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            artistPlaceholder.bottomAnchor.constraint(equalTo: thumbnail.bottomAnchor, constant: -6),
+            artistPlaceholder.trailingAnchor.constraint(equalTo: disclosure.leadingAnchor, constant: -12),
+            artistPlaceholder.topAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: 5),
+            disclosure.trailingAnchor.constraint(equalTo: viewContainer.trailingAnchor, constant: -12),
+            disclosure.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor, constant: 0),
+            disclosure.heightAnchor.constraint(equalToConstant: 25),
+            disclosure.widthAnchor.constraint(equalTo: disclosure.heightAnchor),
             ])
     }
     override func layoutSubviews() {

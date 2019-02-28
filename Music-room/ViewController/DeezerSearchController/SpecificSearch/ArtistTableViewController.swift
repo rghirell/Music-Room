@@ -17,19 +17,18 @@ class ArtistTableViewController: ParentTableViewController {
     
     private func setupTableView() {
         tableView.register(ArtistTableViewCell.self, forCellReuseIdentifier: CellIdentifier.artistCell)
-        tableView.rowHeight = 80
+        tableView.rowHeight = 120
         tableView.separatorStyle = .none
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.artistCell, for: indexPath) as! ArtistTableViewCell
         let pictureURL = result[indexPath.row]["picture_medium"] as? String
+        cell.thumbnail.image = nil
         downloadImage(urlImage: pictureURL) { (image) in
-            cell.thumbnail.image = nil
             cell.thumbnail.image = image
         }
         cell.artistLabel.text = result[indexPath.row]["name"] as? String
-        cell.accessoryType = .disclosureIndicator
         return cell
     }
 

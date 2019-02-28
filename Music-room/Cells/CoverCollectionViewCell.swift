@@ -31,7 +31,7 @@ class CoverCollectionViewCell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             coverCollectionView.heightAnchor.constraint(equalTo: self.heightAnchor),
             coverCollectionView.widthAnchor.constraint(equalTo: self.heightAnchor),
-            coverCollectionView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+//            coverCollectionView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             coverCollectionView.centerXAnchor.constraint(equalTo: self.centerXAnchor)
             ])
     }

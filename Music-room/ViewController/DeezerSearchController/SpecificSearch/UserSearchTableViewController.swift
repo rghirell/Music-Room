@@ -25,7 +25,7 @@ class UserSearchTableViewController: UITableViewController {
         super.viewDidLoad()
         setupTableView()
         let ref = Firestore.firestore().collection("users")
-        ref.whereField("displayName", isEqualTo: "rghirell").getDocuments { (query, err) in
+        ref.whereField("displayName", isEqualTo: search).getDocuments { (query, err) in
             self.result = query?.documents
         }
     }
@@ -44,6 +44,10 @@ class UserSearchTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
+        if result?.count ?? 0 <= 0 {
+            tableView.setEmptyMessage("No results")
+        }
+        tableView.restore()
         return result?.count ?? 0
     }
 

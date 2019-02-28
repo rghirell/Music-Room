@@ -18,18 +18,11 @@ class HeaderView: UICollectionReusableView {
         return iv
     }()
     
-    let button: UILabel = {
-        let button = UILabel()
-        button.text = "rgwergrgwre"
-        return button
-    }()
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(imageView)
-        addSubview(button)
+        
         self.backgroundColor = .red
-        button.anchor(top: nil, leading: superview?.leadingAnchor, bottom: superview?.bottomAnchor, trailing: superview?.trailingAnchor, padding: .init(top: 0, left: 0, bottom: 80, right: 0), size: .zero)
         imageView.fillSuperview()
     }
     

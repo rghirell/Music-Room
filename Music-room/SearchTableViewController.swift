@@ -17,7 +17,6 @@ import Firebase
 
 class SearchTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,  UISearchBarDelegate {
    
-
     let dispatchGroup = DispatchGroup()
     
     // MARK: -
@@ -80,8 +79,25 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         navigationItem.titleView = searchBar
     }
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.search = searchText
+
+    
+    // MARK: -
+    // MARK: - Table view data source
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if searchBar.text?.count ?? 0 <= 0 {
+            tableView.setEmptyMessage("Search")
+            return 0
+        }
+        self.tableView.restore()
+        return result.count + 5
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.search = searchBar.text!
         result = []
         dispatchGroup.enter()
         fetchFromAPI(searchType: "artist", cancelPreviousSearch: true)
@@ -95,19 +111,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
                 self.createResultArray(runningGroup: self.runningGroup)
             }
         }
-    }
-    
-    // MARK: -
-    // MARK: - Table view data source
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchBar.text?.count ?? 0 <= 0 {
-            return 0
-        }
-        return result.count + 5
+        searchBar.resignFirstResponder()
     }
     
     private func specialCell(indexPath: IndexPath) -> UITableViewCell {
@@ -137,23 +141,23 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             let vc = ArtistTableViewController()
             vc.player = player
             vc.searchType = "artist"
-            vc.search = searchBar.text
+            vc.search = self.search
             show(vc, sender: self)
         case 4:
             let vc = TrackTableViewController()
             vc.player = player
             vc.searchType = "track"
-            vc.search = searchBar.text
+            vc.search = self.search
             show(vc, sender: self)
         case 3:
             let vc = AlbumTableViewController()
             vc.player = player
             vc.searchType = "album"
-            vc.search = searchBar.text
+            vc.search = self.search
             show(vc, sender: self)
         case 1:
             let vc = UserSearchTableViewController()
-            vc.search = searchBar.text
+            vc.search = self.search
             show(vc, sender: self)
         default:
             print("oops")
@@ -170,7 +174,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         switch result[indexPath.row]["type"] as? String {
         case "artist":
             let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.artistCell, for: indexPath) as! ArtistTableViewCell
-            cell.accessoryType = .disclosureIndicator
             let pictureURL = result[indexPath.row]["picture_xl"] as? String
             downloadImage(urlImage: pictureURL) { (image) in
                 cell.thumbnail.image = nil
@@ -195,7 +198,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             return cell
         case "album":
             let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.albumCell, for: indexPath) as! AlbumTableViewCell
-            cell.accessoryType = .disclosureIndicator
             let artistDic = result[indexPath.row]["artist"] as! NSDictionary
             let artist = artistDic["name"] as? String
             let albumName = result[indexPath.row]["record_type"] as? String
@@ -381,7 +383,7 @@ extension SearchTableViewController {
         if indexPath.row >= result.count {
             return 60
         }
-        return 80
+        return 120
     }
     
     
@@ -389,7 +391,6 @@ extension SearchTableViewController {
         for (index, element) in (fetchedArtist?.data)!.enumerated() {
             result.append(element.dictionary)
             downloadImage(urlImage: element.picture_xl!) { (_) in }
-            print("Index --->", index)
             if index > 2 {
                 break
             }

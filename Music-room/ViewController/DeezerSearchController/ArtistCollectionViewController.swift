@@ -13,8 +13,11 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     fileprivate let cellID = "cellID"
     fileprivate let headerId = "headerId"
     fileprivate let padding: CGFloat = 16
+    fileprivate var ratio: CGFloat = 0
+ 
     var artistName: String?
     var player: PlayerViewController!
+    
 
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     var albumURL: String? {
@@ -31,11 +34,38 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         }
     }
     var headerImage: UIImage?
+    let navView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .black
+        return view
+    }()
+    
+    let backButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(named: "backWhite"), for: .normal)
+        return button
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.addSubview(navView)
+        view.addSubview(backButton)
+        backButton.addTarget(self, action: #selector(popView), for: .touchUpInside)
         setupCollectionViewLayout()
         setupCollectionView()
+        
+        
+        NSLayoutConstraint.activate([
+            navView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            navView.topAnchor.constraint(equalTo: view.topAnchor),
+            navView.heightAnchor.constraint(equalToConstant: 90),
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            backButton.heightAnchor.constraint(equalToConstant: 25),
+            backButton.widthAnchor.constraint(equalTo:backButton.heightAnchor),
+            ])
     }
     
     
@@ -47,10 +77,17 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        print("view will apear", imageCache)
         guard let navigationController = self.navigationController else { return }
-        navigationController.navigationBar.alpha = 0.4
+        navigationController.navigationBar.barStyle = .black
+        navigationController.navigationBar.isHidden = true
+        updateCustomNavBar()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        guard let navigationController = self.navigationController else { return }
+        navigationController.navigationBar.barStyle = .default
+        navigationController.navigationBar.isHidden = false
     }
     
     fileprivate func setupCollectionView() {
@@ -158,4 +195,23 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         }
         task.resume()
     }
+    
+    
+    private func updateCustomNavBar() {
+        navView.alpha = ratio
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let heightOffset = scrollView.contentOffset.y
+        if heightOffset > 215 { return }
+        ratio = heightOffset / 250
+        updateCustomNavBar()
+    }
+    
+    @objc private func popView() {
+        print("Here")
+        navigationController?.popViewController(animated: true)
+    }
+    
 }
+

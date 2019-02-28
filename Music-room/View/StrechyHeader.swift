@@ -25,6 +25,7 @@ class StrechyHeader: UICollectionViewFlowLayout {
                 let height = attributes.frame.height - offsetY
                 
                 attributes.frame = CGRect(x: 0, y: offsetY, width: width, height: height)
+
             }
         })
         return layoutAttributes

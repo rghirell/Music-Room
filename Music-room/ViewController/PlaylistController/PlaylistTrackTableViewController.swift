@@ -27,7 +27,7 @@ class PlaylistTrackTableViewController: UITableViewController {
         setupTableView()
     }
     fileprivate func setupTableView() {
-        tableView.rowHeight = 80
+        tableView.rowHeight = 120
         tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)

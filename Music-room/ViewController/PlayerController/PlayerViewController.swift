@@ -88,7 +88,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     let artistLabel: UILabel = {
         let label = UILabel()
-       
+        label.textAlignment = .center
         label.font = label.font.withSize(16)
         label.textColor = UIColor.gray
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -98,6 +98,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     let trackLabel: UILabel = {
         let label = UILabel()
+        label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 24)
         label.textColor = .white
         label.text = "track"
@@ -416,16 +417,17 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             timeSlider.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -24),
             artistLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             artistLabel.bottomAnchor.constraint(equalTo: timeSlider.topAnchor, constant: -5),
+            artistLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
             trackLabel.bottomAnchor.constraint(equalTo: artistLabel.topAnchor, constant: -5),
             trackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            albumLabel.bottomAnchor.constraint(equalTo: collectionView.topAnchor, constant: -(minimumSpaceConstant + 5)),
-            albumLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
-            albumLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -12),
+            trackLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
+            albumLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
+            albumLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
             albumLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1),
             collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: imageConstraintMultiplier),
-            collectionView.bottomAnchor.constraint(greaterThanOrEqualTo: trackLabel.topAnchor, constant: -minimumSpaceConstant),
+            collectionView.bottomAnchor.constraint(equalTo: trackLabel.topAnchor, constant: -minimumSpaceConstant),
             currentDurationLabel.topAnchor.constraint(equalTo: timeSlider.bottomAnchor, constant: 4),
             currentDurationLabel.leadingAnchor.constraint(equalTo: timeSlider.leadingAnchor, constant: 0),
             durationLabel.topAnchor.constraint(equalTo: timeSlider.bottomAnchor, constant: 4),

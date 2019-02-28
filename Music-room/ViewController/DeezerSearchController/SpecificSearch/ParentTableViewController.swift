@@ -23,24 +23,25 @@ class ParentTableViewController: UITableViewController {
         fetchFromApi()
     }
     
-    
- 
-    // MARK: - Table view data source
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
+        if result.count <= 0 {
+            tableView.setEmptyMessage("No results")
+        } else {
+            self.tableView.restore()
+        }
         return result.count
     }
     
-    
     func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
+        print(urlImage)
         guard let urlImage = urlImage else { return }
+        print("good")
         if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
+            print("cache")
             completion(imageFromCache)
             return
         }
@@ -96,5 +97,7 @@ class ParentTableViewController: UITableViewController {
             }
         }
     }
+    
+    
 
 }

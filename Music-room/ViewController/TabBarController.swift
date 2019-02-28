@@ -115,10 +115,10 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
             currentTrackButton.heightAnchor.constraint(equalToConstant: 40),
             currentTrackButton.widthAnchor.constraint(equalToConstant: 40),
             
-            currentTrackLabel.trailingAnchor.constraint(equalTo: currentTrackView.trailingAnchor, constant: -12),
+            currentTrackLabel.trailingAnchor.constraint(equalTo: currentTrackButton.leadingAnchor, constant: -12),
             currentTrackLabel.heightAnchor.constraint(equalToConstant: 20),
             currentTrackLabel.centerYAnchor.constraint(equalTo: currentTrackView.centerYAnchor),
-            currentTrackLabel.leadingAnchor.constraint(equalTo: currentTrackIV.leadingAnchor, constant: 12),
+            currentTrackLabel.leadingAnchor.constraint(equalTo: currentTrackIV.trailingAnchor, constant: 12),
             ])
     }
     
@@ -198,5 +198,4 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
         vc.showView()
         hideTabBar()
     }
-    
 }

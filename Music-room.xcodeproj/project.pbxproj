@@ -37,7 +37,6 @@
 		4A4E76752216B5A30066D179 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4E76742216B5A30066D179 /* MapKit.framework */; };
 		4A4E76782216B7C80066D179 /* UserAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E76772216B7C80066D179 /* UserAccountViewController.swift */; };
 		4A4E767C2216DBDE0066D179 /* PlaylistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E767B2216DBDE0066D179 /* PlaylistTableViewController.swift */; };
-		4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */; };
 		4ABBB6D12207392700C40A53 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D02207392700C40A53 /* CoreAudio.framework */; };
 		4ABBB6D32207392F00C40A53 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */; };
 		4ABBB6D52207393900C40A53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABBB6D42207393900C40A53 /* SystemConfiguration.framework */; };
@@ -94,7 +93,6 @@
 		4A4E76742216B5A30066D179 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		4A4E76772216B7C80066D179 /* UserAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountViewController.swift; sourceTree = "<group>"; };
 		4A4E767B2216DBDE0066D179 /* PlaylistTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewController.swift; sourceTree = "<group>"; };
-		4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongTableViewController.swift; sourceTree = "<group>"; };
 		4ABBB6D02207392700C40A53 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		4ABBB6D22207392F00C40A53 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4ABBB6D42207393900C40A53 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -281,7 +279,6 @@
 				4A13462222204C78004C4605 /* PlaylistController */,
 				4A13462122204C57004C4605 /* PlayerController */,
 				4AC9D67F220B536100751FAA /* TabBarController.swift */,
-				4ABBB4E22204848A00C40A53 /* SongTableViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -608,7 +605,6 @@
 				4A097E7E221C20FD00FC0239 /* DetailHeaderView.swift in Sources */,
 				4A097E84221C776700FC0239 /* StrechyHeader.swift in Sources */,
 				4A13462B2220526E004C4605 /* AddToPlaylistTableViewController.swift in Sources */,
-				4ABBB4E32204848A00C40A53 /* SongTableViewController.swift in Sources */,
 				4A16E5BA220DB6340054A670 /* MixedModel.swift in Sources */,
 				4A13462F22242A8E004C4605 /* TrackTableViewController.swift in Sources */,
 				4AC9D680220B536200751FAA /* TabBarController.swift in Sources */,

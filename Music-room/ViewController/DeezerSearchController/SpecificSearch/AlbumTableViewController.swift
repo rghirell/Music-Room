@@ -17,13 +17,12 @@ class AlbumTableViewController: ParentTableViewController {
     
     private func setupTableView() {
         tableView.register(AlbumTableViewCell.self, forCellReuseIdentifier: CellIdentifier.albumCell)
-        tableView.rowHeight = 80
+        tableView.rowHeight = 120
         tableView.separatorStyle = .none
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.albumCell, for: indexPath) as! AlbumTableViewCell
-        cell.accessoryType = .disclosureIndicator
         let artistDic = result[indexPath.row]["artist"] as! NSDictionary
         let artist = artistDic["name"] as? String
         let albumName = result[indexPath.row]["record_type"] as? String
@@ -40,7 +39,28 @@ class AlbumTableViewController: ParentTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-     
+        let albumView = AlbumDetailsTableViewController()
+        let pictureURL = result[indexPath.row]["cover_xl"] as? String
+        albumView.player = self.player
+        downloadImage(urlImage: pictureURL) { (image) in
+            albumView.albumCover = image
+            print(albumView.albumCover)
+            print("in completion")
+            do {
+                let x = try JSONSerialization.data(withJSONObject: self.result[indexPath.row])
+                let album = try JSONDecoder().decode(AlbumCodable.self, from: x)
+                albumView.artistName = album.artist?.name
+                albumView.albumName = album.title
+                albumView.tracklist = album.tracklist
+            }
+            catch  {
+                print(error)
+            }
+            albumView.downloadTracks()
+            albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
+            self.show(albumView, sender: self)
+        }
+        
     }
     
 
