@@ -29,7 +29,15 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     }
     
     lazy var newButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(title: "New", style: .done , target: self, action: #selector(addPlaylistHub))
+        let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addPlaylistHub))
+        button.tintColor = .black
+        return button
+    }()
+    
+    let accountButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(named: "account"), for: .normal)
         return button
     }()
     
@@ -41,15 +49,29 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.rightBarButtonItem = newButton
         setRef()
+        setNavBarButton()
         title = "Playlist"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier.playlistCell)
         locManager.requestWhenInUseAuthorization()
         locManager.delegate = self
         locManager.desiredAccuracy = kCLLocationAccuracyBest
-//        getPlaylist()
         tableView.rowHeight = 80
+    }
+    
+    private func setNavBarButton() {
+        navigationItem.rightBarButtonItem = newButton
+        accountButton.addTarget(self, action: #selector(showAccount), for: .touchUpInside)
+        accountButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        accountButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        let barButton = UIBarButtonItem(customView: accountButton)
+        navigationItem.leftBarButtonItem = barButton
+    }
+    
+    @objc func showAccount() {
+        let userAccountVC = UserAccountViewController()
+        let nc = UINavigationController(rootViewController: userAccountVC)
+        present(nc, animated: true, completion: nil)
     }
     
     private func setRef() {

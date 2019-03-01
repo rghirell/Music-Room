@@ -16,11 +16,13 @@ class AddToPlaylistTableViewController: UITableViewController {
             getPlaylist()
         }
     }
+    
     var isRegularPlaylist = true {
         didSet {
             getPlaylist()
         }
     }
+    
     var track: [String: Any]?
     var playlistRes: [QueryDocumentSnapshot]?
     var eventRes: [QueryDocumentSnapshot]?

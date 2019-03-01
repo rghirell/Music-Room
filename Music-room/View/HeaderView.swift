@@ -21,8 +21,6 @@ class HeaderView: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(imageView)
-        
-        self.backgroundColor = .red
         imageView.fillSuperview()
     }
     

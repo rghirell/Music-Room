@@ -18,7 +18,6 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     var artistName: String?
     var player: PlayerViewController!
     
-
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     var albumURL: String? {
         didSet {
@@ -33,7 +32,8 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
             }
         }
     }
-    var headerImage: UIImage?
+    
+    var headerImage: String?
     let navView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -48,25 +48,50 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         return button
     }()
     
+    let artistLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 18)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .white
+        label.textAlignment = .center
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.addSubview(navView)
-        view.addSubview(backButton)
-        backButton.addTarget(self, action: #selector(popView), for: .touchUpInside)
+        artistLabel.text = artistName
         setupCollectionViewLayout()
         setupCollectionView()
-        
-        
+        setupView()
+    }
+    
+    fileprivate func setupView() {
+        view.addSubview(navView)
+        navView.addSubview(artistLabel)
+        view.addSubview(backButton)
+        backButton.addTarget(self, action: #selector(popView), for: .touchUpInside)
+        var navHeight: CGFloat = 85.0
+        let screenSize = UIScreen.main.bounds
+        if screenSize.height <= 700 {
+            navHeight = 65
+        }
         NSLayoutConstraint.activate([
             navView.widthAnchor.constraint(equalTo: view.widthAnchor),
             navView.topAnchor.constraint(equalTo: view.topAnchor),
-            navView.heightAnchor.constraint(equalToConstant: 90),
+            navView.heightAnchor.constraint(equalToConstant: navHeight),
+            navView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            artistLabel.centerXAnchor.constraint(equalTo: navView.centerXAnchor),
+            artistLabel.trailingAnchor.constraint(equalTo: navView.trailingAnchor, constant: -20),
+            artistLabel.leadingAnchor.constraint(equalTo: backButton.trailingAnchor, constant: -20),
+            artistLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
             backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
             backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             backButton.heightAnchor.constraint(equalToConstant: 25),
             backButton.widthAnchor.constraint(equalTo:backButton.heightAnchor),
             ])
     }
+    
+   
     
     
     fileprivate func setupCollectionViewLayout() {
@@ -98,13 +123,10 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
     }
     
-    
     fileprivate func downloadAlbums() {
-        print(albumURL)
         guard let albumURL = self.albumURL else { return }
         let url = URL(string: albumURL)
         guard let request = url else { return }
-        
         let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
             if err != nil {
                 print(err!)
@@ -131,12 +153,13 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerId, for: indexPath) as! HeaderView
-        header.imageView.image = headerImage
+        let url = URL(string: headerImage!)
+        header.imageView.kf.setImage(with: url)
         return header
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return .init(width: view.frame.width, height: 300)
+        return .init(width: view.frame.width, height: UIScreen.main.bounds.height / 3)
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -146,15 +169,12 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let element = albumResult else { print("1")
             return }
-        guard let imageFromCache = imageCache.object(forKey: element[indexPath.row].cover_big as AnyObject) as? UIImage  else {
-            return }
         if element.indices.contains(indexPath.row) {
-            print("3")
             let el = element[indexPath.row]
             let vc = AlbumDetailsTableViewController()
             vc.artistName = self.artistName
             vc.player = player
-            vc.albumCover = imageFromCache
+            vc.albumCoverURL = element[indexPath.row].cover_big
             vc.albumName = el.title
             vc.tracklist = el.tracklist
             vc.downloadTracks()
@@ -165,10 +185,9 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! ArtistCollectionViewCell
-        downloadImage(urlImage: albumResult![indexPath.row].cover_big) { (image) in
-            cell.coverCollectionView.image = nil
-            cell.coverCollectionView.image = image
-        }
+        cell.coverCollectionView.image = nil
+        let url = URL(string: albumResult![indexPath.row].cover_medium!)
+        cell.coverCollectionView.kf.setImage(with: url)
         return cell
     }
     
@@ -176,10 +195,8 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         return .init(width: view.frame.width / 2 - 30 , height: view.frame.width / 2 - 30)
     }
     
-    
     fileprivate func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
         if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
-            print("here")
             completion(imageFromCache)
             return
         }
@@ -196,7 +213,6 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         task.resume()
     }
     
-    
     private func updateCustomNavBar() {
         navView.alpha = ratio
     }
@@ -209,7 +225,6 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     }
     
     @objc private func popView() {
-        print("Here")
         navigationController?.popViewController(animated: true)
     }
     

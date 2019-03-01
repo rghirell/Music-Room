@@ -95,7 +95,7 @@ class ArtistTableViewCell: SwipeTableViewCell {
             
             thumbnail.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor),
             thumbnail.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor, constant: 12),
-            thumbnail.heightAnchor.constraint(equalTo: viewContainer.heightAnchor, constant: -24),
+            thumbnail.heightAnchor.constraint(equalToConstant: 76),
             thumbnail.widthAnchor.constraint(equalTo: thumbnail.heightAnchor, multiplier: 1),
             artistLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
             artistLabel.trailingAnchor.constraint(equalTo: disclosure.leadingAnchor, constant: -12),
@@ -111,7 +111,7 @@ class ArtistTableViewCell: SwipeTableViewCell {
     }
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+//        print(
         self.thumbnail.layer.masksToBounds = true
         self.thumbnail.layer.cornerRadius = CGFloat(roundf(Float(self.thumbnail.frame.size.width/2.0)))
     }

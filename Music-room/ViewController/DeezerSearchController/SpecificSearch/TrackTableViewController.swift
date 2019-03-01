@@ -6,7 +6,6 @@
 //  Copyright © 2019 raphael ghirelli. All rights reserved.
 //
 
-import UIKit
 
 class TrackTableViewController: ParentTableViewController {
 
@@ -31,9 +30,8 @@ class TrackTableViewController: ParentTableViewController {
         let albumDic = result[indexPath.row]["album"] as! NSDictionary
         let albumURL = albumDic["cover_medium"] as! String
         cell.thumbnail.image = nil
-        downloadImage(urlImage: albumURL) { (image) in
-            cell.thumbnail.image = image
-        }
+        let url = URL(string: albumURL)
+        cell.thumbnail.kf.setImage(with: url)
         cell.delegateViewController = self
         cell.trackLabel.text = result[indexPath.row]["title"] as? String
         cell.trackPlaceholder.text = "Title • \(artist!)"
@@ -43,24 +41,14 @@ class TrackTableViewController: ParentTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let albumDic = result[indexPath.row]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String
-        downloadImage(urlImage: albumURL) { (image) in
-            do {
-                let x = try JSONSerialization.data(withJSONObject: self.result[indexPath.row])
-                let track = try JSONDecoder().decode(TrackCodable.self, from: x)
-                self.player.loadTrack(songIndex: 0, cover: image, songArray: [track])
-            }
-            catch  {
-                print(error)
-            }
+        do {
+            let x = try JSONSerialization.data(withJSONObject: self.result[indexPath.row])
+            let track = try JSONDecoder().decode(TrackCodable.self, from: x)
+            self.player.loadTrack(songIndex: 0, cover: albumURL, songArray: [track])
+        }
+        catch  {
+            print(error)
+            
         }
     }
-    
-    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        // this will turn on `masksToBounds` just before showing the cell
-//        cell.contentView.layer.masksToBounds = true
-//        let radius = cell.contentView.layer.cornerRadius
-//        cell.layer.shadowPath = UIBezierPath(roundedRect: cell.bounds, cornerRadius: radius).cgPath
-    }
-    
-    
 }

@@ -23,6 +23,7 @@
 		4A13463522246C7B004C4605 /* AlbumTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13463422246C7B004C4605 /* AlbumTableViewController.swift */; };
 		4A13463722246F3A004C4605 /* ParentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13463622246F3A004C4605 /* ParentTableViewController.swift */; };
 		4A13463A22247447004C4605 /* UserSearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13463922247447004C4605 /* UserSearchTableViewController.swift */; };
+		4A13467D2229AA29004C4605 /* TagsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13467C2229AA29004C4605 /* TagsCollectionViewCell.swift */; };
 		4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5A8220B67F80054A670 /* FacebookManager.swift */; };
 		4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AC220B67F80054A670 /* SparkExtensions.swift */; };
 		4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AD220B67F80054A670 /* Helpers.swift */; };
@@ -78,6 +79,7 @@
 		4A13463422246C7B004C4605 /* AlbumTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTableViewController.swift; sourceTree = "<group>"; };
 		4A13463622246F3A004C4605 /* ParentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTableViewController.swift; sourceTree = "<group>"; };
 		4A13463922247447004C4605 /* UserSearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSearchTableViewController.swift; sourceTree = "<group>"; };
+		4A13467C2229AA29004C4605 /* TagsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewCell.swift; sourceTree = "<group>"; };
 		4A16E5A8220B67F80054A670 /* FacebookManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookManager.swift; sourceTree = "<group>"; };
 		4A16E5AC220B67F80054A670 /* SparkExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkExtensions.swift; sourceTree = "<group>"; };
 		4A16E5AD220B67F80054A670 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -394,6 +396,7 @@
 				4A097E85221C92B400FC0239 /* ArtistCollectionViewCell.swift */,
 				4A097E7D221C20FD00FC0239 /* DetailHeaderView.swift */,
 				4A13462822204E53004C4605 /* CellIdentifier.swift */,
+				4A13467C2229AA29004C4605 /* TagsCollectionViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -554,6 +557,7 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/JGProgressHUD/JGProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
@@ -576,6 +580,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JGProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
@@ -602,6 +607,7 @@
 				4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */,
 				4A32B8F2220F7F40000089A0 /* CoverCollectionViewCell.swift in Sources */,
 				4A4E76782216B7C80066D179 /* UserAccountViewController.swift in Sources */,
+				4A13467D2229AA29004C4605 /* TagsCollectionViewCell.swift in Sources */,
 				4A097E7E221C20FD00FC0239 /* DetailHeaderView.swift in Sources */,
 				4A097E84221C776700FC0239 /* StrechyHeader.swift in Sources */,
 				4A13462B2220526E004C4605 /* AddToPlaylistTableViewController.swift in Sources */,

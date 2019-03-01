@@ -32,7 +32,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     weak var tabBarDelegate: PlayerTabBarDelegate!
     private var timer: Timer?
     private let reuseIdentifier = "DateCell"
-    var coverImage: UIImage?
+    var coverImage: String?
     var songArray: [TrackCodable] = [] {
         didSet {
             displayInfo()
@@ -275,7 +275,8 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
                 //10 - Set our session category to playback music
                 try audioSession.setCategory(.playback, mode: .default, options: [.mixWithOthers])
                 try AVAudioSession.sharedInstance().setActive(true)
-                imageView.image = coverImage!
+//                let url = URL(string: coverImage!)
+//                imageView.kf.setImage(with: url)
                 songPlayer.play()
                 timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
               
@@ -348,7 +349,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         timer?.invalidate()
     }
     
-    func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable]) {
+    func loadTrack(songIndex: Int, cover: String?, songArray: [TrackCodable]) {
         self.songIndex = 0
         self.songArray = songArray
         coverImage = cover
@@ -357,7 +358,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         tabBarDelegate.displayCurrentTrackView()
     }
     
-    func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable]) {
+    func loadAlbum(songIndex: Int, cover: String?, albumName: String?, songArray: [TrackCodable]) {
         self.songIndex = songIndex
         self.coverImage = cover
         self.albumName = albumName
@@ -444,7 +445,8 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! CoverCollectionViewCell
-        cell.coverCollectionView.image = coverImage
+        let url = URL(string: coverImage!)
+        cell.coverCollectionView.kf.setImage(with: url)
         return cell
     }
     

@@ -29,9 +29,8 @@ class AlbumTableViewController: ParentTableViewController {
         let pictureURL = result[indexPath.row]["cover_medium"] as? String
         cell.thumbnail.image = nil
         if pictureURL != nil {
-            downloadImage(urlImage: pictureURL) { (image) in
-                cell.thumbnail.image = image
-            }
+            let url = URL(string: pictureURL!)
+            cell.thumbnail.kf.setImage(with: url)
         }
         cell.albumLabel.text = result[indexPath.row]["title"] as? String
         cell.albumPlaceholder.text = "\(albumName!.capitalized) • \(artist!)"
@@ -42,24 +41,21 @@ class AlbumTableViewController: ParentTableViewController {
         let albumView = AlbumDetailsTableViewController()
         let pictureURL = result[indexPath.row]["cover_xl"] as? String
         albumView.player = self.player
-        downloadImage(urlImage: pictureURL) { (image) in
-            albumView.albumCover = image
-            print(albumView.albumCover)
-            print("in completion")
-            do {
-                let x = try JSONSerialization.data(withJSONObject: self.result[indexPath.row])
-                let album = try JSONDecoder().decode(AlbumCodable.self, from: x)
-                albumView.artistName = album.artist?.name
-                albumView.albumName = album.title
-                albumView.tracklist = album.tracklist
-            }
-            catch  {
-                print(error)
-            }
-            albumView.downloadTracks()
-            albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
-            self.show(albumView, sender: self)
+        albumView.albumCoverURL = pictureURL
+        do {
+            let x = try JSONSerialization.data(withJSONObject: self.result[indexPath.row])
+            let album = try JSONDecoder().decode(AlbumCodable.self, from: x)
+            albumView.artistName = album.artist?.name
+            albumView.albumName = album.title
+            albumView.tracklist = album.tracklist
         }
+        catch  {
+            print(error)
+        }
+        albumView.downloadTracks()
+        albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
+        self.show(albumView, sender: self)
+        
         
     }
     

@@ -84,15 +84,14 @@ class PlaylistTrackTableViewController: UITableViewController {
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String
-        downloadImage(urlImage: albumURL) { (image) in
-            do {
-                let x = try JSONSerialization.data(withJSONObject: self.trackArray![index])
-                let track = try JSONDecoder().decode(TrackCodable.self, from: x)
-                self.player.loadTrack(songIndex: 0, cover: image, songArray: [track])
-            }
-            catch  {
-                print(error)
-            }
+        
+        do {
+            let x = try JSONSerialization.data(withJSONObject: self.trackArray![index])
+            let track = try JSONDecoder().decode(TrackCodable.self, from: x)
+            self.player.loadTrack(songIndex: 0, cover: albumURL, songArray: [track])
+        }
+        catch  {
+            print(error)
         }
     }
     

@@ -10,13 +10,11 @@ import UIKit
 
 class CoverCollectionViewCell: UICollectionViewCell {
     
-   
     let coverCollectionView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
         iv.layer.masksToBounds = true
-        iv.backgroundColor = .yellow
         return iv
     }()
     

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class ParentTableViewController: UITableViewController {
 
@@ -35,31 +36,9 @@ class ParentTableViewController: UITableViewController {
         }
         return result.count
     }
-    
-    func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
-        print(urlImage)
-        guard let urlImage = urlImage else { return }
-        print("good")
-        if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
-            print("cache")
-            completion(imageFromCache)
-            return
-        }
-        let url = URL(string: urlImage)
-        let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
-            // Perform UI changes only on main thread.
-            DispatchQueue.main.async {
-                if let data = data, let image = UIImage(data: data) {
-                    self.imageCache.setObject(image, forKey: urlImage as AnyObject)
-                    completion(image)
-                }
-            }
-        }
-        task.resume()
-    }
-    
+        
     private func fetchFromApi() {
-        DeezerManager.search(searchType: searchType, query: self.search, index: page.description) { (result, err) in
+        DeezerManager1.search(searchType: searchType, query: self.search, index: page.description) { (result, err) in
             if err != nil {
                 let alert = Alert.errorAlert(title: "Error", message: err!.localizedDescription)
                 DispatchQueue.main.async {
@@ -80,16 +59,12 @@ class ParentTableViewController: UITableViewController {
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if page >= totalIndex - 25 {
-            print(page)
-            print(totalIndex)
+        if page >= totalIndex - 25 || fetchingMore {
             return
         }
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
-        
-        if offsetY > contentHeight - scrollView.frame.height * 4 {
-            print("inside", fetchingMore)
+        if offsetY > contentHeight - scrollView.frame.height * 1.4 {
             if !fetchingMore {
                 print("fetching")
                 fetchFromApi()

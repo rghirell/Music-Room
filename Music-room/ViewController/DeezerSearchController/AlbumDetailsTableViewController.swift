@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 
 protocol AlbumLoadDelegate : class {
@@ -22,16 +23,10 @@ class AlbumDetailsTableViewController: UITableViewController {
             }
         }
     }
-    
+
     var albumLoadDelegate: AlbumLoadDelegate!
     var artistName: String?
-    var albumCover: UIImage? {
-        didSet {
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
+    var albumCoverURL: String?
     var albumName: String?
     var tracklist: String?
     let trackCellIdentifier = "trackCell"
@@ -40,31 +35,21 @@ class AlbumDetailsTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-        let parallaxViewFrame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.width / 1.3)
-        let x = ParallaxHeaderView(frame: parallaxViewFrame)
-        x.imageView.image = albumCover
-        print(albumCover)
-        x.label.text = albumName
-        self.tableView.tableHeaderView  = x
         title = "Album"
-//        tableView.tableHeaderView = imageView
-        
         prepareTableView()
     }
     
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let headerView = self.tableView.tableHeaderView as! ParallaxHeaderView
-//        headerView.scrollViewDidScroll(scrollView: scrollView)
+    var x: ParallaxHeaderView!
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let parallaxViewFrame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.width / 1.3)
+        x = ParallaxHeaderView(frame: parallaxViewFrame)
+        x.label.text = albumName
+        let url = URL(string: albumCoverURL!)
+        x.imageView.kf.setImage(with: url)
+        self.tableView.tableHeaderView  = x
     }
     
-   
-    
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
     func downloadTracks() {
         guard let x = tracklist else {  print("No url given"); return }
         let url = URL(string: x)
@@ -101,7 +86,7 @@ class AlbumDetailsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        player.loadAlbum(songIndex: indexPath.row, cover: albumCover, albumName: albumName, songArray: (albumTracks?.data)!)
+        player.loadAlbum(songIndex: indexPath.row, cover: albumCoverURL, albumName: albumName, songArray: (albumTracks?.data)!)
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {

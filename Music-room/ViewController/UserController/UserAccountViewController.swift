@@ -11,56 +11,121 @@ import UIKit
 import MapKit
 
 
-class UserAccountViewController: UIViewController , CLLocationManagerDelegate {
+class UserAccountViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return buttons.count
+    }
+    
+    let titles = ["Jazz", "Electro", "Rap", "Pop", "Hip-hop", "Rock", "Chill", "Ambiance", "Latino", "Affro", "RnB", "Classique"]
+    var buttons = [UIButton]()
+    
+    func createButton(withTitle title: String) -> UIButton {
+        let button = UIButton()
+        button.setTitle(title, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.bold)
+        button.layer.borderWidth = 0.5
+        button.layer.cornerRadius = 15
+        button.layer.borderColor = UIColor.lightGray.cgColor
+        button.contentEdgeInsets = UIEdgeInsets(top: 5,left: 5,bottom: 5,right: 5)
+        button.addTarget(self, action: #selector(change), for: .touchUpInside)
+        button.sizeToFit()
+        return button
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "test", for: indexPath) as! TagsCollectionViewCell
+        cell.button.setTitle(titles[indexPath.row], for: .normal)
+        cell.backgroundColor = .red
+        return cell
+    }
+    
+    @objc func change(sender: UIButton) {
+    }
+    
 
     var locManager = CLLocationManager()
     var currentLocation: CLLocation!
+    var collectionView: UICollectionView!
     
     let buttonTest: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Test", for: .normal)
+        button.setTitleColor(.black, for: .normal)
         return button
     }()
     
+    let collectionContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .red
+        return view
+    }()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .purple
-        navigationItem.title = "Account"
-        locManager.delegate = self
-        locManager.desiredAccuracy = kCLLocationAccuracyBest
-        locManager.requestWhenInUseAuthorization()
-        view.addSubview(buttonTest)
-        buttonTest.addTarget(self, action: #selector(test), for: .touchUpInside)
-        if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse ||
-            CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways){
-            
+        view.backgroundColor = .white
+        for title in titles {
+            buttons.append(createButton(withTitle: title))
         }
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 30, bottom: 10, right: 30)
+//        layout.itemSize = CGSize(width: 90, height: 120)
+        layout.minimumInteritemSpacing = 8
+//        layout.minimumLineSpacing = 20
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.isScrollEnabled = true
+        collectionContainer.clipsToBounds = true
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(TagsCollectionViewCell.self, forCellWithReuseIdentifier: "test")
+        view.addSubview(buttonTest)
+        collectionContainer.addSubview(collectionView)
+        view.addSubview(collectionContainer)
+        DeezerManager.sharedInstance.loginResult = sessionDidLogin
+        buttonTest.addTarget(self, action: #selector(test), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             buttonTest.widthAnchor.constraint(equalToConstant: 50),
-            buttonTest.heightAnchor.constraint(equalToConstant: 400)])
+            buttonTest.heightAnchor.constraint(equalToConstant: 200),
+            collectionContainer.widthAnchor.constraint(equalTo: view.widthAnchor),
+            collectionContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            collectionContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            collectionContainer.heightAnchor.constraint(equalToConstant: 200),
+            collectionView.widthAnchor.constraint(equalTo: collectionContainer.widthAnchor),
+            collectionView.heightAnchor.constraint(equalTo: collectionContainer.heightAnchor),
+            collectionView.centerXAnchor.constraint(equalTo: collectionContainer.centerXAnchor),
+            collectionView.centerYAnchor.constraint(equalTo: collectionContainer.centerYAnchor),
+            ])
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
         
+        return CGSize(width: buttons[indexPath.row].frame.width + 25 , height: buttons[indexPath.row].frame.height)
     }
+    
     @objc func test() {
-        locManager.startUpdatingLocation()
+        DeezerManager.sharedInstance.login()
+    }
+  
+
+    
+    func sessionDidLogin(result: ResultLogin) {
+        switch result {
+        case .success:
+            DeezerManager.sharedInstance.getMe { (user, err) in
+                print(user)
+            }
+        case .logout:
+            break
+        case .error(let error):
+            print("error")
+        }
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(locations)
-        print(NSDate().timeIntervalSince1970)
-        locManager.stopUpdatingLocation()
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

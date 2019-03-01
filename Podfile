@@ -20,6 +20,7 @@ target 'Music-room' do
   pod 'Firebase/Storage'
   pod 'JGProgressHUD'
   pod 'SwipeCellKit'
+  pod 'Kingfisher', '~> 5.0'
 
 
 

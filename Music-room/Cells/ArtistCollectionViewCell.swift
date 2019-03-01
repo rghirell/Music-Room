@@ -14,7 +14,6 @@ class ArtistCollectionViewCell: UICollectionViewCell {
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
         iv.layer.masksToBounds = true
-        iv.backgroundColor = .yellow
         return iv
     }()
     

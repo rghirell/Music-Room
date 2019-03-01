@@ -174,11 +174,11 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         switch result[indexPath.row]["type"] as? String {
         case "artist":
             let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.artistCell, for: indexPath) as! ArtistTableViewCell
-            let pictureURL = result[indexPath.row]["picture_xl"] as? String
-            downloadImage(urlImage: pictureURL) { (image) in
-                cell.thumbnail.image = nil
-                cell.thumbnail.image = image
-            }
+            let pictureURL = result[indexPath.row]["picture_medium"] as? String
+            cell.thumbnail.image = nil
+            let url = URL(string: pictureURL!)
+            cell.thumbnail.kf.setImage(with: url)
+          
             cell.artistLabel.text = result[indexPath.row]["name"] as? String
             return cell
         case "track":
@@ -187,11 +187,11 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             let artistDic = result[indexPath.row]["artist"] as! NSDictionary
             let artist = artistDic["name"] as? String
             let albumDic = result[indexPath.row]["album"] as! NSDictionary
-            let albumURL = albumDic["cover_xl"] as! String
-            downloadImage(urlImage: albumURL) { (image) in
-                cell.thumbnail.image = nil
-                cell.thumbnail.image = image
-            }
+            let albumURL = albumDic["cover_medium"] as! String
+            cell.thumbnail.image = nil
+            let url = URL(string: albumURL)
+            cell.thumbnail.kf.setImage(with: url)
+          
             cell.delegateViewController = self
             cell.trackLabel.text = result[indexPath.row]["title"] as? String
             cell.trackPlaceholder.text = "Title • \(artist!)"
@@ -201,11 +201,12 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             let artistDic = result[indexPath.row]["artist"] as! NSDictionary
             let artist = artistDic["name"] as? String
             let albumName = result[indexPath.row]["record_type"] as? String
-            let pictureURL = result[indexPath.row]["cover_xl"] as? String
-            downloadImage(urlImage: pictureURL) { (image) in
-                cell.thumbnail.image = nil
-                cell.thumbnail.image = image
-            }
+            let pictureURL = result[indexPath.row]["cover_medium"] as? String
+            cell.thumbnail.image = nil
+            cell.thumbnail.image = nil
+            let url = URL(string: pictureURL!)
+            cell.thumbnail.kf.setImage(with: url)
+        
             cell.albumLabel.text = result[indexPath.row]["title"] as? String
             cell.albumPlaceholder.text = "\(albumName!.capitalized) • \(artist!)"
             return cell
@@ -328,26 +329,22 @@ extension SearchTableViewController {
     func playTracks(index: Int) {
         let albumDic = result[index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String
-        downloadImage(urlImage: albumURL) { (image) in
-            do {
-                let x = try JSONSerialization.data(withJSONObject: self.result[index])
-                let track = try JSONDecoder().decode(TrackCodable.self, from: x)
-                self.player.loadTrack(songIndex: 0, cover: image, songArray: [track])
-            }
-            catch  {
-                print(error)
-            }
+        do {
+            let x = try JSONSerialization.data(withJSONObject: self.result[index])
+            let track = try JSONDecoder().decode(TrackCodable.self, from: x)
+            self.player.loadTrack(songIndex: 0, cover: albumURL, songArray: [track])
         }
+        catch  {
+            print(error)
+        }
+
     }
     
     func displayAlbum(index: Int) {
         let albumView = AlbumDetailsTableViewController()
         let pictureURL = result[index]["cover_xl"] as? String
         albumView.player = self.player
-    
-        downloadImage(urlImage: pictureURL) { (image) in
-            albumView.albumCover = image
-        }
+        albumView.albumCoverURL = pictureURL
         do {
             let x = try JSONSerialization.data(withJSONObject: self.result[index])
             let album = try JSONDecoder().decode(AlbumCodable.self, from: x)
@@ -369,9 +366,7 @@ extension SearchTableViewController {
         vc.albumURL = "https://api.deezer.com/artist/\(result[index]["id"] as! Int)/albums"
         vc.artistName = result[index]["name"] as? String
         let pictureURL = result[index]["picture_xl"] as? String
-        downloadImage(urlImage: pictureURL) { (image) in
-            vc.headerImage = image
-        }
+        vc.headerImage = pictureURL
         vc.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight + 75, right: 0)
         show(vc, sender: self)
     }
@@ -390,21 +385,18 @@ extension SearchTableViewController {
     func createResultArray(runningGroup: Int) {
         for (index, element) in (fetchedArtist?.data)!.enumerated() {
             result.append(element.dictionary)
-            downloadImage(urlImage: element.picture_xl!) { (_) in }
             if index > 2 {
                 break
             }
         }
         for (index, element) in (fetchedTracks?.data)!.enumerated() {
             result.append(element.dictionary)
-            downloadImage(urlImage: element.album!.cover_xl) { (_) in }
             if index > 2 {
                 break
             }
         }
         for (index, element) in (fetchedAlbums?.data)!.enumerated() {
             result.append(element.dictionary)
-            downloadImage(urlImage: element.cover_xl ?? element.artist?.picture_medium) { (_) in }
             if index > 2 {
                 break
             }

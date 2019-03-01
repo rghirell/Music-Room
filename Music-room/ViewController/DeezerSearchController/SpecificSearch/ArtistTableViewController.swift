@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class ArtistTableViewController: ParentTableViewController {
 
@@ -25,10 +26,10 @@ class ArtistTableViewController: ParentTableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.artistCell, for: indexPath) as! ArtistTableViewCell
         let pictureURL = result[indexPath.row]["picture_medium"] as? String
         cell.thumbnail.image = nil
-        downloadImage(urlImage: pictureURL) { (image) in
-            cell.thumbnail.image = image
-        }
+        let url = URL(string: pictureURL!)
+        cell.thumbnail.kf.setImage(with: url)
         cell.artistLabel.text = result[indexPath.row]["name"] as? String
+        cell.layoutIfNeeded()
         return cell
     }
 
@@ -38,9 +39,7 @@ class ArtistTableViewController: ParentTableViewController {
         vc.albumURL = "https://api.deezer.com/artist/\(result[indexPath.row]["id"] as! Int)/albums"
         vc.artistName = result[indexPath.row]["name"] as? String
         let pictureURL = result[indexPath.row]["picture_xl"] as? String
-        downloadImage(urlImage: pictureURL) { (image) in
-            vc.headerImage = image
-        }
+        vc.headerImage = pictureURL
         vc.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight + 75, right: 0)
         show(vc, sender: self)
     }

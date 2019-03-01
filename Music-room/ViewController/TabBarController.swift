@@ -75,14 +75,12 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
   
     func setupTabBars() {
         let searchViewController = SearchTableViewController()
-        let userAccountVC = UserAccountViewController()
         let playlistTableViewVC = PlaylistTableViewController()
         searchViewController.player = vc
         playlistTableViewVC.player = vc
         playlistTableViewVC.tabBarItem =  UITabBarItem(tabBarSystemItem: .favorites, tag: 0)
         searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 1)
-        userAccountVC.tabBarItem = UITabBarItem(tabBarSystemItem: .more, tag: 2)
-        let tabBarList = [ playlistTableViewVC, searchViewController, userAccountVC ]
+        let tabBarList = [ playlistTableViewVC, searchViewController ]
         viewControllers = tabBarList.map { UINavigationController(rootViewController: $0) }
     }
     
@@ -170,15 +168,15 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
         let track = vc.songArray[vc.songIndex]
         let attributedText = NSMutableAttributedString(string: "\(track.title) • ", attributes: [.font: UIFont.boldSystemFont(ofSize: 12), .foregroundColor: UIColor.white])
         attributedText.append(NSAttributedString(string: "\(track.artist.name)", attributes: [.font: UIFont.boldSystemFont(ofSize: 12),.foregroundColor: UIColor.gray]))
-        currentTrackIV.image = vc.coverImage
+        let url = URL(string: vc.coverImage!)
+        currentTrackIV.kf.setImage(with: url)
         currentTrackIV.layer.masksToBounds = true
         currentTrackIV.layer.cornerRadius = CGFloat(roundf(Float(currentTrackIV.frame.size.width/2.0)))
         currentTrackLabel.attributedText = attributedText
     }
-    
+
     //MARK: -
     //MARK: Player controls
-
     @objc func pauseSong() {
         vc.playPauseAction()
     }
