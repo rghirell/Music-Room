@@ -21,6 +21,7 @@ target 'Music-room' do
   pod 'JGProgressHUD'
   pod 'SwipeCellKit'
   pod 'Kingfisher', '~> 5.0'
+  pod 'GoogleSignIn'
 
 
 

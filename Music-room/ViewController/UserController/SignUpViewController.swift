@@ -9,8 +9,9 @@
 import UIKit
 import Firebase
 import JGProgressHUD
+import GoogleSignIn
 
-class SignUpViewController: UIViewController, UITextFieldDelegate {
+class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDelegate {
     
     @IBOutlet weak var userNameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
@@ -100,7 +101,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                     Auth.auth().currentUser?.getIDTokenForcingRefresh(true, completion: { (str, err) in
                         print(str)
                     })
-//                     self.toUserHomeController()
+                     self.toUserHomeController()
                     
                 }
             }
@@ -161,8 +162,15 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+
+
+    @IBAction func googleSignIn(_ sender: GIDSignInButton) {
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+         GIDSignIn.sharedInstance().signOut()
+        GIDSignIn.sharedInstance().uiDelegate = self
         originY = view.frame.origin.y
         textFieldArray = [userNameTextField, passwordTextField, emailTextField]
         setUpLayers()
@@ -249,9 +257,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     }
     
     func toUserHomeController() {
-        let mainStoryboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        let vc : UINavigationController = mainStoryboard.instantiateViewController(withIdentifier: "navUserHome") as! UINavigationController
-        self.present(vc, animated: true, completion: nil)
+        let vc = TabBarController()
+        present(vc, animated: true, completion: nil)
     }
     
 

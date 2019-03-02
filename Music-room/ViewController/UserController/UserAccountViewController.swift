@@ -9,6 +9,8 @@
 
 import UIKit
 import MapKit
+import GoogleSignIn
+
 
 
 class UserAccountViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -110,7 +112,12 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     }
     
     @objc func test() {
-        DeezerManager.sharedInstance.login()
+//        DeezerManager.sharedInstance.login()
+        GIDSignIn.sharedInstance()?.signOut()
+        GIDSignIn.sharedInstance()?.signIn()
+//        FacebookManager.linkWithFacebook(in: self) { (str, err, profile) in
+//            print("hey")
+//        }
     }
   
 

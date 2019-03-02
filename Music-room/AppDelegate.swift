@@ -10,9 +10,42 @@ import UIKit
 import Firebase
 import FacebookCore
 import FBSDKCoreKit
+import GoogleSignIn
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+   
+        if let error = error {
+            return
+        }
+        
+        print(user.userID)
+        guard let authentication = user.authentication else { return }
+        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
+                                                       accessToken: authentication.accessToken)
+        
+        if Auth.auth().currentUser != nil {
+            Auth.auth().currentUser?.linkAndRetrieveData(with: credential, completion: { (data, err) in
+                print("err ---->", err)
+                print("data ----->", data)
+            })
+            return
+        }
+        
+        Auth.auth().signInAndRetrieveData(with: credential) { (authResult, error) in
+            print(authResult)
+            if let error = error {
+                // ...
+                return
+            }
+            
+        }
+        
+        
+        
+    }
+    
 
     var window: UIWindow?
 
@@ -24,17 +57,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settings.areTimestampsInSnapshotsEnabled = true
         db.settings = settings
         UIApplication.shared.beginReceivingRemoteControlEvents()
-        
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = TabBarController()
-        window?.makeKeyAndVisible()
+        GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
+        GIDSignIn.sharedInstance().delegate = self
+        let firebaseAuth = Auth.auth()
+        do {
+            try firebaseAuth.signOut()
+        } catch let signOutError as NSError {
+            print ("Error signing out: %@", signOutError)
+        }
+//        window = UIWindow(frame: UIScreen.main.bounds)
+//        window?.rootViewController = TabBarController()
+//        window?.makeKeyAndVisible()
         
         return true
     }
 
     
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        print("hey", url)
+        
         return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
+    }
+    
+    
+    func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any])
+        -> Bool {
+            return GIDSignIn.sharedInstance().handle(url,
+                                                     sourceApplication:options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                                                     annotation: [:])
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
