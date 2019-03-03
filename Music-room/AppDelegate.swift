@@ -13,40 +13,8 @@ import FBSDKCoreKit
 import GoogleSignIn
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-   
-        if let error = error {
-            return
-        }
-        
-        print(user.userID)
-        guard let authentication = user.authentication else { return }
-        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
-                                                       accessToken: authentication.accessToken)
-        
-        if Auth.auth().currentUser != nil {
-            Auth.auth().currentUser?.linkAndRetrieveData(with: credential, completion: { (data, err) in
-                print("err ---->", err)
-                print("data ----->", data)
-            })
-            return
-        }
-        
-        Auth.auth().signInAndRetrieveData(with: credential) { (authResult, error) in
-            print(authResult)
-            if let error = error {
-                // ...
-                return
-            }
-            
-        }
-        
-        
-        
-    }
-    
-
+class AppDelegate: UIResponder, UIApplicationDelegate {
+  
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -58,7 +26,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         db.settings = settings
         UIApplication.shared.beginReceivingRemoteControlEvents()
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-        GIDSignIn.sharedInstance().delegate = self
         let firebaseAuth = Auth.auth()
         do {
             try firebaseAuth.signOut()
@@ -74,8 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
 
     
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-        print("hey", url)
-        
         return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
     }
     

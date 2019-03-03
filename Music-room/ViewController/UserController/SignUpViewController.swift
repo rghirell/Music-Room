@@ -11,7 +11,7 @@ import Firebase
 import JGProgressHUD
 import GoogleSignIn
 
-class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDelegate {
+class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDelegate, GIDSignInDelegate {
     
     @IBOutlet weak var userNameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
@@ -167,9 +167,28 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     @IBAction func googleSignIn(_ sender: GIDSignInButton) {
     }
     
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let error = error {
+            print(error)
+            return
+        }
+        guard let authentication = user.authentication else { return }
+        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
+        Auth.auth().signInAndRetrieveData(with: credential) { (authResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            DispatchQueue.main.async {
+                    self.toUserHomeController()
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-         GIDSignIn.sharedInstance().signOut()
+        GIDSignIn.sharedInstance().signOut()
+        GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().uiDelegate = self
         originY = view.frame.origin.y
         textFieldArray = [userNameTextField, passwordTextField, emailTextField]

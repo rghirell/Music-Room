@@ -55,6 +55,7 @@ class FacebookManager {
         Auth.auth().signInAndRetrieveData(with: facebookCredential) { (result, err) in
             if let err = err { completion("Failed to sign up with error:", err, nil); return }
             print("Succesfully authenticated with Firebase.")
+            
             self.fetchFacebookUser(completion: completion)
         }
     }
@@ -109,13 +110,15 @@ class FacebookManager {
                 saveFacebookUser(profileImageData: profileImageData, facebookUser: facebookUser, firebaseUID: firebaseUID, completion: completion)
                 return
             }
+            
             deleteAsset(fromUrl: fetchedFacebookUser.picture.data.url, completion: { (result, err) in
                 if let err = err {
                     completion("Failed to deleted profile image form Storage", err, nil)
                     return
                 }
                 if result {
-                    saveFacebookUser(profileImageData: profileImageData, facebookUser: facebookUser, firebaseUID: firebaseUID, completion: completion)
+//                    saveFacebookUser(profileImageData: profileImageData, facebookUser: facebookUser, firebaseUID: firebaseUID, completion: completion)
+                    completion("Successfully signed in with Facebook.", nil, fetchedFacebookUser)
                     
                 } else {
                     completion("Failed to delete profile image from Storage", err, nil)
@@ -239,8 +242,15 @@ class FacebookManager {
                 }
                 let credential = FacebookAuthProvider.credential(withAccessToken: authenticationToken)
                 Auth.auth().currentUser?.linkAndRetrieveData(with: credential, completion: { (data, err) in
-                    print("err ---->", err)
+                    if let err = err {
+                        print("err ---->", err)
+                        return
+                    }
                     print("data ----->", data)
+                    guard let user = Auth.auth().currentUser else { return }
+                    let ref = Firestore.firestore().collection("users").document(user.uid)
+                    ref.setData(["is_linked_to_facebook": true], merge: true)
+                    completion("str", nil,nil)
                 })
             case .failed(let err):
                 completion("Failed to get Facebook user with error:", err, nil)
@@ -252,9 +262,14 @@ class FacebookManager {
     }
     
     static func unlinkFacebookAccount() {
-        Auth.auth().currentUser?.unlink(fromProvider: "facebook.com", completion: { (result, err) in
-            print(result)
-            print(err)
+        Auth.auth().currentUser?.unlink(fromProvider: "facebook.com", completion: { (_, err) in
+            if let err = err {
+                print("err ---->", err)
+                return
+            }
+            guard let user = Auth.auth().currentUser else { return }
+            let ref = Firestore.firestore().collection("users").document(user.uid)
+            ref.setData(["is_linked_to_facebook": false], merge: true)
         })
     }
     

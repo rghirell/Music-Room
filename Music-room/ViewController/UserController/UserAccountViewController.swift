@@ -9,17 +9,38 @@
 
 import UIKit
 import MapKit
+import Firebase
 import GoogleSignIn
 
 
 
-class UserAccountViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class UserAccountViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, GIDSignInDelegate {
+  
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return buttons.count
     }
     
     let titles = ["Jazz", "Electro", "Rap", "Pop", "Hip-hop", "Rock", "Chill", "Ambiance", "Latino", "Affro", "RnB", "Classique"]
     var buttons = [UIButton]()
+    var isLinkedToGoogle = false {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isLinkedToGoogle {
+                    self.buttonTest.setTitle("unlink", for: .normal)
+                } else { self.buttonTest.setTitle("link", for:  .normal) }
+            }
+        }
+    }
+    
+    var isLinkedToFacebook = false {
+        didSet {
+            DispatchQueue.main.async {
+                if self.isLinkedToFacebook {
+                    self.facebookLinkButton.setTitle("Unlink account", for: .normal)
+                } else { self.facebookLinkButton.setTitle("Link account", for:  .normal) }
+            }
+        }
+    }
     
     func createButton(withTitle title: String) -> UIButton {
         let button = UIButton()
@@ -54,6 +75,22 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Test", for: .normal)
         button.setTitleColor(.black, for: .normal)
+       
+        return button
+    }()
+    
+    let facebookLinkButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
+        let fbLogo = UIImage(named: "fbWhiteLogo")
+        button.setTitle("Link account", for: .normal)
+        button.setImage(fbLogo, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.imageEdgeInsets = UIEdgeInsets(top: 5, left: -20 , bottom: 5, right: 0)
+        button.layer.masksToBounds = true
+        button.tintColor = #colorLiteral(red: 0.9688121676, green: 0.9688346982, blue: 0.9688225389, alpha: 1)
+        button.backgroundColor = #colorLiteral(red: 0.2745098039, green: 0.368627451, blue: 0.662745098, alpha: 1)
         return button
     }()
     
@@ -64,19 +101,52 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         return view
     }()
     
+    var ref: DocumentReference!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        unlinkGoogleAccount()
+        setupLinkButtons()
+        setupLayout()
+        DeezerManager.sharedInstance.loginResult = sessionDidLogin
+        guard let user = Auth.auth().currentUser else { return }
+        self.ref = Firestore.firestore().collection("users").document(user.uid)
+        ref.getDocument { (document, error) in
+            if let document = document, document.exists {
+                self.isLinkedToGoogle =  document.data()!["is_linked_to_google"] as! Bool
+                self.isLinkedToFacebook = document.data()!["is_linked_to_facebook"] as! Bool
+            } else {
+                print("Document does not exist")
+            }
+        }
+    }
+    
+    private func setupLinkButtons() {
+        view.addSubview(buttonTest)
+        buttonTest.addTarget(self, action: #selector(test), for: .touchUpInside)
+    
+        view.addSubview(facebookLinkButton)
+        facebookLinkButton.addTarget(self, action: #selector(facebookLinkAction), for: .touchUpInside)
+    }
+    
+    @objc private func facebookLinkAction() {
+        if isLinkedToFacebook {
+            FacebookManager.unlinkFacebookAccount()
+            isLinkedToFacebook = false
+        } else {
+            FacebookManager.linkWithFacebook(in: self) { (_, _, _) in self.isLinkedToFacebook = true }
+        }
+    }
+    
+    fileprivate func setupLayout() {
         view.backgroundColor = .white
         for title in titles {
             buttons.append(createButton(withTitle: title))
         }
-        
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 20, left: 30, bottom: 10, right: 30)
-//        layout.itemSize = CGSize(width: 90, height: 120)
         layout.minimumInteritemSpacing = 8
-//        layout.minimumLineSpacing = 20
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -84,12 +154,8 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         collectionContainer.clipsToBounds = true
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(TagsCollectionViewCell.self, forCellWithReuseIdentifier: "test")
-        view.addSubview(buttonTest)
         collectionContainer.addSubview(collectionView)
         view.addSubview(collectionContainer)
-        DeezerManager.sharedInstance.loginResult = sessionDidLogin
-        buttonTest.addTarget(self, action: #selector(test), for: .touchUpInside)
-        
         NSLayoutConstraint.activate([
             buttonTest.widthAnchor.constraint(equalToConstant: 50),
             buttonTest.heightAnchor.constraint(equalToConstant: 200),
@@ -101,6 +167,10 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
             collectionView.heightAnchor.constraint(equalTo: collectionContainer.heightAnchor),
             collectionView.centerXAnchor.constraint(equalTo: collectionContainer.centerXAnchor),
             collectionView.centerYAnchor.constraint(equalTo: collectionContainer.centerYAnchor),
+            facebookLinkButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            facebookLinkButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            facebookLinkButton.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
+            facebookLinkButton.heightAnchor.constraint(equalToConstant: 30),
             ])
     }
     
@@ -113,14 +183,18 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     
     @objc func test() {
 //        DeezerManager.sharedInstance.login()
-        GIDSignIn.sharedInstance()?.signOut()
-        GIDSignIn.sharedInstance()?.signIn()
+          GIDSignIn.sharedInstance().delegate = self
+        if isLinkedToGoogle {
+            unlinkGoogleAccount()
+        } else {
+                    GIDSignIn.sharedInstance()?.signOut()
+                    GIDSignIn.sharedInstance()?.signIn()
+        }
+
 //        FacebookManager.linkWithFacebook(in: self) { (str, err, profile) in
 //            print("hey")
 //        }
     }
-  
-
     
     func sessionDidLogin(result: ResultLogin) {
         switch result {
@@ -134,5 +208,36 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
             print("error")
         }
     }
+    
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let error = error {
+            print(error)
+            return
+        }
+        guard let authentication = user.authentication else { return }
+        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
+                                                       accessToken: authentication.accessToken)
+        Auth.auth().currentUser?.linkAndRetrieveData(with: credential, completion: { (data, err) in
+            if err != nil {
+                print(err!)
+                return
+            }
+            guard let user = self.ref else { return }
+            user.setData(["is_linked_to_google": true], merge: true)
+            self.isLinkedToGoogle = true
+//            ref.removeAllObservers()
+        })
+    }
+    
+    func unlinkGoogleAccount() {
+        Auth.auth().currentUser?.unlink(fromProvider: "google.com", completion: { (result, err) in
+            print(result)
+            print(err)
+            guard let user = self.ref else { return }
+            user.updateData(["is_link_to_google": false])
+            self.isLinkedToGoogle = false
+        })
+    }
+    
     
 }

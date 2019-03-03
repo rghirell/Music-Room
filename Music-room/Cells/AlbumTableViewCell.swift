@@ -10,8 +10,6 @@ import UIKit
 
 class AlbumTableViewCell: UITableViewCell {
     
-    
-    
     let albumLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)
@@ -96,7 +94,6 @@ class AlbumTableViewCell: UITableViewCell {
             albumPlaceholder.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12),
             albumPlaceholder.trailingAnchor.constraint(equalTo: disclosure.leadingAnchor, constant: -30),
             albumPlaceholder.topAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: 5),
-            
             disclosure.trailingAnchor.constraint(equalTo: viewContainer.trailingAnchor, constant: -12),
             disclosure.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor, constant: 0),
             disclosure.heightAnchor.constraint(equalToConstant: 25),
