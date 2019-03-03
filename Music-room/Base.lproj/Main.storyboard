@@ -119,9 +119,6 @@
                                     <constraint firstAttribute="height" constant="41" id="A4V-wh-qXN"/>
                                     <constraint firstAttribute="width" constant="213" id="wxw-1l-7S6"/>
                                 </constraints>
-                                <connections>
-                                    <action selector="googleSignIn:" destination="Ddz-NE-X2u" eventType="touchUpInside" id="186-MO-qvJ"/>
-                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.2193390429" green="0.51816105840000004" blue="0.96867865320000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>

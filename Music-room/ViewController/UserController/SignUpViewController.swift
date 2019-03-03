@@ -162,29 +162,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         }
     }
     
-
-
-    @IBAction func googleSignIn(_ sender: GIDSignInButton) {
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        if let error = error {
-            print(error)
-            return
-        }
-        guard let authentication = user.authentication else { return }
-        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
-        Auth.auth().signInAndRetrieveData(with: credential) { (authResult, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            DispatchQueue.main.async {
-                    self.toUserHomeController()
-            }
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         GIDSignIn.sharedInstance().signOut()
@@ -275,9 +252,51 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         return emailTest.evaluate(with: testStr)
     }
     
-    func toUserHomeController() {
+    private func toUserHomeController() {
         let vc = TabBarController()
         present(vc, animated: true, completion: nil)
+    }
+    
+    
+    //MARK: -
+    //MARK: Google Register/Signin Handlers
+    
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let error = error {
+            print(error)
+            return
+        }
+        guard let authentication = user.authentication else { return }
+        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
+        Auth.auth().signInAndRetrieveData(with: credential) { (authResult, error) in
+            if let error = error {
+                print(error)
+                return
+            }
+            self.checkIfGoogleDataExist(completion: { (exist) in
+                if !exist {
+                    let registerData = RegisterData(accessibility: Accessibility(permission: false, friends: false), displayName: user.profile.name, friends: [String](), is_linked_to_deezer: false, is_linked_to_facebook: false, is_linked_to_google: false, pref_music: [String]())
+                    FirebaseManager.Firestore_Users_Collection.document(Auth.auth().currentUser!.uid).setData(registerData.dictionary, completion: { (err) in
+                        if let err = err { print(err); return }
+                    })
+                }
+                DispatchQueue.main.async {
+                    self.toUserHomeController()
+                }
+            })
+        }
+    }
+    
+    
+    private func checkIfGoogleDataExist(completion: @escaping (Bool) -> ()) {
+        let docRef = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
+        docRef.getDocument { (snapshot, err) in
+            if snapshot?.data() == nil {
+                completion(false)
+                return
+            }
+            completion(true)
+        }
     }
     
 
