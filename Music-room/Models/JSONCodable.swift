@@ -49,8 +49,10 @@ struct EventPlaylistCreation : Codable {
 
 struct Accessibility : Codable {
     var permission: Bool
+    var friends: Bool?
     
     enum CodingKeys: String, CodingKey {
+        case friends
         case permission = "public"
     }
 }
@@ -142,6 +144,17 @@ struct FacebookPicture : Codable {
         return FacebookPicture(height: self.height, width: self.width, url: url ?? self.url)
     }
 }
+struct RegisterData : Codable {
+    var accessibility : Accessibility
+    var displayName : String
+    var friends : [String]
+    var is_linked_to_deezer : Bool
+    var is_linked_to_facebook : Bool
+    var is_linked_to_google : Bool
+    var pref_music : [String]
+}
+
+
 
 struct JSON {
     static let encoder = JSONEncoder()

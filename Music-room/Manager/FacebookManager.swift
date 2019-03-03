@@ -144,9 +144,10 @@ class FacebookManager {
                 print("Successfully uploaded profile image into Firebase storage with URL:", profileImageFirebaseUrl)
               
                 let facebookDocument = FacebookProfile(email: facebookUser.email, name: facebookUser.name, id: firebaseUID, picture: DataFacebookPicture(data: facebookUser.picture.data.changeValues(url: profileImageFirebaseUrl)))
-                let facebookProfileContainer = FacebookProfileContainer(facebookProfile: facebookDocument)
-                print(facebookDocument.id)
-                FirebaseManager.Firestore_Users_Collection.document(facebookDocument.id).setData(facebookProfileContainer.dictionary, completion: { (err) in
+//                let facebookProfileContainer = FacebookProfileContainer(facebookProfile: facebookDocument)
+                let registerData = RegisterData(accessibility: Accessibility(permission: false, friends: false), displayName: facebookUser.name, friends: [String](), is_linked_to_deezer: false, is_linked_to_facebook: false, is_linked_to_google: false, pref_music: [String]())
+                
+                FirebaseManager.Firestore_Users_Collection.document(firebaseUID).setData(registerData.dictionary, completion: { (err) in
                     if let err = err { completion("Failed to save document with error:", err, nil); return }
                     print("Successfully saved user info into Firestore: \(String(describing: facebookDocument))")
                     completion("Successfully signed in with Facebook.", nil, facebookDocument)
