@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 protocol TrackDelegate: class {
     func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
@@ -21,11 +22,14 @@ class PlaylistTrackTableViewController: UITableViewController {
     }
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     var player: PlayerViewController!
+    var ref: DocumentReference? = nil
+    var playlistID: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
     }
+    
     fileprivate func setupTableView() {
         tableView.rowHeight = 120
         tableView.separatorStyle = .none
@@ -80,11 +84,12 @@ class PlaylistTrackTableViewController: UITableViewController {
         task.resume()
     }
     
+    
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String
-        
         do {
             let x = try JSONSerialization.data(withJSONObject: self.trackArray![index])
             let track = try JSONDecoder().decode(TrackCodable.self, from: x)
