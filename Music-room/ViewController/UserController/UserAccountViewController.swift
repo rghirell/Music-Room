@@ -26,8 +26,8 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         didSet {
             DispatchQueue.main.async {
                 if self.isLinkedToGoogle {
-                    self.buttonTest.setTitle("unlink", for: .normal)
-                } else { self.buttonTest.setTitle("link", for:  .normal) }
+                    self.googleLinkButton.setTitle("Unlink Google account", for: .normal)
+                } else { self.googleLinkButton.setTitle("Link Google account", for:  .normal) }
             }
         }
     }
@@ -36,8 +36,8 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         didSet {
             DispatchQueue.main.async {
                 if self.isLinkedToFacebook {
-                    self.facebookLinkButton.setTitle("Unlink account", for: .normal)
-                } else { self.facebookLinkButton.setTitle("Link account", for:  .normal) }
+                    self.facebookLinkButton.setTitle("Unlink Facebook account", for: .normal)
+                } else { self.facebookLinkButton.setTitle("Link Facebook account", for:  .normal) }
             }
         }
     }
@@ -70,29 +70,56 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     var currentLocation: CLLocation!
     var collectionView: UICollectionView!
     
-    let buttonTest: UIButton = {
+    let googleLinkButton: UIButton = {
         let button = UIButton()
+        button.layer.cornerRadius = 5
+        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 3, height: 3)
+        button.layer.shadowOpacity = 0.4
+        button.layer.shadowRadius = 4.0
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Test", for: .normal)
+        button.setTitle("Link Google account", for: .normal)
         button.setTitleColor(.black, for: .normal)
-       
+        button.backgroundColor = .white
+        let googleLogo = UIImage(named: "btn_google_light_normal_ios")
+        button.tintColor = .clear
+        button.setImage(googleLogo, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.imageEdgeInsets = UIEdgeInsets(top: 2, left: -30 , bottom: 2, right: 0)
         return button
     }()
     
     let facebookLinkButton: UIButton = {
         let button = UIButton()
         button.layer.cornerRadius = 5
+        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 3, height: 3)
+        button.layer.shadowOpacity = 0.4
+        button.layer.shadowRadius = 4.0
         button.translatesAutoresizingMaskIntoConstraints = false
         let fbLogo = UIImage(named: "fbWhiteLogo")
         button.setTitle("Link account", for: .normal)
         button.setImage(fbLogo, for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
         button.imageEdgeInsets = UIEdgeInsets(top: 5, left: -20 , bottom: 5, right: 0)
-        button.layer.masksToBounds = true
         button.tintColor = #colorLiteral(red: 0.9688121676, green: 0.9688346982, blue: 0.9688225389, alpha: 1)
         button.backgroundColor = #colorLiteral(red: 0.2745098039, green: 0.368627451, blue: 0.662745098, alpha: 1)
         return button
     }()
+    
+    let logOutButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Logout", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        
+        button.addTarget(self, action: #selector(signOut), for: .touchUpInside)
+        return button
+    }()
+    
+
     
     let collectionContainer: UIView = {
         let view = UIView()
@@ -102,11 +129,11 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     }()
     
     var ref: DocumentReference!
-
+    var providerID: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        unlinkGoogleAccount()
+        providerID = Auth.auth().currentUser?.providerData[0].providerID
         setupLinkButtons()
         setupLayout()
         DeezerManager.sharedInstance.loginResult = sessionDidLogin
@@ -122,23 +149,9 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         }
     }
     
-    private func setupLinkButtons() {
-        view.addSubview(buttonTest)
-        buttonTest.addTarget(self, action: #selector(test), for: .touchUpInside)
-    
-        view.addSubview(facebookLinkButton)
-        facebookLinkButton.addTarget(self, action: #selector(facebookLinkAction), for: .touchUpInside)
-    }
-    
-    @objc private func facebookLinkAction() {
-        if isLinkedToFacebook {
-            FacebookManager.unlinkFacebookAccount()
-            isLinkedToFacebook = false
-        } else {
-            FacebookManager.linkWithFacebook(in: self) { (_, _, _) in self.isLinkedToFacebook = true }
-        }
-    }
-    
+
+    //MARK: -
+    //MARK: Layout setup
     fileprivate func setupLayout() {
         view.backgroundColor = .white
         for title in titles {
@@ -157,8 +170,6 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         collectionContainer.addSubview(collectionView)
         view.addSubview(collectionContainer)
         NSLayoutConstraint.activate([
-            buttonTest.widthAnchor.constraint(equalToConstant: 50),
-            buttonTest.heightAnchor.constraint(equalToConstant: 200),
             collectionContainer.widthAnchor.constraint(equalTo: view.widthAnchor),
             collectionContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -171,29 +182,123 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
             facebookLinkButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             facebookLinkButton.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
             facebookLinkButton.heightAnchor.constraint(equalToConstant: 30),
+            googleLinkButton.widthAnchor.constraint(equalTo: facebookLinkButton.widthAnchor),
+            googleLinkButton.heightAnchor.constraint(equalTo: facebookLinkButton.heightAnchor),
+            googleLinkButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            googleLinkButton.bottomAnchor.constraint(equalTo: facebookLinkButton.topAnchor, constant: -12),
+            logOutButton.widthAnchor.constraint(equalTo: facebookLinkButton.widthAnchor),
+            logOutButton.heightAnchor.constraint(equalTo: facebookLinkButton.heightAnchor),
+            logOutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logOutButton.bottomAnchor.constraint(equalTo: googleLinkButton.topAnchor, constant: -12),
             ])
+    }
+    
+    private func setupLinkButtons() {
+        view.addSubview(googleLinkButton)
+        googleLinkButton.addTarget(self, action: #selector(googleLinkAction), for: .touchUpInside)
+        view.addSubview(facebookLinkButton)
+        facebookLinkButton.addTarget(self, action: #selector(facebookLinkAction), for: .touchUpInside)
+        view.addSubview(logOutButton)
+        switch providerID {
+        case "google.com":
+            googleLinkButton.isHidden = true
+        case "facebook.com":
+            facebookLinkButton.isHidden = true
+        default:
+            return
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
         return CGSize(width: buttons[indexPath.row].frame.width + 25 , height: buttons[indexPath.row].frame.height)
     }
+
     
-    @objc func test() {
-//        DeezerManager.sharedInstance.login()
-          GIDSignIn.sharedInstance().delegate = self
+    @objc private func facebookLinkAction() {
+        if isLinkedToFacebook {
+            FacebookManager.unlinkFacebookAccount()
+            isLinkedToFacebook = false
+        } else {
+            if providerID == "password" {
+                verifyPassword { (str) in
+                    FacebookManager.linkWithFacebook(in: self) { (msg, err, _) in
+                        if err != nil {
+                            let alert = Alert.errorAlert(title: "Error linking account", message: err?.localizedDescription)
+                            DispatchQueue.main.async {
+                                self.present(alert, animated: true, completion: nil)
+                                return
+                            }
+                            return
+                        }
+                        if msg != "cancel" {
+                            self.isLinkedToFacebook = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @objc func googleLinkAction() {
+//                DeezerManager.sharedInstance.login()
+        GIDSignIn.sharedInstance().delegate = self
         if isLinkedToGoogle {
             unlinkGoogleAccount()
         } else {
+            if providerID == "password" {
+                verifyPassword { (str) in
                     GIDSignIn.sharedInstance()?.signOut()
                     GIDSignIn.sharedInstance()?.signIn()
+                }
+            } else {
+                GIDSignIn.sharedInstance()?.signOut()
+                GIDSignIn.sharedInstance()?.signIn()
+            }
         }
-
-//        FacebookManager.linkWithFacebook(in: self) { (str, err, profile) in
-//            print("hey")
-//        }
+    }
+    
+    private func createTextField(placeholder: String) -> UITextField {
+        let textField = UITextField()
+        textField.placeholder = placeholder
+        textField.textContentType = .password
+        textField.isSecureTextEntry = true
+        return textField
+    }
+    
+    @objc private func signOut() {
+        switch providerID! {
+        case "google.com":
+            GIDSignIn.sharedInstance()?.signOut()
+        default:
+            print("hello")
+        }
+        do {
+            try Auth.auth().signOut()
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+        } catch  {
+            let alert = Alert.errorAlert(title: "Error", message: "Couldn't log out")
+            present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    private func verifyPassword(completion: @escaping (String) -> ()) {
+        let tf = createTextField(placeholder: "Password")
+        var alert = UIAlertController()
+        alert = Alert.alert(style: .alert, title: "Password verification", message: "Please verify your password", textFields: [tf]) { password in
+            Auth.auth().signIn(withEmail: Auth.auth().currentUser!.email!, password: password![0], completion: { (res, err) in
+                if err != nil {
+                    let alert = Alert.errorAlert(title: "Wrong password", message: err!.localizedDescription)
+                    DispatchQueue.main.async {
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    return
+                }
+                completion("success")
+            })
+        }
+        present(alert, animated: true, completion: nil)
     }
     
     func sessionDidLogin(result: ResultLogin) {
@@ -219,25 +324,30 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
                                                        accessToken: authentication.accessToken)
         Auth.auth().currentUser?.linkAndRetrieveData(with: credential, completion: { (data, err) in
             if err != nil {
-                print(err!)
+                let alert = Alert.errorAlert(title: "Error linking account", message: err!.localizedDescription)
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                }
                 return
             }
             guard let user = self.ref else { return }
             user.setData(["is_linked_to_google": true], merge: true)
             self.isLinkedToGoogle = true
-//            ref.removeAllObservers()
         })
     }
     
-    func unlinkGoogleAccount() {
+    private func unlinkGoogleAccount() {
         Auth.auth().currentUser?.unlink(fromProvider: "google.com", completion: { (result, err) in
-            print(result)
-            print(err)
+            if err != nil {
+                let alert = Alert.errorAlert(title: "Error unlinking account", message: err!.localizedDescription)
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                }
+                return
+            }
             guard let user = self.ref else { return }
-            user.updateData(["is_link_to_google": false])
+            user.updateData(["is_linked_to_google": false])
             self.isLinkedToGoogle = false
         })
     }
-    
-    
 }

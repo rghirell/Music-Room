@@ -25,17 +25,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         settings.areTimestampsInSnapshotsEnabled = true
         db.settings = settings
         UIApplication.shared.beginReceivingRemoteControlEvents()
+        
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-        let firebaseAuth = Auth.auth()
-        do {
-            try firebaseAuth.signOut()
-        } catch let signOutError as NSError {
-            print ("Error signing out: %@", signOutError)
-        }
+
 //        window = UIWindow(frame: UIScreen.main.bounds)
 //        window?.rootViewController = TabBarController()
 //        window?.makeKeyAndVisible()
-        
         return true
     }
 

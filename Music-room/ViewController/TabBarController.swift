@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 
 protocol SearchDelegate: class {
@@ -65,6 +66,14 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
         view.addSubview(vc.view)
         NotificationCenter.default.addObserver(self, selector: #selector(toPauseButton), name: .songPlay, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(toPlayButton), name: .songPause, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("tabBarWillAppear")
+        if Auth.auth().currentUser == nil {
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+        }
     }
     
     var tabBarY: CGFloat!

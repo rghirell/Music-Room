@@ -29,6 +29,8 @@ struct Alert {
         for textField in textFields {
             alert.addTextField(configurationHandler: { (theTextField) in
                 theTextField.placeholder = textField.placeholder
+                theTextField.isSecureTextEntry = textField.isSecureTextEntry
+                theTextField.textContentType = textField.textContentType
             })
         }
         

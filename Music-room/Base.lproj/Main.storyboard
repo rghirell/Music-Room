@@ -112,33 +112,37 @@
                                     <action selector="fbLogin:" destination="Ddz-NE-X2u" eventType="touchUpInside" id="4SO-oC-RyF"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kPF-8U-Cn3" customClass="GIDSignInButton">
-                                <rect key="frame" x="81" y="672" width="213" height="41"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zZf-cp-9vI">
+                                <rect key="frame" x="12" y="686" width="351" height="30"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="41" id="A4V-wh-qXN"/>
-                                    <constraint firstAttribute="width" constant="213" id="wxw-1l-7S6"/>
-                                </constraints>
-                            </view>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                <state key="normal" title="Log in with Google">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="googleSignIn:" destination="Ddz-NE-X2u" eventType="touchUpInside" id="Ods-kX-Paf"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.2193390429" green="0.51816105840000004" blue="0.96867865320000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="Q34-pY-mK1" firstAttribute="height" secondItem="5mz-hg-D3b" secondAttribute="height" id="1c6-mq-bGE"/>
+                            <constraint firstItem="zZf-cp-9vI" firstAttribute="bottom" secondItem="Q34-pY-mK1" secondAttribute="top" constant="-12" id="1i7-dw-f4J"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="centerY" secondItem="hrL-zw-HKW" secondAttribute="centerY" id="2Zl-0G-4JW"/>
                             <constraint firstItem="hrL-zw-HKW" firstAttribute="bottom" secondItem="Q34-pY-mK1" secondAttribute="bottom" constant="20" id="4sH-tr-owI"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="width" secondItem="9Nn-ZA-Oxq" secondAttribute="width" constant="-24" id="BEz-y0-Rq0"/>
                             <constraint firstItem="Q34-pY-mK1" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="BZ0-DB-pE7"/>
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="CMy-56-AbD"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="top" secondItem="YUq-8o-2PR" secondAttribute="bottom" constant="12" id="DV3-8X-FVL"/>
-                            <constraint firstItem="Q34-pY-mK1" firstAttribute="top" secondItem="kPF-8U-Cn3" secondAttribute="bottom" constant="15" id="KUQ-fg-Omy"/>
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="bottom" secondItem="YUq-8o-2PR" secondAttribute="top" constant="-20" id="Oxg-uh-8YG"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="width" secondItem="YUq-8o-2PR" secondAttribute="width" id="b9K-dj-rB4"/>
-                            <constraint firstItem="hrL-zw-HKW" firstAttribute="trailing" secondItem="kPF-8U-Cn3" secondAttribute="trailing" constant="81" id="dfG-qU-WyR"/>
+                            <constraint firstItem="zZf-cp-9vI" firstAttribute="width" secondItem="5mz-hg-D3b" secondAttribute="width" id="cjH-XQ-yQp"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="hAB-Nl-DRo"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="height" secondItem="hrL-zw-HKW" secondAttribute="height" multiplier="0.3" id="kji-E3-1oY"/>
+                            <constraint firstItem="zZf-cp-9vI" firstAttribute="height" secondItem="5mz-hg-D3b" secondAttribute="height" id="muE-KV-MCK"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="nX5-B5-eJb"/>
-                            <constraint firstItem="kPF-8U-Cn3" firstAttribute="leading" secondItem="hrL-zw-HKW" secondAttribute="leading" constant="81" id="uwz-wn-P0A"/>
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="width" secondItem="YUq-8o-2PR" secondAttribute="width" id="xGG-b6-qfG"/>
+                            <constraint firstItem="zZf-cp-9vI" firstAttribute="centerX" secondItem="5mz-hg-D3b" secondAttribute="centerX" id="xSo-A2-GUq"/>
                             <constraint firstItem="Q34-pY-mK1" firstAttribute="width" secondItem="5mz-hg-D3b" secondAttribute="width" id="zHE-uZ-vCO"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="hrL-zw-HKW"/>
@@ -148,6 +152,7 @@
                         <outlet property="LoginRegisterSegment" destination="VfE-Eq-noG" id="uLJ-7W-wLM"/>
                         <outlet property="emailTextField" destination="pyS-XD-awV" id="uNA-kx-zsL"/>
                         <outlet property="facebookLoginButton" destination="Q34-pY-mK1" id="1Kg-eX-0fb"/>
+                        <outlet property="googleLoginButton" destination="zZf-cp-9vI" id="wvU-xc-dxd"/>
                         <outlet property="passwordTextField" destination="8YM-5t-5OU" id="1zV-lc-Gdc"/>
                         <outlet property="registerButton" destination="5mz-hg-D3b" id="dle-iW-CZ1"/>
                         <outlet property="stackViewContainer" destination="YUq-8o-2PR" id="sru-nS-3bX"/>

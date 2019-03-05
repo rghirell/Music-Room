@@ -5,6 +5,7 @@ import SwiftyJSON
 import FirebaseStorage
 import FacebookCore
 import FacebookLogin
+import FBSDKLoginKit
 
 class FacebookManager {
     
@@ -25,8 +26,7 @@ class FacebookManager {
     // MARK: Sign in with Facebook
     static func signInWithFacebook(in viewController: UIViewController, completion: @escaping (_ message: String, _ error: Error?, _ facebookReturn: FacebookProfile?) ->()) {
         let loginManager = LoginManager()
-
-        loginManager.logIn(readPermissions: [.publicProfile, .email], viewController: viewController) { (result) in
+        loginManager.logIn(readPermissions: [.publicProfile, .email, ], viewController: viewController) { (result) in
             switch result {
             case .success(grantedPermissions: _, declinedPermissions: _, token: _):
                 print("Succesfully logged in into Facebook.")
@@ -61,7 +61,6 @@ class FacebookManager {
     }
     
     fileprivate static func fetchFacebookUser(completion: @escaping (_ message: String, _ error: Error?, _ facebookReturn: FacebookProfile?) ->()) {
-        
         let graphRequestConnection = GraphRequestConnection()
         let graphRequest = GraphRequest(graphPath: "me", parameters: ["fields": "id, email, name, picture.type(large)"], accessToken: AccessToken.current, httpMethod: .GET, apiVersion: .defaultVersion)
         graphRequestConnection.add(graphRequest, completion: { (httpResponse, result) in
@@ -245,9 +244,9 @@ class FacebookManager {
                 Auth.auth().currentUser?.linkAndRetrieveData(with: credential, completion: { (data, err) in
                     if let err = err {
                         print("err ---->", err)
+                        completion("Error Linking account", err, nil)
                         return
                     }
-                    print("data ----->", data)
                     guard let user = Auth.auth().currentUser else { return }
                     let ref = Firestore.firestore().collection("users").document(user.uid)
                     ref.setData(["is_linked_to_facebook": true], merge: true)
@@ -256,7 +255,7 @@ class FacebookManager {
             case .failed(let err):
                 completion("Failed to get Facebook user with error:", err, nil)
             case .cancelled:
-                completion("Canceled getting Facebook user.", nil, nil)
+                completion("cancel", nil, nil)
             }
         }
         
@@ -270,6 +269,7 @@ class FacebookManager {
             }
             guard let user = Auth.auth().currentUser else { return }
             let ref = Firestore.firestore().collection("users").document(user.uid)
+            
             ref.setData(["is_linked_to_facebook": false], merge: true)
         })
     }

@@ -85,12 +85,10 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             self.playlistRes = query?.documents
             self.mergeResult()
         }
-    
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
+        super.viewWillAppear(animated)        
     }
     
     override func viewWillDisappear(_ animated: Bool) {

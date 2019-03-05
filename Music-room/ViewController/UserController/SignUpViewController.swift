@@ -22,6 +22,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     @IBOutlet weak var stackViewContainerHeight: NSLayoutConstraint!
     @IBOutlet weak var LoginRegisterSegment: UISegmentedControl!
     @IBOutlet weak var facebookLoginButton: UIButton!
+    @IBOutlet weak var googleLoginButton: UIButton!
     
     var spinner: UIView?
     var isKeyboardActive = false
@@ -110,6 +111,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         
     }
     
+    
     func register() {
         if !(isValidEmail(emailTextField.text!)) {
             let emailAlert =  Alert.errorAlert(title: "Invalid Email", message: "Email is invalid, please enter a valid email address")
@@ -164,7 +166,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        GIDSignIn.sharedInstance().signOut()
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().uiDelegate = self
         originY = view.frame.origin.y
@@ -177,12 +178,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         navigationController?.navigationBar.topItem?.title = "Login"
-        // Do any additional setup after loading the view.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        userNameTextField.text = ""
+        passwordTextField.text = ""
+        emailTextField.text = ""
     }
     
     @objc func keyboardWillChange(notification: Notification) {
@@ -239,7 +241,15 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         stackViewContainer.layer.cornerRadius = 5
         registerButton.layer.cornerRadius = 5
         facebookLoginButton.layer.cornerRadius = 5
+        googleLoginButton.layer.cornerRadius = 5
         let fbLogo = UIImage(named: "fbWhiteLogo")
+        let googleLogo = UIImage(named: "btn_google_light_normal_ios")
+        googleLoginButton.tintColor = .clear
+        googleLoginButton.layer.masksToBounds = true
+        googleLoginButton.setImage(googleLogo, for: .normal)
+        googleLoginButton.imageView?.contentMode = .scaleAspectFit
+        googleLoginButton.imageEdgeInsets = UIEdgeInsets(top: 2, left: -30 , bottom: 2, right: 0)
+        googleLoginButton.layer.masksToBounds = true
         facebookLoginButton.setImage(fbLogo, for: .normal)
         facebookLoginButton.imageView?.contentMode = .scaleAspectFit
         facebookLoginButton.imageEdgeInsets = UIEdgeInsets(top: 5, left: -20 , bottom: 5, right: 0)
@@ -260,6 +270,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     
     //MARK: -
     //MARK: Google Register/Signin Handlers
+    @IBAction func googleSignIn(_ sender: UIButton) {
+        GIDSignIn.sharedInstance()?.signIn()
+    }
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if let error = error {
@@ -286,7 +299,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
             })
         }
     }
-    
     
     private func checkIfGoogleDataExist(completion: @escaping (Bool) -> ()) {
         let docRef = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
