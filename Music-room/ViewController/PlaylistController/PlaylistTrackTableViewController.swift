@@ -8,18 +8,15 @@
 
 import UIKit
 import Firebase
+import SwipeCellKit
 
 protocol TrackDelegate: class {
     func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
 }
 
-class PlaylistTrackTableViewController: UITableViewController {
+class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCellDelegate {
     
-    var trackArray: [[String: Any]]? {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    var trackArray: [[String: Any]]? 
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     var player: PlayerViewController!
     var ref: DocumentReference? = nil
@@ -32,6 +29,8 @@ class PlaylistTrackTableViewController: UITableViewController {
     
     fileprivate func setupTableView() {
         tableView.rowHeight = 120
+//        tableView.isEditing = true
+        tableView.allowsSelectionDuringEditing = true
         tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
@@ -63,7 +62,28 @@ class PlaylistTrackTableViewController: UITableViewController {
         cell.delegateViewController = self
         cell.trackLabel.text = trackArray[indexPath.row]["title"] as? String
         cell.trackPlaceholder.text = "Title • \(artist!)"
+        cell.delegate = self
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else { return nil }
+        
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            self.trackArray?.remove(at: indexPath.row)
+            self.ref?.updateData(["titles" : self.trackArray!])
+        }
+        
+        // customize the action appearance
+        deleteAction.image = UIImage(named: "delete")
+        
+        return [deleteAction]
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        var options = SwipeOptions()
+        options.expansionStyle = .destructive
+        return options
     }
     
     
@@ -84,12 +104,22 @@ class PlaylistTrackTableViewController: UITableViewController {
         task.resume()
     }
     
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        ref = Firestore.firestore().collection("playlist").document(playlistID!)
+        ref?.addSnapshotListener({ (data, err) in
+            print("hey")
+            let x = data!.get("titles") as! [[String: Any]]
+            self.trackArray = x
+            self.tableView.reloadData()
+        })
+    }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String
+        tableView.deselectRow(at: indexPath, animated: true)
         do {
             let x = try JSONSerialization.data(withJSONObject: self.trackArray![index])
             let track = try JSONDecoder().decode(TrackCodable.self, from: x)

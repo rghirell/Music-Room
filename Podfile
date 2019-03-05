@@ -22,6 +22,7 @@ target 'Music-room' do
   pod 'SwipeCellKit'
   pod 'Kingfisher', '~> 5.0'
   pod 'GoogleSignIn'
+  pod 'SwiftReorder', '~> 6.0'
 
 
 

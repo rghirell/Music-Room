@@ -25,11 +25,7 @@ class SongTableViewController: UITableViewController {
         DZRObject.search(for: .track, withQuery: "origin", requestManager: DZRRequestManager.default(), callback: { (data, error) in
             print(data)
         })
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+   
     }
 
     // MARK: - Table view data source
@@ -68,10 +64,8 @@ class SongTableViewController: UITableViewController {
             self.tableView.reloadData()
             print(self.titles ?? "nothing")
         })
-    
     }
     
- 
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .none
     }
@@ -83,7 +77,6 @@ class SongTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         print("item to move")

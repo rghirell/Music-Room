@@ -7,9 +7,8 @@
 //
 
 import UIKit
-import SwipeCellKit
 
-class TrackTableViewCell: SwipeTableViewCell {
+class PlaylistTrackTableViewCell: UITableViewCell {
     
     var urlString: String?
     
@@ -47,13 +46,6 @@ class TrackTableViewCell: SwipeTableViewCell {
         return imageView
     }()
     
-    let addToPlaylistButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageView?.contentMode = .scaleAspectFit
-        button.setImage(UIImage(named: "moreBlack"), for: .normal)
-        return button 
-    }()
     
     let viewContainer: UIView = {
         let view = UIView()
@@ -69,31 +61,19 @@ class TrackTableViewCell: SwipeTableViewCell {
         return view
     }()
     
-    let eventButton: UIButton = {
+    let dragPlaylist: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .blue
-        button.layer.cornerRadius = 10
-        button.tintColor = .white
-        button.setTitle("Events", for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.setImage(UIImage(named: "moreBlack"), for: .normal)
         return button
     }()
     
-    let playlistButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .green
-        button.layer.cornerRadius = 10
-        button.tintColor = .white
-        button.setTitle("Playlists", for: .normal)
-        return button
-    }()
-    
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
-
+        
         viewPlaylist.layer.cornerRadius = 10
         viewPlaylist.layer.borderColor = UIColor.black.cgColor
         viewPlaylist.layer.shadowColor = UIColor.black.cgColor
@@ -122,56 +102,27 @@ class TrackTableViewCell: SwipeTableViewCell {
             showsPlaylist = false
         }
     }
-
+    
     
     @objc func presentPlaylist() {
         UIView.transition(from: viewContainer, to: viewPlaylist, duration: 0.3, options: [.transitionFlipFromBottom, .showHideTransitionViews] , completion: nil)
         showsPlaylist = true
-//        let vc = AddToPlaylistTableViewController()
-//        let nc = UINavigationController(rootViewController: vc)
-//        let alert = UIAlertController(title: "Add to Playlist", message: "Choose which kind of playlist you want to add your song to", preferredStyle: .actionSheet)
-//        let eventAction = UIAlertAction(title: "Add to event playlist", style: .default) { (action) in
-//            vc.isRegularPlaylist = false
-//            vc.track = self.currentTrack
-//            self.delegateViewController?.present(nc, animated: true, completion: nil)
-//        }
-//        let playlistAction = UIAlertAction(title: "Add to my playlist", style: .default) { (action) in
-//            vc.isEventPlaylist = false
-//            vc.track = self.currentTrack
-//            self.delegateViewController?.present(nc, animated: true, completion: nil)
-//        }
-//        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-//        alert.addAction(cancel)
-//        alert.addAction(eventAction)
-//        alert.addAction(playlistAction)
-//        delegateViewController?.present(alert, animated: true, completion: nil)
     }
     
-    @objc private func toPlaylist(sender: UIButton) {
-        let vc = AddToPlaylistTableViewController()
-        let nc = UINavigationController(rootViewController: vc)
-        if sender.currentTitle == "Events" {
-            vc.isRegularPlaylist = false
-        } else { vc.isEventPlaylist = false }
-        vc.track = self.currentTrack
-        self.delegateViewController?.present(nc, animated: true, completion: nil)
 
-    }
     
     func setupLayout() {
         selectionStyle = .none
-        viewPlaylist.addSubview(eventButton)
-        viewPlaylist.addSubview(playlistButton)
+
         addSubview(viewPlaylist)
         addSubview(viewContainer)
-        eventButton.addTarget(self, action: #selector(toPlaylist), for: .touchUpInside)
-        playlistButton.addTarget(self, action: #selector(toPlaylist), for: .touchUpInside)
-        viewContainer.addSubview(addToPlaylistButton)
+        
         viewContainer.addSubview(trackLabel)
         viewContainer.addSubview(trackPlaceholder)
         viewContainer.addSubview(thumbnail)
+        viewContainer.addSubview(dragPlaylist)
         
-        addToPlaylistButton.addTarget(self, action: #selector(presentPlaylist), for: .touchUpInside)
+        
         
         trackLabelToThumbnailConstraint = trackLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12)
         trackLabelToViewConstraint = trackLabel.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor, constant: 12)
@@ -187,26 +138,16 @@ class TrackTableViewCell: SwipeTableViewCell {
             viewPlaylist.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             viewPlaylist.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -24),
             viewPlaylist.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -20),
-            eventButton.trailingAnchor.constraint(equalTo: viewPlaylist.centerXAnchor, constant: -20),
-            eventButton.centerYAnchor.constraint(equalTo: viewPlaylist.centerYAnchor),
-            eventButton.widthAnchor.constraint(equalToConstant: 100),
-            playlistButton.leadingAnchor.constraint(equalTo: viewPlaylist.centerXAnchor, constant: 20),
-            playlistButton.centerYAnchor.constraint(equalTo: viewPlaylist.centerYAnchor),
-            playlistButton.widthAnchor.constraint(equalToConstant: 100),
             thumbnail.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor),
             thumbnail.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor, constant: 12),
             thumbnail.heightAnchor.constraint(equalTo: viewContainer.heightAnchor, constant: -24),
             thumbnail.widthAnchor.constraint(equalTo: thumbnail.heightAnchor, multiplier: 1),
-            addToPlaylistButton.trailingAnchor.constraint(equalTo: viewContainer.trailingAnchor, constant: -12),
-            addToPlaylistButton.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor, constant: 0),
-            addToPlaylistButton.heightAnchor.constraint(equalToConstant: 25),
-            addToPlaylistButton.widthAnchor.constraint(equalTo: addToPlaylistButton.heightAnchor),
             trackLabelToThumbnailConstraint,
             trackLabelToViewConstraint,
-            trackLabel.trailingAnchor.constraint(equalTo:  addToPlaylistButton.leadingAnchor , constant: -12),
+            trackLabel.trailingAnchor.constraint(equalTo:  dragPlaylist.leadingAnchor , constant: -12),
             trackLabel.bottomAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: -5),
             trackPlaceholder.leadingAnchor.constraint(equalTo: trackLabel.leadingAnchor),
-            trackPlaceholder.trailingAnchor.constraint(equalTo: addToPlaylistButton.leadingAnchor , constant: -12),
+            trackPlaceholder.trailingAnchor.constraint(equalTo: dragPlaylist.leadingAnchor , constant: -12),
             trackPlaceholder.topAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: 5),
             ])
     }
@@ -223,5 +164,5 @@ class TrackTableViewCell: SwipeTableViewCell {
         }
     }
     
-
+    
 }

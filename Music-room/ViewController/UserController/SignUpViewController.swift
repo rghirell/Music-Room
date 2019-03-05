@@ -166,9 +166,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let user = Auth.auth().currentUser {
-            toUserHomeController()
-        }
+       
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().uiDelegate = self
         originY = view.frame.origin.y
@@ -311,6 +309,12 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
                 return
             }
             completion(true)
+        }
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let user = Auth.auth().currentUser {
+            toUserHomeController()
         }
     }
     

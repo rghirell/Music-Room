@@ -24,6 +24,7 @@
 		4A13463722246F3A004C4605 /* ParentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13463622246F3A004C4605 /* ParentTableViewController.swift */; };
 		4A13463A22247447004C4605 /* UserSearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13463922247447004C4605 /* UserSearchTableViewController.swift */; };
 		4A13467D2229AA29004C4605 /* TagsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13467C2229AA29004C4605 /* TagsCollectionViewCell.swift */; };
+		4A13467F222EE952004C4605 /* PlaylistTrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */; };
 		4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5A8220B67F80054A670 /* FacebookManager.swift */; };
 		4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AC220B67F80054A670 /* SparkExtensions.swift */; };
 		4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AD220B67F80054A670 /* Helpers.swift */; };
@@ -80,6 +81,7 @@
 		4A13463622246F3A004C4605 /* ParentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentTableViewController.swift; sourceTree = "<group>"; };
 		4A13463922247447004C4605 /* UserSearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSearchTableViewController.swift; sourceTree = "<group>"; };
 		4A13467C2229AA29004C4605 /* TagsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewCell.swift; sourceTree = "<group>"; };
+		4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5A8220B67F80054A670 /* FacebookManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookManager.swift; sourceTree = "<group>"; };
 		4A16E5AC220B67F80054A670 /* SparkExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkExtensions.swift; sourceTree = "<group>"; };
 		4A16E5AD220B67F80054A670 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -391,6 +393,7 @@
 			children = (
 				4AC9D5D72209A35400751FAA /* ArtistTableViewCell.swift */,
 				4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */,
+				4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */,
 				4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */,
 				4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */,
 				4A097E85221C92B400FC0239 /* ArtistCollectionViewCell.swift */,
@@ -562,6 +565,7 @@
 				"${BUILT_PRODUCTS_DIR}/JGProgressHUD/JGProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftReorder/SwiftReorder.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 				"${BUILT_PRODUCTS_DIR}/TinyConstraints/TinyConstraints.framework",
@@ -586,6 +590,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JGProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftReorder.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TinyConstraints.framework",
@@ -614,6 +619,7 @@
 				4A13467D2229AA29004C4605 /* TagsCollectionViewCell.swift in Sources */,
 				4A097E7E221C20FD00FC0239 /* DetailHeaderView.swift in Sources */,
 				4A097E84221C776700FC0239 /* StrechyHeader.swift in Sources */,
+				4A13467F222EE952004C4605 /* PlaylistTrackTableViewCell.swift in Sources */,
 				4A13462B2220526E004C4605 /* AddToPlaylistTableViewController.swift in Sources */,
 				4A16E5BA220DB6340054A670 /* MixedModel.swift in Sources */,
 				4A13462F22242A8E004C4605 /* TrackTableViewController.swift in Sources */,
