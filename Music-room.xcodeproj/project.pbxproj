@@ -25,6 +25,8 @@
 		4A13463A22247447004C4605 /* UserSearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13463922247447004C4605 /* UserSearchTableViewController.swift */; };
 		4A13467D2229AA29004C4605 /* TagsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13467C2229AA29004C4605 /* TagsCollectionViewCell.swift */; };
 		4A13467F222EE952004C4605 /* PlaylistTrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */; };
+		4A13468122312140004C4605 /* SearchTrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13468022312140004C4605 /* SearchTrackTableViewCell.swift */; };
+		4A134685223175D7004C4605 /* EventTrackTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A134684223175D7004C4605 /* EventTrackTableViewController.swift */; };
 		4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5A8220B67F80054A670 /* FacebookManager.swift */; };
 		4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AC220B67F80054A670 /* SparkExtensions.swift */; };
 		4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AD220B67F80054A670 /* Helpers.swift */; };
@@ -82,6 +84,8 @@
 		4A13463922247447004C4605 /* UserSearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSearchTableViewController.swift; sourceTree = "<group>"; };
 		4A13467C2229AA29004C4605 /* TagsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagsCollectionViewCell.swift; sourceTree = "<group>"; };
 		4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTrackTableViewCell.swift; sourceTree = "<group>"; };
+		4A13468022312140004C4605 /* SearchTrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTrackTableViewCell.swift; sourceTree = "<group>"; };
+		4A134684223175D7004C4605 /* EventTrackTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTrackTableViewController.swift; sourceTree = "<group>"; };
 		4A16E5A8220B67F80054A670 /* FacebookManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookManager.swift; sourceTree = "<group>"; };
 		4A16E5AC220B67F80054A670 /* SparkExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkExtensions.swift; sourceTree = "<group>"; };
 		4A16E5AD220B67F80054A670 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
@@ -211,6 +215,7 @@
 				4A13462622204D45004C4605 /* PlaylistTrackTableViewController.swift */,
 				4A4E767B2216DBDE0066D179 /* PlaylistTableViewController.swift */,
 				4A13462A2220526E004C4605 /* AddToPlaylistTableViewController.swift */,
+				4A134684223175D7004C4605 /* EventTrackTableViewController.swift */,
 			);
 			path = PlaylistController;
 			sourceTree = "<group>";
@@ -393,6 +398,7 @@
 			children = (
 				4AC9D5D72209A35400751FAA /* ArtistTableViewCell.swift */,
 				4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */,
+				4A13468022312140004C4605 /* SearchTrackTableViewCell.swift */,
 				4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */,
 				4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */,
 				4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */,
@@ -625,6 +631,7 @@
 				4A13462F22242A8E004C4605 /* TrackTableViewController.swift in Sources */,
 				4AC9D680220B536200751FAA /* TabBarController.swift in Sources */,
 				4A4E767C2216DBDE0066D179 /* PlaylistTableViewController.swift in Sources */,
+				4A134685223175D7004C4605 /* EventTrackTableViewController.swift in Sources */,
 				4A097E86221C92B400FC0239 /* ArtistCollectionViewCell.swift in Sources */,
 				4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */,
 				4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */,
@@ -634,6 +641,7 @@
 				4A4E7670221490180066D179 /* File.swift in Sources */,
 				4AC9D5DB2209B15300751FAA /* ArtistModel.swift in Sources */,
 				4AE5FDA321FB729800F1FEF8 /* JSONCodable.swift in Sources */,
+				4A13468122312140004C4605 /* SearchTrackTableViewCell.swift in Sources */,
 				4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */,
 				4AE5FDA521FB86B100F1FEF8 /* extensions.swift in Sources */,
 				4A0E7F4322142945007C20A5 /* AlbumDetailsTableViewController.swift in Sources */,

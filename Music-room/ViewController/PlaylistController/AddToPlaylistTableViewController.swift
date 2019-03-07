@@ -119,7 +119,11 @@ class AddToPlaylistTableViewController: UITableViewController {
         var ref: DocumentReference
         if isEventPlaylist {
             ref = Firestore.firestore().collection("event").document(playlistResult[indexPath.row].documentID)
+            let vote = Firestore.firestore().collection("vote").document(playlistResult[indexPath.row].documentID)
+            let x = String(track!["id"] as! Int)
+            vote.updateData([x: []])
         } else { ref = Firestore.firestore().collection("playlist").document(playlistResult[indexPath.row].documentID) }
+        
         ref.updateData(["titles": FieldValue.arrayUnion([track!])]) { (err) in
             if err != nil {
                 let alert = Alert.errorAlert(title: "Error", message: "Couldn't add it to the playlist")

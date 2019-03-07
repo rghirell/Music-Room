@@ -1,23 +1,16 @@
 //
-//  TrackTableViewController.swift
+//  EventTrackTableViewController.swift
 //  Music-room
 //
-//  Created by raphael ghirelli on 2/22/19.
+//  Created by raphael ghirelli on 3/7/19.
 //  Copyright © 2019 raphael ghirelli. All rights reserved.
 //
 
 import UIKit
 import Firebase
-import SwipeCellKit
 
-protocol TrackDelegate: class {
-    func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
-}
+class EventTrackTableViewController: UITableViewController, LikeDelegate {
 
-class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCellDelegate {
-    
-    
-    
     var trackArray: [[String: Any]]?
     var trackLike = [(key: String, value: [String])]()
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
@@ -38,54 +31,51 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return trackArray?.count ?? 0
     }
-
+    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
+        var index = indexPath.row
         guard let trackArray = self.trackArray else { return UITableViewCell() }
-        cell.currentTrack = trackArray[indexPath.row]
-        let artistDic = trackArray[indexPath.row]["artist"] as! NSDictionary
+        if trackLike.count <= 0 {
+            return UITableViewCell()
+        }
+        if indexPath.row >= trackLike.count {
+            index = indexPath.row
+        } else {
+            index = trackArray.firstIndex(where: { (y) -> Bool in
+                print(y["id"], Int(trackLike[indexPath.row].key))
+                return y["id"] as? Int == Int(trackLike[indexPath.row].key)
+            })!
+        }
+        
+        cell.liked = trackLike[indexPath.row].value.contains(Auth.auth().currentUser!.uid)
+        cell.likeDelegate = self
+        cell.currentTrack = trackArray[index]
+        cell.hideThumbButton(isHidden: false)
+        let artistDic = trackArray[index]["artist"] as! NSDictionary
         let artist = artistDic["name"] as? String
-        let albumDic = trackArray[indexPath.row]["album"] as! NSDictionary
+        let albumDic = trackArray[index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String
         downloadImage(urlImage: albumURL) { (image) in
             cell.thumbnail.image = nil
             cell.thumbnail.image = image
         }
         cell.delegateViewController = self
-        cell.trackLabel.text = trackArray[indexPath.row]["title"] as? String
+        cell.trackLabel.text = trackArray[index]["title"] as? String
         cell.trackPlaceholder.text = "Title • \(artist!)"
-        cell.delegate = self
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        guard orientation == .right else { return nil }
-        
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
-            self.trackArray?.remove(at: indexPath.row)
-            self.ref?.updateData(["titles" : self.trackArray!])
-        }
-        deleteAction.image = UIImage(named: "delete")
-        return [deleteAction]
-    }
-    
-    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
-        var options = SwipeOptions()
-        options.expansionStyle = .destructive
-        return options
-    }
-    
     
     fileprivate func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
         if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
@@ -106,16 +96,34 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        ref = Firestore.firestore().collection("playlist").document(playlistID!)
+        ref = Firestore.firestore().collection("event").document(playlistID!)
         ref?.addSnapshotListener({ (data, err) in
             if data?.data() == nil { return }
             let x = data!.get("titles") as! [[String: Any]]
             self.trackArray = x
         })
+        
+        refVote = Firestore.firestore().collection("vote").document(playlistID)
+        refVote?.addSnapshotListener({ (data, err) in
+            guard let data = data?.data() else  { return }
+            let x = data as! [String: [String]]
+            self.trackLike = x.sorted { $0.value.count > $1.value.count }
+            self.tableView.reloadData()
+        })
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+    }
+    
+    func updatelikes(track: [String : Any], like: Bool) {
+        let x = String(track["id"] as! Int)
+        switch like {
+        case true:
+            refVote!.updateData([x: FieldValue.arrayUnion([Auth.auth().currentUser!.uid])])
+        case false:
+            refVote!.updateData(([x: FieldValue.arrayRemove([Auth.auth().currentUser!.uid])]))
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -132,5 +140,5 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
             print(error)
         }
     }
-    
+
 }

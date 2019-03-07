@@ -247,10 +247,22 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = PlaylistTrackTableViewController()
-        vc.player = self.player
-        vc.playlistID = playlistResult[indexPath.row].documentID
-        vc.trackArray = playlistResult[indexPath.row].data()["titles"] as? [[String: Any]]
-        show(vc, sender: self)
+        
+        if playlistResult[indexPath.row].data()["pos"] != nil {
+            let vc = EventTrackTableViewController()
+            vc.player = self.player
+            vc.playlistID = playlistResult[indexPath.row].documentID
+            vc.trackArray = playlistResult[indexPath.row].data()["titles"] as? [[String: Any]]
+            show(vc, sender: self)
+        } else {
+            let vc = PlaylistTrackTableViewController()
+            vc.player = self.player
+            vc.playlistID = playlistResult[indexPath.row].documentID
+            vc.trackArray = playlistResult[indexPath.row].data()["titles"] as? [[String: Any]]
+            show(vc, sender: self)
+        }
+        
+        
+    
     }
 }

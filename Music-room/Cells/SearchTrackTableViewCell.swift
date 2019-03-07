@@ -1,36 +1,20 @@
 //
-//  TrackTableViewCell.swift
+//  SearchTrackTableViewCell.swift
 //  Music-room
 //
-//  Created by raphael ghirelli on 2/8/19.
+//  Created by raphael ghirelli on 3/7/19.
 //  Copyright © 2019 raphael ghirelli. All rights reserved.
 //
 
 import UIKit
-import SwipeCellKit
 
-protocol LikeDelegate: class {
-    func updatelikes(track: [String: Any], like: Bool)
-}
+class SearchTrackTableViewCell: UITableViewCell {
 
-class TrackTableViewCell: SwipeTableViewCell {
-    
     var urlString: String?
     
     private var showsPlaylist = false
-    var liked = false {
-        didSet {
-            likeSongHandler()
-        }
-    }
-    
     var trackLabelToThumbnailConstraint: NSLayoutConstraint!
     var trackLabelToViewConstraint: NSLayoutConstraint!
-    
-    var trackLabelToThumbConstraint: NSLayoutConstraint!
-    var trackLabelToPlaylistButton: NSLayoutConstraint!
-    var likeDelegate: LikeDelegate!
-    
     var delegateViewController: UIViewController?
     var currentTrack: [String: Any]?
     let trackLabel: UILabel = {
@@ -70,15 +54,6 @@ class TrackTableViewCell: SwipeTableViewCell {
         return button
     }()
     
-    let thumbButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageView?.contentMode = .scaleAspectFit
-        
-        button.setImage(#imageLiteral(resourceName: "outline_thumb_up_black"), for: .normal)
-        return button
-    }()
-    
     let viewContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -93,7 +68,7 @@ class TrackTableViewCell: SwipeTableViewCell {
         return view
     }()
     
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
@@ -154,22 +129,12 @@ class TrackTableViewCell: SwipeTableViewCell {
     func setupLayout() {
         selectionStyle = .none
         addSubview(viewContainer)
+        
         viewContainer.addSubview(addToPlaylistButton)
         viewContainer.addSubview(trackLabel)
         viewContainer.addSubview(trackPlaceholder)
         viewContainer.addSubview(thumbnail)
-        viewContainer.addSubview(thumbButton)
-        thumbButton.isHidden = true
-        thumbButton.addTarget(self, action: #selector(thumbButtonAction), for: .touchDown)
         addToPlaylistButton.addTarget(self, action: #selector(presentPlaylist), for: .touchUpInside)
-        
-        trackLabelToThumbConstraint = trackLabel.trailingAnchor.constraint(equalTo: thumbButton.leadingAnchor, constant: -12)
-        trackLabelToPlaylistButton = trackLabel.trailingAnchor.constraint(equalTo: addToPlaylistButton.leadingAnchor, constant: -12)
-        trackLabelToThumbConstraint.priority = UILayoutPriority.defaultLow
-        trackLabelToPlaylistButton.priority = UILayoutPriority.defaultHigh
-        
-        print(trackLabelToPlaylistButton.priority)
-        print(trackLabelToThumbConstraint.priority)
         
         trackLabelToThumbnailConstraint = trackLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12)
         trackLabelToViewConstraint = trackLabel.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor, constant: 12)
@@ -189,21 +154,12 @@ class TrackTableViewCell: SwipeTableViewCell {
             addToPlaylistButton.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor, constant: 0),
             addToPlaylistButton.heightAnchor.constraint(equalToConstant: 25),
             addToPlaylistButton.widthAnchor.constraint(equalTo: addToPlaylistButton.heightAnchor),
-            
-            thumbButton.trailingAnchor.constraint(equalTo: addToPlaylistButton.leadingAnchor, constant: -12),
-            thumbButton.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor, constant: 0),
-            thumbButton.heightAnchor.constraint(equalToConstant: 25),
-            thumbButton.widthAnchor.constraint(equalTo: thumbButton.heightAnchor),
-            
             trackLabelToThumbnailConstraint,
             trackLabelToViewConstraint,
-            trackLabelToPlaylistButton,
-            trackLabelToThumbConstraint,
-            
-
+            trackLabel.trailingAnchor.constraint(equalTo:  addToPlaylistButton.leadingAnchor , constant: -12),
             trackLabel.bottomAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: -5),
             trackPlaceholder.leadingAnchor.constraint(equalTo: trackLabel.leadingAnchor),
-            trackPlaceholder.trailingAnchor.constraint(equalTo: trackLabel.trailingAnchor),
+            trackPlaceholder.trailingAnchor.constraint(equalTo: addToPlaylistButton.leadingAnchor , constant: -12),
             trackPlaceholder.topAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: 5),
             ])
     }
@@ -219,33 +175,5 @@ class TrackTableViewCell: SwipeTableViewCell {
             thumbnail.isHidden = false
         }
     }
-    
-    func hideThumbButton(isHidden: Bool = false) {
-        if (isHidden) {
-            trackLabelToThumbConstraint.priority = UILayoutPriority.defaultLow
-            trackLabelToPlaylistButton.priority = UILayoutPriority.defaultHigh
-            thumbButton.isHidden = true
-        } else {
-            trackLabelToThumbConstraint.priority = UILayoutPriority.defaultHigh
-            trackLabelToPlaylistButton.priority = UILayoutPriority.defaultLow
-            print(trackLabelToPlaylistButton.priority)
-            print(trackLabelToThumbConstraint.priority)
-            thumbButton.isHidden = false
-        }
-    }
-    
-    @objc private func thumbButtonAction() {
-        liked = !liked
-        likeDelegate.updatelikes(track: currentTrack!, like: liked)
-    }
-    
-    private func likeSongHandler() {
-        if liked {
-            thumbButton.setImage(#imageLiteral(resourceName: "baseline_thumb_up"), for: .normal)
-        } else {
-            thumbButton.setImage(#imageLiteral(resourceName: "outline_thumb_up_black"), for: .normal)
-        }
-    }
-    
 
 }
