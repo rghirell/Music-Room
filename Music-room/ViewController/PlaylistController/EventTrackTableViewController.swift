@@ -120,7 +120,6 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
         })
     }
     
-    
     @objc private func displayPlaylistControls() {
         let vc = PlaylistPreferenceViewController(nibName: "PlaylistPreferenceViewController", bundle: Bundle.main)
         tableView.isScrollEnabled = false
@@ -130,7 +129,6 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
         vc.view.frame = self.view.frame
         self.view.addSubview(vc.view)
         vc.didMove(toParent: self)
-//        present(vc, animated: true, completion: nil)
     }
     
     deinit {

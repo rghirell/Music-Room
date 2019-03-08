@@ -31,7 +31,10 @@ class PlaylistPreferenceViewController: UIViewController {
         vc.view.frame = CGRect(x: 0, y: 0, width: vi.frame.width, height: vi.frame.height)
         self.view.viewWithTag(1)!.addSubview(vc.view)
         vc.didMove(toParent: self)
-//        show(vc, sender: self)
+    }
+    
+    @IBAction func close(_ sender: UIButton) {
+        view.removeFromSuperview()
     }
     
     func showAnimate() {
@@ -43,14 +46,4 @@ class PlaylistPreferenceViewController: UIViewController {
         })
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
