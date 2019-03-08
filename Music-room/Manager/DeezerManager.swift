@@ -267,4 +267,29 @@ class DeezerManager1 {
         task.resume()
     }
     
+    
+    static func search(id: String, completion: @escaping ([String: Any]? , Error?) -> ()) {
+        let url = URL(string: "https://api.deezer.com/track/\(id)")
+        var request = URLRequest(url: url!)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "GET"
+        
+        let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
+            if err != nil {
+                completion(nil, err)
+                return
+            }
+            if data != nil {
+                do {
+                    let result = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! [String: Any]
+                    completion(result, nil)
+                } catch let error as NSError {
+                    print(error)
+                }
+            }
+        }
+        task.resume()
+    }
+
+    
 }

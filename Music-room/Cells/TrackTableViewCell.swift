@@ -13,6 +13,11 @@ protocol LikeDelegate: class {
     func updatelikes(track: [String: Any], like: Bool)
 }
 
+protocol TrackRequestDelegate: class {
+    func getTrack(id: Int, completion: @escaping ([String: Any]?, Error?) -> ())
+}
+
+
 class TrackTableViewCell: SwipeTableViewCell {
     
     var urlString: String?
@@ -26,10 +31,15 @@ class TrackTableViewCell: SwipeTableViewCell {
     
     var trackLabelToThumbnailConstraint: NSLayoutConstraint!
     var trackLabelToViewConstraint: NSLayoutConstraint!
+    var trackPlaceholderToThumbnailConstraint: NSLayoutConstraint!
+    var trackPlaceholderToViewConstraint: NSLayoutConstraint!
     
     var trackLabelToThumbConstraint: NSLayoutConstraint!
     var trackLabelToPlaylistButton: NSLayoutConstraint!
     var likeDelegate: LikeDelegate!
+    
+    var trackRequestDelegate: TrackRequestDelegate!
+    var id = 0
     
     var delegateViewController: UIViewController?
     var currentTrack: [String: Any]?
@@ -125,19 +135,38 @@ class TrackTableViewCell: SwipeTableViewCell {
         let alert = UIAlertController(title: "Add to Playlist", message: "Choose which kind of playlist you want to add your song to", preferredStyle: .actionSheet)
         let eventAction = UIAlertAction(title: "Add to event playlist", style: .default) { (action) in
             vc.isRegularPlaylist = false
-            vc.track = self.currentTrack
-            self.delegateViewController?.present(nc, animated: true, completion: nil)
+            self.toPlaylist(nc: nc, vc: vc)
         }
         let playlistAction = UIAlertAction(title: "Add to my playlist", style: .default) { (action) in
             vc.isEventPlaylist = false
-            vc.track = self.currentTrack
-            self.delegateViewController?.present(nc, animated: true, completion: nil)
+            self.toPlaylist(nc: nc, vc: vc)
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addAction(cancel)
         alert.addAction(eventAction)
         alert.addAction(playlistAction)
         delegateViewController?.present(alert, animated: true, completion: nil)
+    }
+    
+    func toPlaylist(nc: UINavigationController, vc: AddToPlaylistTableViewController) {
+        if currentTrack != nil {
+            vc.track = currentTrack
+            DispatchQueue.main.async {
+                self.delegateViewController?.present(nc, animated: true, completion: nil)
+            }
+        }
+        else {
+            self.trackRequestDelegate.getTrack(id: self.id, completion: { (track, err) in
+                if err != nil {
+                    print(err)
+                    return
+                }
+                vc.track = track
+                DispatchQueue.main.async {
+                    self.delegateViewController?.present(nc, animated: true, completion: nil)
+                }
+            })
+        }
     }
     
     @objc private func toPlaylist(sender: UIButton) {
@@ -148,7 +177,6 @@ class TrackTableViewCell: SwipeTableViewCell {
         } else { vc.isEventPlaylist = false }
         vc.track = self.currentTrack
         self.delegateViewController?.present(nc, animated: true, completion: nil)
-        
     }
     
     func setupLayout() {
@@ -168,14 +196,19 @@ class TrackTableViewCell: SwipeTableViewCell {
         trackLabelToThumbConstraint.priority = UILayoutPriority.defaultLow
         trackLabelToPlaylistButton.priority = UILayoutPriority.defaultHigh
         
-        print(trackLabelToPlaylistButton.priority)
-        print(trackLabelToThumbConstraint.priority)
-        
         trackLabelToThumbnailConstraint = trackLabel.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12)
         trackLabelToViewConstraint = trackLabel.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor, constant: 12)
         trackLabelToThumbnailConstraint.priority = UILayoutPriority.defaultHigh
         trackLabelToViewConstraint.priority = UILayoutPriority.defaultLow
         
+        trackPlaceholderToThumbnailConstraint = trackPlaceholder.leadingAnchor.constraint(equalTo: thumbnail.trailingAnchor, constant: 12)
+        trackPlaceholderToViewConstraint = trackPlaceholder.leadingAnchor.constraint(equalTo: viewContainer.leadingAnchor, constant: 12)
+        trackPlaceholderToThumbnailConstraint.priority = UILayoutPriority.defaultHigh
+        trackPlaceholderToViewConstraint.priority = UILayoutPriority.defaultLow
+        
+        let trackLabelWidth = trackLabel.widthAnchor.constraint(equalToConstant: 50)
+        trackLabelWidth.priority = UILayoutPriority(rawValue: 251)
+
         NSLayoutConstraint.activate([
             viewContainer.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             viewContainer.centerXAnchor.constraint(equalTo: self.centerXAnchor),
@@ -189,21 +222,21 @@ class TrackTableViewCell: SwipeTableViewCell {
             addToPlaylistButton.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor, constant: 0),
             addToPlaylistButton.heightAnchor.constraint(equalToConstant: 25),
             addToPlaylistButton.widthAnchor.constraint(equalTo: addToPlaylistButton.heightAnchor),
-            
+
             thumbButton.trailingAnchor.constraint(equalTo: addToPlaylistButton.leadingAnchor, constant: -12),
             thumbButton.centerYAnchor.constraint(equalTo: viewContainer.centerYAnchor, constant: 0),
             thumbButton.heightAnchor.constraint(equalToConstant: 25),
             thumbButton.widthAnchor.constraint(equalTo: thumbButton.heightAnchor),
-            
+
             trackLabelToThumbnailConstraint,
             trackLabelToViewConstraint,
             trackLabelToPlaylistButton,
             trackLabelToThumbConstraint,
-            
-
+            trackLabelWidth,
             trackLabel.bottomAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: -5),
-            trackPlaceholder.leadingAnchor.constraint(equalTo: trackLabel.leadingAnchor),
-            trackPlaceholder.trailingAnchor.constraint(equalTo: trackLabel.trailingAnchor),
+            trackPlaceholderToViewConstraint,
+            trackPlaceholderToThumbnailConstraint,
+            trackPlaceholder.widthAnchor.constraint(equalToConstant: 90),
             trackPlaceholder.topAnchor.constraint(equalTo: thumbnail.centerYAnchor, constant: 5),
             ])
     }
@@ -212,8 +245,12 @@ class TrackTableViewCell: SwipeTableViewCell {
         if (isHidden) {
             trackLabelToThumbnailConstraint.priority = UILayoutPriority.defaultLow
             trackLabelToViewConstraint.priority = UILayoutPriority.defaultHigh
+            trackPlaceholderToThumbnailConstraint.priority = UILayoutPriority.defaultLow
+            trackPlaceholderToViewConstraint.priority = UILayoutPriority.defaultHigh
             thumbnail.isHidden = true
         } else {
+            trackPlaceholderToThumbnailConstraint.priority = UILayoutPriority.defaultHigh
+            trackPlaceholderToViewConstraint.priority = UILayoutPriority.defaultLow
             trackLabelToThumbnailConstraint.priority = UILayoutPriority.defaultHigh
             trackLabelToViewConstraint.priority = UILayoutPriority.defaultLow
             thumbnail.isHidden = false
@@ -228,8 +265,6 @@ class TrackTableViewCell: SwipeTableViewCell {
         } else {
             trackLabelToThumbConstraint.priority = UILayoutPriority.defaultHigh
             trackLabelToPlaylistButton.priority = UILayoutPriority.defaultLow
-            print(trackLabelToPlaylistButton.priority)
-            print(trackLabelToThumbConstraint.priority)
             thumbButton.isHidden = false
         }
     }
@@ -246,6 +281,4 @@ class TrackTableViewCell: SwipeTableViewCell {
             thumbButton.setImage(#imageLiteral(resourceName: "outline_thumb_up_black"), for: .normal)
         }
     }
-    
-
 }

@@ -45,6 +45,7 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
+       
         var index = indexPath.row
         guard let trackArray = self.trackArray else { return UITableViewCell() }
         if trackLike.count <= 0 {
@@ -54,7 +55,6 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
             index = indexPath.row
         } else {
             index = trackArray.firstIndex(where: { (y) -> Bool in
-                print(y["id"], Int(trackLike[indexPath.row].key))
                 return y["id"] as? Int == Int(trackLike[indexPath.row].key)
             })!
         }
@@ -74,6 +74,9 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
         cell.delegateViewController = self
         cell.trackLabel.text = trackArray[index]["title"] as? String
         cell.trackPlaceholder.text = "Title • \(artist!)"
+        if cell.hasAmbiguousLayout {
+            print(cell.trackLabel.text)
+        }
         return cell
     }
     
@@ -105,7 +108,9 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
         
         refVote = Firestore.firestore().collection("vote").document(playlistID)
         refVote?.addSnapshotListener({ (data, err) in
+        
             guard let data = data?.data() else  { return }
+            
             let x = data as! [String: [String]]
             self.trackLike = x.sorted { $0.value.count > $1.value.count }
             self.tableView.reloadData()

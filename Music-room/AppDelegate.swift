@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         let db = Firestore.firestore()
         let settings = db.settings
+        db.settings.isPersistenceEnabled = false
         settings.areTimestampsInSnapshotsEnabled = true
         db.settings = settings
         UIApplication.shared.beginReceivingRemoteControlEvents()

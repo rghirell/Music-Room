@@ -16,8 +16,6 @@ protocol TrackDelegate: class {
 
 class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCellDelegate {
     
-    
-    
     var trackArray: [[String: Any]]?
     var trackLike = [(key: String, value: [String])]()
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
