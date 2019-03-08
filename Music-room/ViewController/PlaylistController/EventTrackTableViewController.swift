@@ -102,6 +102,7 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
         ref = Firestore.firestore().collection("event").document(playlistID!)
        refListener =  ref?.addSnapshotListener({ (data, err) in
             if data?.data() == nil { return }
@@ -111,13 +112,25 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
 
         refVote = Firestore.firestore().collection("vote").document(playlistID)
         refVoteListener = refVote?.addSnapshotListener({ (data, err) in
-        
             guard let data = data?.data() else  { return }
             
             let x = data as! [String: [String]]
             self.trackLike = x.sorted { $0.value.count > $1.value.count }
             self.tableView.reloadData()
         })
+    }
+    
+    
+    @objc private func displayPlaylistControls() {
+        let vc = PlaylistPreferenceViewController(nibName: "PlaylistPreferenceViewController", bundle: Bundle.main)
+        tableView.isScrollEnabled = false
+        self.addChild(vc)
+        vc.playlistUID = playlistID
+        vc.type = "event"
+        vc.view.frame = self.view.frame
+        self.view.addSubview(vc.view)
+        vc.didMove(toParent: self)
+//        present(vc, animated: true, completion: nil)
     }
     
     deinit {

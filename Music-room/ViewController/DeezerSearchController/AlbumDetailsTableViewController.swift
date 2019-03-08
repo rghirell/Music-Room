@@ -130,7 +130,6 @@ final class ParallaxHeaderView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         addSubview(imageView)
         addSubview(label)
         NSLayoutConstraint.activate([
