@@ -57,4 +57,11 @@ class UserSearchTableViewController: UITableViewController {
         cell.textLabel?.text = result![indexPath.row].get("displayName") as? String
         return cell
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = UserResultViewController()
+        vc.uid = result![indexPath.row].documentID
+        show(vc, sender: self)
+    }
+    
 }

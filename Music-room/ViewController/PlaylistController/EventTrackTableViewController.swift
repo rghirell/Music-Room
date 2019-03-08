@@ -16,7 +16,10 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     var player: PlayerViewController!
     var ref: DocumentReference? = nil
+    var refListener: ListenerRegistration? = nil
+    
     var refVote: DocumentReference? = nil
+    var refVoteListener: ListenerRegistration? = nil
     var playlistID: String!
     
     override func viewDidLoad() {
@@ -100,14 +103,15 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         ref = Firestore.firestore().collection("event").document(playlistID!)
-        ref?.addSnapshotListener({ (data, err) in
+       refListener =  ref?.addSnapshotListener({ (data, err) in
             if data?.data() == nil { return }
             let x = data!.get("titles") as! [[String: Any]]
             self.trackArray = x
         })
+
         
         refVote = Firestore.firestore().collection("vote").document(playlistID)
-        refVote?.addSnapshotListener({ (data, err) in
+        refVoteListener = refVote?.addSnapshotListener({ (data, err) in
         
             guard let data = data?.data() else  { return }
             
@@ -115,6 +119,11 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
             self.trackLike = x.sorted { $0.value.count > $1.value.count }
             self.tableView.reloadData()
         })
+    }
+    
+    deinit {
+        refListener?.remove()
+        refVoteListener?.remove()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
