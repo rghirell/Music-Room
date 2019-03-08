@@ -109,7 +109,6 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
             self.trackArray = x
         })
 
-        
         refVote = Firestore.firestore().collection("vote").document(playlistID)
         refVoteListener = refVote?.addSnapshotListener({ (data, err) in
         

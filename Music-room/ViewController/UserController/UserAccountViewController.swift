@@ -15,13 +15,15 @@ import GoogleSignIn
 
 
 class UserAccountViewController: UIViewController , CLLocationManagerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, GIDSignInDelegate {
-  
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return buttons.count
-    }
-    
+ 
     let titles = ["Jazz", "Electro", "Rap", "Pop", "Hip-hop", "Rock", "Chill", "Ambiance", "Latino", "Affro", "RnB", "Classique"]
     var buttons = [UIButton]()
+    var preferences = [String]() {
+        didSet {
+            self.collectionView.reloadData()
+        }
+    }
+    var preferencesListener: ListenerRegistration!
     var isLinkedToGoogle = false {
         didSet {
             DispatchQueue.main.async {
@@ -42,30 +44,6 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         }
     }
     
-    func createButton(withTitle title: String) -> UIButton {
-        let button = UIButton()
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.bold)
-        button.layer.borderWidth = 0.5
-        button.layer.cornerRadius = 15
-        button.layer.borderColor = UIColor.lightGray.cgColor
-        button.contentEdgeInsets = UIEdgeInsets(top: 5,left: 5,bottom: 5,right: 5)
-        button.addTarget(self, action: #selector(change), for: .touchUpInside)
-        button.sizeToFit()
-        return button
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "test", for: indexPath) as! TagsCollectionViewCell
-        cell.button.setTitle(titles[indexPath.row], for: .normal)
-        cell.backgroundColor = .red
-        return cell
-    }
-    
-    @objc func change(sender: UIButton) {
-    }
-    
-
     var locManager = CLLocationManager()
     var currentLocation: CLLocation!
     var collectionView: UICollectionView!
@@ -119,8 +97,6 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         return button
     }()
     
-
-    
     let collectionContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -149,7 +125,36 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         }
     }
     
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let ref =  Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
+        preferencesListener = ref.addSnapshotListener { (doc, err) in
+            guard let doc = doc else { return }
+            guard let data = doc.data() else { return }
+            guard let preferences =  data["pref_music"] else { return }
+            DispatchQueue.main.async {
+                self.preferences = preferences as! [String]
+            }
+        }
+    }
+    
+    deinit {
+        preferencesListener.remove()
+    }
+    
+    func createButton(withTitle title: String) -> UIButton {
+        let button = UIButton()
+        button.setTitle(title, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.bold)
+        button.layer.borderWidth = 0.5
+        button.layer.cornerRadius = 15
+        button.layer.borderColor = UIColor.lightGray.cgColor
+        button.contentEdgeInsets = UIEdgeInsets(top: 5,left: 5,bottom: 5,right: 5)
+        button.isUserInteractionEnabled = false
+        button.sizeToFit()
+        return button
+    }
+    
     //MARK: -
     //MARK: Layout setup
     fileprivate func setupLayout() {
@@ -209,13 +214,46 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+    //MARK: -
+    //MARK: CollectionView Logic
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: buttons[indexPath.row].frame.width + 25 , height: buttons[indexPath.row].frame.height)
     }
-
     
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return buttons.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "test", for: indexPath) as! TagsCollectionViewCell
+        cell.button.setTitle(titles[indexPath.row], for: .normal)
+        if (preferences.contains(titles[indexPath.row])) {
+            cell.label.text = "✓"
+        } else { cell.label.text = "+" }
+        
+        cell.backgroundColor = .red
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        addOrRemoveTag(tag: titles[indexPath.row])
+    }
+    
+    func addOrRemoveTag(tag: String) {
+        let ref = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
+        let add = preferences.contains(tag)
+        if !add {
+            ref.updateData(["pref_music": FieldValue.arrayUnion([tag])])
+        } else {
+            ref.updateData(["pref_music": FieldValue.arrayRemove([tag])])
+        }
+    }
+}
+
+
+extension UserAccountViewController {
+    //MARK: -
+    //MARK: Link Management
     @objc private func facebookLinkAction() {
         if isLinkedToFacebook {
             FacebookManager.unlinkFacebookAccount()
@@ -240,9 +278,9 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
             }
         }
     }
-
+    
     @objc func googleLinkAction() {
-//                DeezerManager.sharedInstance.login()
+        //                DeezerManager.sharedInstance.login()
         GIDSignIn.sharedInstance().delegate = self
         if isLinkedToGoogle {
             unlinkGoogleAccount()
@@ -350,4 +388,5 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
             self.isLinkedToGoogle = false
         })
     }
+
 }

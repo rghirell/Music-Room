@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class TagsCollectionViewCell: UICollectionViewCell {
     
     
@@ -18,13 +19,14 @@ class TagsCollectionViewCell: UICollectionViewCell {
         button.tintColor = .white
         button.layer.borderColor = UIColor.lightGray.cgColor
         button.contentEdgeInsets = UIEdgeInsets(top: 5,left: 5,bottom: 5,right: 5)
+        button.isUserInteractionEnabled = false
         return button
     }()
     
     let label: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20.0, weight: UIFont.Weight.bold)
-        label.text = "✓"
+        label.text = "+"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -45,8 +47,9 @@ class TagsCollectionViewCell: UICollectionViewCell {
             button.leadingAnchor.constraint(equalTo: label.trailingAnchor),
             button.centerYAnchor.constraint(equalTo: centerYAnchor),
             ])
-//        layer.masksToBounds = true
     }
+    
+
         
     required init?(coder aDecoder: NSCoder) {
         fatalError("NOT GOOD")
