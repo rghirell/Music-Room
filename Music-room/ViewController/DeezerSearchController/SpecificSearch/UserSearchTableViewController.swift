@@ -24,6 +24,9 @@ class UserSearchTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        if search == Auth.auth().currentUser?.displayName {
+            return
+        }
         let ref = Firestore.firestore().collection("users")
         ref.whereField("displayName", isEqualTo: search).getDocuments { (query, err) in
             self.result = query?.documents
@@ -59,8 +62,10 @@ class UserSearchTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = UserResultViewController()
+        let vc = UserResultViewController(nibName: "FriendView", bundle: Bundle.main)
         vc.uid = result![indexPath.row].documentID
+        vc.userInfo = result![indexPath.row]
+        vc.name = result![indexPath.row].get("displayName") as? String
         show(vc, sender: self)
     }
     

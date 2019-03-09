@@ -13,43 +13,34 @@ class UserResultViewController: UIViewController {
     
     var uid: String!
     var ref: DocumentReference!
+    var name: String!
+    var userInfo: QueryDocumentSnapshot!
     var friendsArray = [String]() {
         didSet {
             checkFriendRelationship()
         }
     }
 
+    @IBOutlet weak var addFriendButton: UIButton!
+    @IBOutlet weak var displayName: UILabel!
+    @IBOutlet weak var showFriendButton: UIButton!
     var isFriend = false {
         didSet {
             updateButtonTitle()
         }
     }
-    let addFriendButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Follow", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        return button
-    }()
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        setupButton()
+        if let name = name {
+            displayName.text = name
+        } else { displayName.text = "Error" }
+        addFriendButton.addTarget(self, action: #selector(addOrRemoveFriend), for: .touchUpInside)
         // Do any additional setup after loading the view.
     }
     
-    private func setupButton() {
-        view.addSubview(addFriendButton)
-        addFriendButton.addTarget(self, action: #selector(addOrRemoveFriend), for: .touchUpInside)
-        
-        NSLayoutConstraint.activate([
-            addFriendButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addFriendButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            addFriendButton.widthAnchor.constraint(equalToConstant: 200),
-            addFriendButton.heightAnchor.constraint(equalToConstant: 100),
-            ])
-    }
+
     
     override func viewWillAppear(_ animated: Bool) {
         ref = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
@@ -61,6 +52,26 @@ class UserResultViewController: UIViewController {
         }
     }
 
+    @IBAction func showFriend(_ sender: UIButton) {
+        let vc = FriendListTableViewController()
+        vc.userUID = uid
+        show(vc, sender: self)
+    }
+    
+    @IBAction func showPublicEvent(_ sender: UIButton) {
+        let vc = FriendPlaylistTableViewController()
+        vc.type = "event"
+        vc.uid = self.uid
+        show(vc, sender: self)
+    }
+    
+    @IBAction func showPublicPlaylist(_ sender: UIButton) {
+        let vc = FriendPlaylistTableViewController()
+        vc.type = "playlist"
+        vc.uid = self.uid
+        show(vc, sender: self)
+    }
+    
     
     private func checkFriendRelationship() {
         isFriend = friendsArray.contains(where: { $0 == uid } )

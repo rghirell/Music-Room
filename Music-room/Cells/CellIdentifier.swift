@@ -14,4 +14,5 @@ struct CellIdentifier {
     static let trackCell = "trackCell"
     static let albumCell = "albumCell"
     static let playlistCell = "playlistCell"
+    static let friendCell = "friendCell"
 }
