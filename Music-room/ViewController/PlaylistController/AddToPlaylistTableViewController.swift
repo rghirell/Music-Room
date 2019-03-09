@@ -104,6 +104,8 @@ class AddToPlaylistTableViewController: UITableViewController {
     }
     
     fileprivate func getEventPlaylist() {
+        
+    
         let ref = Firestore.firestore().collection("event")
         ref.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).getDocuments(completion: { (query, err) in
             if err != nil {

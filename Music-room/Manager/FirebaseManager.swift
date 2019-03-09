@@ -10,8 +10,6 @@ import Foundation
 import Firebase
 import FirebaseStorage
 
- let token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNiYmQyOGVkYzNkMTBiOTI5ZjU3NWEyY2E2ODU0OWZjYTZkODg5OTMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vbXVzaWMtcm9vbS00MiIsIm5hbWUiOiJyZ2hpcmVsbCIsImF1ZCI6Im11c2ljLXJvb20tNDIiLCJhdXRoX3RpbWUiOjE1NTA4NTM0NjcsInVzZXJfaWQiOiJBREtvMHZNcGEyTWxudE9nNlBHd1Y2Nm1rMU8yIiwic3ViIjoiQURLbzB2TXBhMk1sbnRPZzZQR3dWNjZtazFPMiIsImlhdCI6MTU1MDg1MzQ2OCwiZXhwIjoxNTUwODU3MDY4LCJlbWFpbCI6InJnaGlyZWxsQHN0dWRlbnQuNDIuZnIiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJyZ2hpcmVsbEBzdHVkZW50LjQyLmZyIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.SUaLXCB9i4sG2cXNxAWLzWTr0P9Cp9bXbgcKaTyhqXhSBaQmjqfVGUnPirXbhq8PY8QSV78tqi6u8kDivESsWREI5D1M_Wxl0X-IT4ZliBnh-sGbvK-XTJ0M2S7nkJm0gZ5E1FTkK1FISh6JQ_-fFX_WLaSo_qfvYuT-vaTyKSVpqli_4ua_zwPiW1esd37pshFlsW6_tx5ribjuGoBMeI43loK0VWPbxCfjfAZgvzAgZiU_8ASuF9LFt8HTonwq-RGXnSySzq1f3xh_PrDbbBotWbIIg8eY0sLoCrcGZ_gLG80ofeup8EQvgtlwyBVW756IFNf5lpK-lRpXSmkTLQ"
-
 struct FirebaseManager {
     
     struct PlaylistUrl {
@@ -34,47 +32,57 @@ struct FirebaseManager {
 //    }()
     
     
-    fileprivate static func requestCompletion<T: Decodable>(data: Data?, response: URLResponse?, err: Error?) -> [T]? {
+    fileprivate static func requestCompletion(data: Data?, response: URLResponse?, err: Error?) -> [String: Any]? {
         if err != nil {
             print(err!.localizedDescription)
             return nil
         }
         if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
             print("\(httpResponse.statusCode)")
-            let result = jsonHelper.convertJSONToObject(data: data)
-            if let _ = result {
-                print(result!["message"])
-            }
-//            return nil
+            return nil
         }
         do {
-            let result = try JSONDecoder().decode([T].self, from: data!)
+            let result = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as! [String: Any]
             return result
         } catch {
             print(error)
             return nil
         }
     }
-    
-    @discardableResult
-    static func getRequestWithToken<T: Decodable>(url: String, queryItem: [URLQueryItem]?, result: @escaping ([T]?) -> Void) -> [T]?  {
+
+    static func getRequestWithToken(url: String, queryItem: [URLQueryItem]?, result: @escaping ([String: Any]?) -> ()) {
         var urlComponents = URLComponents(string: url)
         urlComponents?.queryItems = queryItem
         let url = urlComponents?.url!
         guard let urlRequest = url else {
             print("wrong url")
-            return nil
+            return
         }
         var request = URLRequest(url: urlRequest)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "GET"
-        let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
-            let res: [T]? = self.requestCompletion(data: data, response: response, err: err)
-            result(res)
+        getToken { (token) in
+            guard let token = token else { return }
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpMethod = "GET"
+            let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
+                let res = self.requestCompletion(data: data, response: response, err: err)
+                result(res)
+            }
+            task.resume()
         }
-        task.resume()
-        return nil
+        return
+    }
+    
+    static func getToken(completion: @escaping (String?) -> ()) {
+        guard let user = Auth.auth().currentUser else {  completion(nil);  return }
+        user.getIDToken { (token, err) in
+            if err != nil {
+                print(err!)
+                completion(nil)
+                return
+            }
+            completion(token)
+        }
     }
     
     
@@ -86,24 +94,29 @@ struct FirebaseManager {
             print("wrong url")
             return
         }
+        
         var request = URLRequest(url: urlRequest)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = "POST"
-        request.httpBody = data
-        let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
-            if err != nil {
-                print(err!)
-                return
+        getToken { (token) in
+            guard let token = token else { return }
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpMethod = "POST"
+            request.httpBody = data
+            let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
+                if err != nil {
+                    print(err!)
+                    return
+                }
+                guard let httpResponse = response as? HTTPURLResponse else { return }
+                let x = jsonHelper.convertJSONToObject(data: data)
+                if let _ = x {
+                    print(x!["message"])
+                }
+                result(httpResponse.statusCode)
             }
-            guard let httpResponse = response as? HTTPURLResponse else { return }
-            let x = jsonHelper.convertJSONToObject(data: data)
-            if let _ = x {
-                print(x!["message"])
-            }
-            result(httpResponse.statusCode)
+            task.resume()
         }
-        task.resume()
+    
     }
 
     
@@ -150,6 +163,8 @@ struct FirebaseManager {
             }
         })
     }
+    
+    
 }
 
 extension FirebaseManager {

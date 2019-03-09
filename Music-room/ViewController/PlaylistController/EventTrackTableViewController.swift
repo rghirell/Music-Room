@@ -8,8 +8,11 @@
 
 import UIKit
 import Firebase
+import MapKit
 
-class EventTrackTableViewController: UITableViewController, LikeDelegate {
+class EventTrackTableViewController: UITableViewController, LikeDelegate, PreferenceDelegate {
+
+    
 
     var trackArray: [[String: Any]]?
     var trackLike = [(key: String, value: [String])]()
@@ -17,6 +20,7 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     var player: PlayerViewController!
     var ref: DocumentReference? = nil
     var refListener: ListenerRegistration? = nil
+    var isInRadius = false
     
     var refVote: DocumentReference? = nil
     var refVoteListener: ListenerRegistration? = nil
@@ -36,7 +40,6 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     }
     
     // MARK: - Table view data source
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -45,10 +48,11 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
         return trackArray?.count ?? 0
     }
     
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
-       
+        if !isInRadius {
+            cell.isUserInteractionEnabled = false
+        }
         var index = indexPath.row
         guard let trackArray = self.trackArray else { return UITableViewCell() }
         if trackLike.count <= 0 {
@@ -61,7 +65,6 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
                 return y["id"] as? Int == Int(trackLike[indexPath.row].key)
             })!
         }
-        
         cell.liked = trackLike[indexPath.row].value.contains(Auth.auth().currentUser!.uid)
         cell.likeDelegate = self
         cell.currentTrack = trackArray[index]
@@ -77,9 +80,6 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
         cell.delegateViewController = self
         cell.trackLabel.text = trackArray[index]["title"] as? String
         cell.trackPlaceholder.text = "Title • \(artist!)"
-        if cell.hasAmbiguousLayout {
-            print(cell.trackLabel.text)
-        }
         return cell
     }
     
@@ -101,15 +101,15 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
+        super.viewWillAppear(animated)
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
         ref = Firestore.firestore().collection("event").document(playlistID!)
-       refListener =  ref?.addSnapshotListener({ (data, err) in
+        refListener =  ref?.addSnapshotListener({ (data, err) in
             if data?.data() == nil { return }
             let x = data!.get("titles") as! [[String: Any]]
             self.trackArray = x
         })
-
+        
         refVote = Firestore.firestore().collection("vote").document(playlistID)
         refVoteListener = refVote?.addSnapshotListener({ (data, err) in
             guard let data = data?.data() else  { return }
@@ -122,13 +122,21 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
     
     @objc private func displayPlaylistControls() {
         let vc = PlaylistPreferenceViewController(nibName: "PlaylistPreferenceViewController", bundle: Bundle.main)
-        tableView.isScrollEnabled = false
+        vc.delegate = self
         self.addChild(vc)
         vc.playlistUID = playlistID
         vc.type = "event"
         vc.view.frame = self.view.frame
         self.view.addSubview(vc.view)
         vc.didMove(toParent: self)
+    }
+    
+    func changeTableViewInteraction() {
+        tableView.isScrollEnabled = !tableView.isScrollEnabled
+    }
+    
+    func dismissController() {
+        navigationController!.popViewController(animated: true)
     }
     
     deinit {
@@ -147,6 +155,14 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate {
             refVote!.updateData([x: FieldValue.arrayUnion([Auth.auth().currentUser!.uid])])
         case false:
             refVote!.updateData(([x: FieldValue.arrayRemove([Auth.auth().currentUser!.uid])]))
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !isInRadius {
+            let alert = Alert.errorAlert(title: "Warning", message: "You won't be able to interact with this event as you are not in the correct radius")
+            present(alert, animated: true, completion: nil)
         }
     }
     

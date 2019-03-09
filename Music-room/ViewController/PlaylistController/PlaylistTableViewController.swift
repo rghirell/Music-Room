@@ -174,28 +174,14 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             if code != 200 {
                 let alert = Alert.errorAlert(title: "Error", message: "Couldn't create new playlist")
                 self.present(alert, animated: true, completion: nil)
-            } else {
-                self.dismiss(animated: true, completion: nil)
             }
         }
     }
     
- 
     // MARK: - Table view data source
-
     let dispatch = DispatchGroup()
     var finalResult: [Playlist]?
     var finalResultEvent: [Playlist]?
-    
-    fileprivate func getPlaylist() {
-        dispatch.enter()
-        getEventPlaylist()
-        dispatch.enter()
-        getRegularPlaylist()
-        dispatch.notify(queue: .main) {
-           self.mergeResult()
-        }
-    }
     
     private func mergeResult() {
         playlistResult = []
@@ -206,30 +192,6 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             playlistResult +=  eventRes!
         }
         
-    }
-    
-    fileprivate func getRegularPlaylist() {
-        let ref = Firestore.firestore().collection("playlist")
-        ref.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).getDocuments(completion: { (query, err) in
-            if err != nil {
-                self.dispatch.leave()
-                return
-            }
-            self.playlistRes = query?.documents
-            self.dispatch.leave()
-        })
-    }
-    
-    fileprivate func getEventPlaylist() {
-        let ref = Firestore.firestore().collection("event")
-        ref.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).getDocuments(completion: { (query, err) in
-            if err != nil {
-                 self.dispatch.leave()
-                return
-            }
-            self.eventRes = query?.documents
-            self.dispatch.leave()
-        })
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -246,12 +208,21 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         return cell
     }
     
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         if playlistResult[indexPath.row].data()["pos"] != nil {
             let vc = EventTrackTableViewController()
+            let pos = playlistResult[indexPath.row].data()["pos"] as! [String: Any]
+            let lat = pos["lat"] as! Double
+            let lon = pos["lon"] as! Double
+            let radius = playlistResult[indexPath.row].data()["distance"] as! Double
+            let center = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+            let currentCenter = CLLocationCoordinate2D(latitude: self.locManager.location!.coordinate.latitude, longitude: self.locManager.location!.coordinate.longitude)
+            let x = CLCircularRegion(center: currentCenter, radius: radius * 1000, identifier: "europe")
             vc.player = self.player
             vc.playlistID = playlistResult[indexPath.row].documentID
+            vc.isInRadius = x.contains(center)
+            
             vc.trackArray = playlistResult[indexPath.row].data()["titles"] as? [[String: Any]]
             show(vc, sender: self)
         } else {
@@ -261,8 +232,6 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             vc.trackArray = playlistResult[indexPath.row].data()["titles"] as? [[String: Any]]
             show(vc, sender: self)
         }
-        
-        
     
     }
 }

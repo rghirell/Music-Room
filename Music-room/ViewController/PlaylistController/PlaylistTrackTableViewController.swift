@@ -14,7 +14,7 @@ protocol TrackDelegate: class {
     func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
 }
 
-class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCellDelegate {
+class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCellDelegate, PreferenceDelegate {
     
     var trackArray: [[String: Any]]?
     var trackLike = [(key: String, value: [String])]()
@@ -103,7 +103,8 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
+        super.viewWillAppear(animated)
+          navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
         ref = Firestore.firestore().collection("playlist").document(playlistID!)
         ref?.addSnapshotListener({ (data, err) in
             if data?.data() == nil { return }
@@ -114,6 +115,25 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+    }
+    
+    @objc private func displayPlaylistControls() {
+        let vc = PlaylistPreferenceViewController(nibName: "PlaylistPreferenceViewController", bundle: Bundle.main)
+        vc.delegate = self
+        self.addChild(vc)
+        vc.playlistUID = playlistID
+        vc.type = "playlist"
+        vc.view.frame = self.view.frame
+        self.view.addSubview(vc.view)
+        vc.didMove(toParent: self)
+    }
+    
+    func changeTableViewInteraction() {
+        tableView.isScrollEnabled = !tableView.isScrollEnabled
+    }
+    
+    func dismissController() {
+        navigationController!.popViewController(animated: true)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
