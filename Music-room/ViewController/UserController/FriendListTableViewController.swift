@@ -40,7 +40,9 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
     fileprivate func setupTableView() {
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
-        tableView.register(FriendsTableViewCell.self, forCellReuseIdentifier: CellIdentifier.friendCell)
+        let xib = UINib(nibName: "FriendsTableViewCell", bundle: nil)
+        tableView.register(xib, forCellReuseIdentifier: CellIdentifier.friendCell)
+        
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -50,6 +52,11 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
+        if friends.count <= 0 {
+            tableView.setEmptyMessage("No results")
+        }else {
+            self.tableView.restore()
+        }
         return friends.count
     }
     
@@ -74,7 +81,7 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.friendCell, for: indexPath) as! FriendsTableViewCell
-        cell.textLabel?.text = friends[indexPath.row].name
+        cell.displayName.text = friends[indexPath.row].name
         cell.delegate = self
         cell.isFriend = userFriendsUID.contains(friends[indexPath.row].uid)
         cell.index = indexPath.row

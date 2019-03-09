@@ -13,10 +13,8 @@ protocol FriendCellDelegate: class {
 }
 
 class FriendsTableViewCell: UITableViewCell {
-
     
-    
-    @IBOutlet weak var displayName: UILabel!
+    @IBOutlet var displayName: UILabel!
     var delegate: FriendCellDelegate!
     var index: Int!
     var isFriend = false {
@@ -25,12 +23,15 @@ class FriendsTableViewCell: UITableViewCell {
         }
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
     }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        
+        // Configure the view for the selected state
     }
     
     @IBAction func addOrRemoveFriend(_ sender: UIButton) {

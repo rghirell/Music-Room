@@ -49,8 +49,9 @@ class UserSearchTableViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         if result?.count ?? 0 <= 0 {
             tableView.setEmptyMessage("No results")
+        } else {
+            self.tableView.restore()
         }
-        tableView.restore()
         return result?.count ?? 0
     }
 

@@ -32,8 +32,7 @@
                         </constraints>
                         <state key="normal" image="addFriend"/>
                         <connections>
-                            <action selector="AddOrRemoveFriend:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ivS-yl-GsZ"/>
-                            <action selector="addOrRemoveFriend:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="bbB-KS-ZdP"/>
+                            <action selector="addOrRemoveFriend:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7e8-CG-qOy"/>
                         </connections>
                     </button>
                 </subviews>
