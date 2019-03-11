@@ -14,7 +14,7 @@ protocol TrackDelegate: class {
     func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
 }
 
-class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCellDelegate, PreferenceDelegate {
+class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, SwipeTableViewCellDelegate, PreferenceDelegate {
     
     var trackArray: [[String: Any]]?
     var trackLike = [(key: String, value: [String])]()
@@ -23,6 +23,7 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
     var ref: DocumentReference? = nil
     var refVote: DocumentReference? = nil
     var playlistID: String!
+    var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,25 +31,31 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
     }
     
     fileprivate func setupTableView() {
+        let displayWidth: CGFloat = self.view.frame.width
+        let displayHeight: CGFloat = self.view.frame.height
+        tableView = UITableView(frame: CGRect(x: 0, y: 0, width: displayWidth, height: displayHeight))
+        tableView.delegate = self
+        tableView.dataSource = self
         tableView.rowHeight = 120
         tableView.allowsSelectionDuringEditing = true
         tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
+        view.addSubview(tableView)
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return trackArray?.count ?? 0
     }
 
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
         guard let trackArray = self.trackArray else { return UITableViewCell() }
         cell.currentTrack = trackArray[indexPath.row]
@@ -136,7 +143,7 @@ class PlaylistTrackTableViewController: UITableViewController, SwipeTableViewCel
         navigationController!.popViewController(animated: true)
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String

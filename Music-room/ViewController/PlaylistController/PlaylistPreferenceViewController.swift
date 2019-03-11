@@ -20,6 +20,7 @@ class PlaylistPreferenceViewController: UIViewController {
     var type: String!
     var ref: DocumentReference!
     private var hasRight = true
+    private var isFollowing = true
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var switchPublicPrivate: UISwitch!
     var delegate: PreferenceDelegate! {
@@ -27,6 +28,7 @@ class PlaylistPreferenceViewController: UIViewController {
             delegate.changeTableViewInteraction()
         }
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         showAnimate()
@@ -53,6 +55,7 @@ class PlaylistPreferenceViewController: UIViewController {
         view.removeFromSuperview()
     }
     
+    @IBOutlet weak var followSwitch: UISwitch!
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         ref = Firestore.firestore().collection(type).document(playlistUID)
@@ -61,6 +64,12 @@ class PlaylistPreferenceViewController: UIViewController {
             guard let owner = data["owner"] as? String else { self.close(nil); return }
             guard let accessibility = data["accessibility"] as? [String: Bool] else { self.close(nil); return }
             guard let playlistStatus = accessibility["public"] else { self.close(nil); return }
+            guard let follower = data["follower"] as? [String] else{ self.close(nil); return }
+            
+            if !follower.contains(Auth.auth().currentUser!.uid) {
+                self.isFollowing = false
+                self.followSwitch.isOn = false
+            }
             if playlistStatus {
                 self.switchPublicPrivate.isOn = false
             }
@@ -79,6 +88,16 @@ class PlaylistPreferenceViewController: UIViewController {
             ref.updateData(["accessibility.public": !sender.isOn])
         }
     }
+    
+   
+    @IBAction func changeFollowStatus(_ sender: UISwitch) {
+        if sender.isOn {
+            ref.updateData(["follower": FieldValue.arrayUnion([Auth.auth().currentUser!.uid])])
+        } else {
+            ref.updateData(["follower": FieldValue.arrayRemove([Auth.auth().currentUser!.uid])])
+        }
+    }
+    
     
     @IBAction func DeletePlaylist(_ sender: UIButton) {
         if hasRight {

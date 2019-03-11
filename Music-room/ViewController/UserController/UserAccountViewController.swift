@@ -50,6 +50,7 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     
     let googleLinkButton: UIButton = {
         let button = UIButton()
+         button.titleLabel!.font = UIFont(name: "Futura-bold", size: 16)!
         button.layer.cornerRadius = 5
         button.layer.borderColor = UIColor.black.cgColor
         button.layer.shadowColor = UIColor.black.cgColor
@@ -70,6 +71,7 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     
     let facebookLinkButton: UIButton = {
         let button = UIButton()
+         button.titleLabel!.font = UIFont(name: "Futura-bold", size: 16)!
         button.layer.cornerRadius = 5
         button.layer.borderColor = UIColor.black.cgColor
         button.layer.shadowColor = UIColor.black.cgColor
@@ -88,11 +90,18 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     }()
     
     let logOutButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .custom)
+        button.backgroundColor = .red
+        button.layer.cornerRadius = 5
+        button.layer.borderColor = UIColor.black.cgColor
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 3, height: 3)
+        button.layer.shadowOpacity = 0.4
+        button.layer.shadowRadius = 4.0
+        button.tintColor = .white
+        button.titleLabel!.font = UIFont(name: "Futura-bold", size: 16)!
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Logout", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        
         button.addTarget(self, action: #selector(signOut), for: .touchUpInside)
         return button
     }()
@@ -113,6 +122,14 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         setupLinkButtons()
         setupLayout()
         DeezerManager.sharedInstance.loginResult = sessionDidLogin
+        let button = UIButton(type: .custom)
+        button.setImage(#imageLiteral(resourceName: "back_24"), for: .normal)
+        button.setTitle("Playlist", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.sizeToFit()
+        button.addTarget(self, action: #selector(dismissController), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+        navigationItem.leftBarButtonItem?.tintColor = .black
         guard let user = Auth.auth().currentUser else { return }
         self.ref = Firestore.firestore().collection("users").document(user.uid)
         ref.getDocument { (document, error) in
@@ -136,6 +153,10 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
                 self.preferences = preferences as! [String]
             }
         }
+    }
+    
+    @objc func dismissController() {
+        dismiss(animated: true, completion: nil)
     }
     
     deinit {
@@ -169,6 +190,7 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.isScrollEnabled = true
+        collectionView.backgroundColor = .white
         collectionContainer.clipsToBounds = true
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(TagsCollectionViewCell.self, forCellWithReuseIdentifier: "test")
@@ -206,9 +228,10 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         view.addSubview(logOutButton)
         switch providerID {
         case "google.com":
-            googleLinkButton.isHidden = true
+            googleLinkButton.isEnabled = false
+            googleLinkButton.backgroundColor = #colorLiteral(red: 0.6820679903, green: 0.6820679903, blue: 0.6820679903, alpha: 1)
         case "facebook.com":
-            facebookLinkButton.isHidden = true
+            facebookLinkButton.isEnabled = false
         default:
             return
         }

@@ -10,9 +10,7 @@ import UIKit
 import Firebase
 import MapKit
 
-class EventTrackTableViewController: UITableViewController, LikeDelegate, PreferenceDelegate {
-
-    
+class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, LikeDelegate, PreferenceDelegate {
 
     var trackArray: [[String: Any]]?
     var trackLike = [(key: String, value: [String])]()
@@ -21,6 +19,7 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate, Prefer
     var ref: DocumentReference? = nil
     var refListener: ListenerRegistration? = nil
     var isInRadius = false
+    var tableView: UITableView!
     
     var refVote: DocumentReference? = nil
     var refVoteListener: ListenerRegistration? = nil
@@ -32,23 +31,29 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate, Prefer
     }
     
     fileprivate func setupTableView() {
+        let displayWidth: CGFloat = self.view.frame.width
+        let displayHeight: CGFloat = self.view.frame.height
+        tableView = UITableView(frame: CGRect(x: 0, y: 0, width: displayWidth, height: displayHeight))
+        tableView.delegate = self
+        tableView.dataSource = self
         tableView.rowHeight = 120
         tableView.allowsSelectionDuringEditing = true
         tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
+        view.addSubview(tableView)
     }
     
     // MARK: - Table view data source
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return trackArray?.count ?? 0
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
         if !isInRadius {
             cell.isUserInteractionEnabled = false
@@ -166,7 +171,7 @@ class EventTrackTableViewController: UITableViewController, LikeDelegate, Prefer
         }
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String

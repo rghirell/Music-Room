@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PlaylistPreferenceViewController" customModule="Music_room" customModuleProvider="target">
             <connections>
                 <outlet property="deleteButton" destination="gBc-86-1I5" id="8DM-UI-VEU"/>
+                <outlet property="followSwitch" destination="JPb-bn-fcq" id="PfQ-gQ-UHV"/>
                 <outlet property="scroll" destination="pNt-jt-24h" id="5Uf-7G-EOC"/>
                 <outlet property="switchPublicPrivate" destination="2hr-cB-vDI" id="Z34-Q4-2eY"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -38,10 +39,6 @@
                                                 <action selector="do:" destination="-1" eventType="touchUpInside" id="HcJ-qA-gdv"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rgY-vd-jXb" userLabel="Follow">
-                                            <rect key="frame" x="121" y="57" width="61" height="30"/>
-                                            <state key="normal" title="Follow"/>
-                                        </button>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Make playlist private" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pvJ-7a-a3h">
                                             <rect key="frame" x="8" y="97" width="156" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -67,23 +64,37 @@
                                                 <action selector="DeletePlaylist:" destination="-1" eventType="touchUpInside" id="RqQ-3H-Prm"/>
                                             </connections>
                                         </button>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Follow playlist" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SCU-7k-Cas">
+                                            <rect key="frame" x="8" y="57" width="156" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JPb-bn-fcq">
+                                            <rect key="frame" x="236" y="52" width="51" height="31"/>
+                                            <connections>
+                                                <action selector="changeFollowStatus:" destination="-1" eventType="valueChanged" id="NnA-B0-PcS"/>
+                                            </connections>
+                                        </switch>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
+                                        <constraint firstItem="SCU-7k-Cas" firstAttribute="top" secondItem="mGy-tG-gfG" secondAttribute="bottom" constant="8" id="2Bt-xb-lz8"/>
                                         <constraint firstItem="gBc-86-1I5" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="8" id="2lD-JT-5En"/>
                                         <constraint firstAttribute="trailing" secondItem="gBc-86-1I5" secondAttribute="trailing" constant="8" id="313-XN-5Nz"/>
+                                        <constraint firstAttribute="trailing" secondItem="JPb-bn-fcq" secondAttribute="trailing" constant="20" id="5mA-J4-Wi8"/>
+                                        <constraint firstItem="SCU-7k-Cas" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="8" id="5rN-Xt-w7j"/>
+                                        <constraint firstItem="pvJ-7a-a3h" firstAttribute="top" secondItem="SCU-7k-Cas" secondAttribute="bottom" constant="19" id="5v6-Mn-e62"/>
                                         <constraint firstItem="gBc-86-1I5" firstAttribute="top" secondItem="pvJ-7a-a3h" secondAttribute="bottom" constant="17" id="83t-qa-7sg"/>
                                         <constraint firstItem="mGy-tG-gfG" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="106" id="97p-BN-FQV"/>
                                         <constraint firstItem="pvJ-7a-a3h" firstAttribute="centerY" secondItem="2hr-cB-vDI" secondAttribute="centerY" id="Ecn-dc-5oX"/>
                                         <constraint firstAttribute="trailing" secondItem="mGy-tG-gfG" secondAttribute="trailing" constant="107" id="FSv-s7-npK"/>
-                                        <constraint firstAttribute="trailing" secondItem="rgY-vd-jXb" secondAttribute="trailing" constant="123" id="JGs-A5-GYu"/>
-                                        <constraint firstItem="rgY-vd-jXb" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="121" id="M26-98-FqA"/>
-                                        <constraint firstItem="rgY-vd-jXb" firstAttribute="top" secondItem="mGy-tG-gfG" secondAttribute="bottom" constant="8" id="TYX-6J-dAJ"/>
                                         <constraint firstItem="pvJ-7a-a3h" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="8" id="b8Q-QB-cw9"/>
                                         <constraint firstItem="mGy-tG-gfG" firstAttribute="top" secondItem="gac-pt-zFd" secondAttribute="top" constant="19" id="b95-Rx-9VF"/>
                                         <constraint firstAttribute="trailing" secondItem="2hr-cB-vDI" secondAttribute="trailing" constant="20" id="k9e-hC-G1J"/>
                                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="gBc-86-1I5" secondAttribute="bottom" constant="20" id="kTx-WG-YpK"/>
-                                        <constraint firstItem="pvJ-7a-a3h" firstAttribute="top" secondItem="rgY-vd-jXb" secondAttribute="bottom" constant="10" id="zCI-eE-CB8"/>
+                                        <constraint firstItem="SCU-7k-Cas" firstAttribute="width" secondItem="pvJ-7a-a3h" secondAttribute="width" id="kb5-SA-fjy"/>
+                                        <constraint firstItem="JPb-bn-fcq" firstAttribute="centerY" secondItem="SCU-7k-Cas" secondAttribute="centerY" id="rdq-JT-zF6"/>
                                     </constraints>
                                 </view>
                             </subviews>
