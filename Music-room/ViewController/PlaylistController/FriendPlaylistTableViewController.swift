@@ -47,7 +47,7 @@ class FriendPlaylistTableViewController: UITableViewController, CLLocationManage
     private func setRef() {
         let refEvent = Firestore.firestore().collection("event")
         if type == "event" {
-            refEvent.whereField("follower", arrayContains: uid!).addSnapshotListener { (query, err) in
+            refEvent.whereField("follower", arrayContains: uid!).getDocuments { (query, err) in
                 self.eventRes = query?.documents
                 self.mergeResult()
             }
@@ -55,7 +55,7 @@ class FriendPlaylistTableViewController: UITableViewController, CLLocationManage
         
         if type == "playlist" {
             let refPlaylist = Firestore.firestore().collection("playlist")
-            refPlaylist.whereField("follower", arrayContains: uid!).addSnapshotListener { (query, err) in
+            refPlaylist.whereField("follower", arrayContains: uid!).getDocuments { (query, err) in
                 self.playlistRes = query?.documents
                 self.mergeResult()
             }

@@ -239,7 +239,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
     }
     
    override func viewWillDisappear(_ animated: Bool) {
@@ -252,6 +251,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         if (cancelPreviousSearch) {
             APItasks.forEach {tasks in
                 tasks.cancel()
+                
             }
         }
         APItasks = []
