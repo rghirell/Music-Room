@@ -23,13 +23,15 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
             self.collectionView.reloadData()
         }
     }
+    
     var preferencesListener: ListenerRegistration!
     var isLinkedToGoogle = false {
         didSet {
             DispatchQueue.main.async {
+                let view = self.googleLinkView.viewWithTag(1) as! UILabel
                 if self.isLinkedToGoogle {
-                    self.googleLinkButton.setTitle("Unlink Google account", for: .normal)
-                } else { self.googleLinkButton.setTitle("Link Google account", for:  .normal) }
+                    view.text = "Unlink Google account"
+                } else { view.text =  "Link Google account" }
             }
         }
     }
@@ -37,99 +39,34 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     var isLinkedToFacebook = false {
         didSet {
             DispatchQueue.main.async {
+                let view = self.facebookLinkView.viewWithTag(1) as! UILabel
                 if self.isLinkedToFacebook {
-                    self.facebookLinkButton.setTitle("Unlink Facebook account", for: .normal)
-                } else { self.facebookLinkButton.setTitle("Link Facebook account", for:  .normal) }
+                    view.text = "Unlink Facebook account"
+                } else { view.text = "Link Facebook account" }
             }
         }
     }
     
     var locManager = CLLocationManager()
     var currentLocation: CLLocation!
-    var collectionView: UICollectionView!
+
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var googleLinkView: UIView!
+    @IBOutlet weak var facebookLinkView: UIView!
+    @IBOutlet weak var logOutButton: UIButton!
+    @IBOutlet weak var deezerLink: UIButton!
     
-    let googleLinkButton: UIButton = {
-        let button = UIButton()
-         button.titleLabel!.font = UIFont(name: "Futura-bold", size: 16)!
-        button.layer.cornerRadius = 5
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOffset = CGSize(width: 3, height: 3)
-        button.layer.shadowOpacity = 0.4
-        button.layer.shadowRadius = 4.0
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Link Google account", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = .white
-        let googleLogo = UIImage(named: "btn_google_light_normal_ios")
-        button.tintColor = .clear
-        button.setImage(googleLogo, for: .normal)
-        button.imageView?.contentMode = .scaleAspectFit
-        button.imageEdgeInsets = UIEdgeInsets(top: 2, left: -30 , bottom: 2, right: 0)
-        return button
-    }()
-    
-    let facebookLinkButton: UIButton = {
-        let button = UIButton()
-         button.titleLabel!.font = UIFont(name: "Futura-bold", size: 16)!
-        button.layer.cornerRadius = 5
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOffset = CGSize(width: 3, height: 3)
-        button.layer.shadowOpacity = 0.4
-        button.layer.shadowRadius = 4.0
-        button.translatesAutoresizingMaskIntoConstraints = false
-        let fbLogo = UIImage(named: "fbWhiteLogo")
-        button.setTitle("Link account", for: .normal)
-        button.setImage(fbLogo, for: .normal)
-        button.imageView?.contentMode = .scaleAspectFit
-        button.imageEdgeInsets = UIEdgeInsets(top: 5, left: -20 , bottom: 5, right: 0)
-        button.tintColor = #colorLiteral(red: 0.9688121676, green: 0.9688346982, blue: 0.9688225389, alpha: 1)
-        button.backgroundColor = #colorLiteral(red: 0.2745098039, green: 0.368627451, blue: 0.662745098, alpha: 1)
-        return button
-    }()
-    
-    let logOutButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.backgroundColor = .red
-        button.layer.cornerRadius = 5
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOffset = CGSize(width: 3, height: 3)
-        button.layer.shadowOpacity = 0.4
-        button.layer.shadowRadius = 4.0
-        button.tintColor = .white
-        button.titleLabel!.font = UIFont(name: "Futura-bold", size: 16)!
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Logout", for: .normal)
-        button.addTarget(self, action: #selector(signOut), for: .touchUpInside)
-        return button
-    }()
-    
-    let collectionContainer: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .red
-        return view
-    }()
     
     var ref: DocumentReference!
     var providerID: String!
     
+    //MARK: -
+    //MARK: View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        providerID = Auth.auth().currentUser?.providerData[0].providerID
         setupLinkButtons()
         setupLayout()
         DeezerManager.sharedInstance.loginResult = sessionDidLogin
-        let button = UIButton(type: .custom)
-        button.setImage(#imageLiteral(resourceName: "back_24"), for: .normal)
-        button.setTitle("Playlist", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.sizeToFit()
-        button.addTarget(self, action: #selector(dismissController), for: .touchUpInside)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
-        navigationItem.leftBarButtonItem?.tintColor = .black
         guard let user = Auth.auth().currentUser else { return }
         self.ref = Firestore.firestore().collection("users").document(user.uid)
         ref.getDocument { (document, error) in
@@ -162,6 +99,52 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     deinit {
         preferencesListener.remove()
     }
+
+    
+    //MARK: -
+    //MARK: Layout setup
+    fileprivate func setupLayout() {
+        view.backgroundColor = .white
+        for title in titles {
+            buttons.append(createButton(withTitle: title))
+        }
+        
+        let button = UIButton(type: .custom)
+        button.setImage(#imageLiteral(resourceName: "back_24"), for: .normal)
+        button.setTitle("Playlist", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.sizeToFit()
+        button.addTarget(self, action: #selector(dismissController), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+        navigationItem.leftBarButtonItem?.tintColor = .black
+        setCornerLayer(viewArray: [logOutButton, deezerLink, googleLinkView, facebookLinkView])
+        logOutButton.addTarget(self, action: #selector(signOut), for: .touchUpInside)
+        let tapGoogle = UITapGestureRecognizer(target: self, action: #selector(googleLinkAction))
+        googleLinkView.addGestureRecognizer(tapGoogle)
+        let tapFacebook = UITapGestureRecognizer(target: self, action: #selector(facebookLinkAction))
+        facebookLinkView.addGestureRecognizer(tapFacebook)
+        deezerLink.addTarget(self, action: #selector(deezerLinkAction), for: .touchUpInside)
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 30, bottom: 10, right: 30)
+        layout.minimumInteritemSpacing = 8
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.isScrollEnabled = true
+        collectionView.backgroundColor = .white
+        collectionView.register(TagsCollectionViewCell.self, forCellWithReuseIdentifier: "test")
+
+    }
+    
+    private func setCornerLayer(viewArray: [UIView]) {
+        for element in viewArray {
+            element.layer.cornerRadius = 5
+            element.layer.borderColor = UIColor.black.cgColor
+            element.layer.shadowColor = UIColor.black.cgColor
+            element.layer.shadowOffset = CGSize(width: 3, height: 3)
+            element.layer.shadowOpacity = 0.4
+            element.layer.shadowRadius = 4.0
+        }
+    }
     
     func createButton(withTitle title: String) -> UIButton {
         let button = UIButton()
@@ -176,62 +159,14 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         return button
     }
     
-    //MARK: -
-    //MARK: Layout setup
-    fileprivate func setupLayout() {
-        view.backgroundColor = .white
-        for title in titles {
-            buttons.append(createButton(withTitle: title))
-        }
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 20, left: 30, bottom: 10, right: 30)
-        layout.minimumInteritemSpacing = 8
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.isScrollEnabled = true
-        collectionView.backgroundColor = .white
-        collectionContainer.clipsToBounds = true
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(TagsCollectionViewCell.self, forCellWithReuseIdentifier: "test")
-        collectionContainer.addSubview(collectionView)
-        view.addSubview(collectionContainer)
-        NSLayoutConstraint.activate([
-            collectionContainer.widthAnchor.constraint(equalTo: view.widthAnchor),
-            collectionContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            collectionContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            collectionContainer.heightAnchor.constraint(equalToConstant: 200),
-            collectionView.widthAnchor.constraint(equalTo: collectionContainer.widthAnchor),
-            collectionView.heightAnchor.constraint(equalTo: collectionContainer.heightAnchor),
-            collectionView.centerXAnchor.constraint(equalTo: collectionContainer.centerXAnchor),
-            collectionView.centerYAnchor.constraint(equalTo: collectionContainer.centerYAnchor),
-            facebookLinkButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            facebookLinkButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            facebookLinkButton.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
-            facebookLinkButton.heightAnchor.constraint(equalToConstant: 30),
-            googleLinkButton.widthAnchor.constraint(equalTo: facebookLinkButton.widthAnchor),
-            googleLinkButton.heightAnchor.constraint(equalTo: facebookLinkButton.heightAnchor),
-            googleLinkButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            googleLinkButton.bottomAnchor.constraint(equalTo: facebookLinkButton.topAnchor, constant: -12),
-            logOutButton.widthAnchor.constraint(equalTo: facebookLinkButton.widthAnchor),
-            logOutButton.heightAnchor.constraint(equalTo: facebookLinkButton.heightAnchor),
-            logOutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logOutButton.bottomAnchor.constraint(equalTo: googleLinkButton.topAnchor, constant: -12),
-            ])
-    }
-    
     private func setupLinkButtons() {
-        view.addSubview(googleLinkButton)
-        googleLinkButton.addTarget(self, action: #selector(googleLinkAction), for: .touchUpInside)
-        view.addSubview(facebookLinkButton)
-        facebookLinkButton.addTarget(self, action: #selector(facebookLinkAction), for: .touchUpInside)
-        view.addSubview(logOutButton)
         switch providerID {
         case "google.com":
-            googleLinkButton.isEnabled = false
-            googleLinkButton.backgroundColor = #colorLiteral(red: 0.6820679903, green: 0.6820679903, blue: 0.6820679903, alpha: 1)
+            googleLinkView.isUserInteractionEnabled = false
+            googleLinkView.backgroundColor = #colorLiteral(red: 0.6820679903, green: 0.6820679903, blue: 0.6820679903, alpha: 1)
         case "facebook.com":
-            facebookLinkButton.isEnabled = false
+            facebookLinkView.isUserInteractionEnabled = false
+            facebookLinkView.backgroundColor = #colorLiteral(red: 0.6820679903, green: 0.6820679903, blue: 0.6820679903, alpha: 1)
         default:
             return
         }
@@ -271,7 +206,10 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
             ref.updateData(["pref_music": FieldValue.arrayRemove([tag])])
         }
     }
+    
 }
+
+
 
 
 extension UserAccountViewController {
@@ -318,6 +256,10 @@ extension UserAccountViewController {
                 GIDSignIn.sharedInstance()?.signIn()
             }
         }
+    }
+    
+    @objc func deezerLinkAction() {
+        DeezerManager.sharedInstance.login()
     }
     
     private func createTextField(placeholder: String) -> UITextField {
@@ -411,5 +353,4 @@ extension UserAccountViewController {
             self.isLinkedToGoogle = false
         })
     }
-
 }

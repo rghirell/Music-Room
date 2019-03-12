@@ -44,6 +44,7 @@
 		4A16E5BC220DBD8C0054A670 /* TrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */; };
 		4A16E5BE220DDBFC0054A670 /* AlbumTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */; };
 		4A16E5C2220F010F0054A670 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5C1220F010F0054A670 /* PlayerViewController.swift */; };
+		4A2070AE2238255300E3D55D /* UserView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A2070AD2238255300E3D55D /* UserView.xib */; };
 		4A32B8F2220F7F40000089A0 /* CoverCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */; };
 		4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A3F320B220F6446003F7E40 /* Assets.xcassets */; };
 		4A4E7670221490180066D179 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4E766F221490180066D179 /* File.swift */; };
@@ -112,6 +113,7 @@
 		4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5BD220DDBFC0054A670 /* AlbumTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTableViewCell.swift; sourceTree = "<group>"; };
 		4A16E5C1220F010F0054A670 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
+		4A2070AD2238255300E3D55D /* UserView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UserView.xib; sourceTree = "<group>"; };
 		4A32B8F1220F7F40000089A0 /* CoverCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverCollectionViewCell.swift; sourceTree = "<group>"; };
 		4A3F320B220F6446003F7E40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4A4E766F221490180066D179 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 				4A097E81221C659C00FC0239 /* HeaderView.swift */,
 				4A097E83221C776700FC0239 /* StrechyHeader.swift */,
 				4A079C8B223452E0005773CD /* FriendsTableViewCell.xib */,
+				4A2070AD2238255300E3D55D /* UserView.xib */,
 				4A079C812232B1CF005773CD /* PlaylistPreferenceViewController.xib */,
 				4A079C8622343C8D005773CD /* FriendView.xib */,
 			);
@@ -528,6 +531,7 @@
 				4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */,
 				4AC9D59322086CC300751FAA /* deezer.xcconfig in Resources */,
 				4A079C8D223452E0005773CD /* FriendsTableViewCell.xib in Resources */,
+				4A2070AE2238255300E3D55D /* UserView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

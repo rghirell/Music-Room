@@ -60,6 +60,7 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabBars()
+        
         setupCurrentTrackView()
         vc.view.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         vc.tabBarDelegate = self

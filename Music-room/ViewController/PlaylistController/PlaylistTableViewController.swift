@@ -22,6 +22,7 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     
     var playlistRes: [QueryDocumentSnapshot]?
     var eventRes: [QueryDocumentSnapshot]?
+    var providerID: String!
     var playlistResult = [QueryDocumentSnapshot]() {
         didSet {
             tableView.reloadData()
@@ -50,6 +51,7 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         setRef()
+        decode()
         setNavBarButton()
         title = "Playlist"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier.playlistCell)
@@ -69,7 +71,10 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     }
     
     @objc func showAccount() {
-        let userAccountVC = UserAccountViewController()
+        guard let provider = providerID else { return }
+//        let userAccountVC = UserAccountViewController()
+        let userAccountVC = UserAccountViewController(nibName: "UserView", bundle: Bundle.main)
+        userAccountVC.providerID = provider
         let nc = UINavigationController(rootViewController: userAccountVC)
         present(nc, animated: true, completion: nil)
     }
@@ -233,5 +238,43 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             show(vc, sender: self)
         }
     
+    }
+}
+
+extension PlaylistTableViewController {
+    func decode()  {
+        Auth.auth().currentUser?.getIDToken(completion: { (token, err) in
+            if err != nil {
+                return
+            }
+            let segments = token!.components(separatedBy: ".")
+            let x =  self.decodeJWTPart(segments[1]) ?? [:]
+            let y = x["firebase"] as! [String: Any]
+            self.providerID = y["sign_in_provider"] as? String
+        })
+        
+    }
+    
+    func base64UrlDecode(_ value: String) -> Data? {
+        var base64 = value
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        
+        let length = Double(base64.lengthOfBytes(using: String.Encoding.utf8))
+        let requiredLength = 4 * ceil(length / 4.0)
+        let paddingLength = requiredLength - length
+        if paddingLength > 0 {
+            let padding = "".padding(toLength: Int(paddingLength), withPad: "=", startingAt: 0)
+            base64 = base64 + padding
+        }
+        return Data(base64Encoded: base64, options: .ignoreUnknownCharacters)
+    }
+    
+    func decodeJWTPart(_ value: String) -> [String: Any]? {
+        guard let bodyData = base64UrlDecode(value),
+            let json = try? JSONSerialization.jsonObject(with: bodyData, options: []), let payload = json as? [String: Any] else {
+                return nil
+        }
+        return payload
     }
 }
