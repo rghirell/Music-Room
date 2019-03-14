@@ -28,7 +28,10 @@ class UserSearchTableViewController: UITableViewController {
             return
         }
         let ref = Firestore.firestore().collection("users")
-        ref.whereField("displayName", isEqualTo: search).getDocuments { (query, err) in
+        ref
+            .whereField("displayName", isEqualTo: search)
+            .whereField("accessibility.public", isEqualTo: true)
+            .getDocuments { (query, err) in
             self.result = query?.documents
         }
     }

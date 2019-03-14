@@ -61,7 +61,7 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
     var providerID: String!
     
     //MARK: -
-    //MARK: View cycle
+    //MARK: - View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLinkButtons()
@@ -79,14 +79,22 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         }
     }
     
+    @IBOutlet weak var displayName: UILabel!
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let ref =  Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
         preferencesListener = ref.addSnapshotListener { (doc, err) in
             guard let doc = doc else { return }
             guard let data = doc.data() else { return }
+            guard let accessibility = data["accessibility"] as? [String: Bool] else { return }
             guard let preferences =  data["pref_music"] else { return }
+            guard let displayName = data["displayName"] as? String else { return }
+            self.displayName.text = displayName
+          
             DispatchQueue.main.async {
+                if accessibility["public"] != nil && accessibility["public"]! == true {
+                    self.visibility.isOn = false
+                }
                 self.preferences = preferences as! [String]
             }
         }
@@ -102,7 +110,7 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
 
     
     //MARK: -
-    //MARK: Layout setup
+    //MARK: - Layout setup
     fileprivate func setupLayout() {
         view.backgroundColor = .white
         for title in titles {
@@ -172,8 +180,16 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         }
     }
     
+    
+    @IBOutlet weak var visibility: UISwitch!
+    @IBAction func changeVisibility(_ sender: Any) {
+        if visibility.isOn {
+            ref.updateData(["accessibility.public": false])
+        } else { ref.updateData(["accessibility.public": true])}
+    }
+    
     //MARK: -
-    //MARK: CollectionView Logic
+    //MARK: - CollectionView Logic
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: buttons[indexPath.row].frame.width + 25 , height: buttons[indexPath.row].frame.height)
     }

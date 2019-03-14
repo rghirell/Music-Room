@@ -107,21 +107,32 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        var flag = 0
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
         ref = Firestore.firestore().collection("event").document(playlistID!)
-        refListener =  ref?.addSnapshotListener({ (data, err) in
-            if data?.data() == nil { return }
-            let x = data!.get("titles") as! [[String: Any]]
-            self.trackArray = x
+        self.refListener =  self.ref?.addSnapshotListener({ (data, err) in
+            self.ref?.getDocument(completion: { (data, err) in
+                if data?.data() == nil { return }
+                let x = data!.get("titles") as! [[String: Any]]
+                self.trackArray = x
+                if flag == 1 {
+                    self.tableView.reloadData()
+                    flag = 0
+                } else { flag = 1}
+            })
         })
         
         refVote = Firestore.firestore().collection("vote").document(playlistID)
         refVoteListener = refVote?.addSnapshotListener({ (data, err) in
-            guard let data = data?.data() else  { return }
-            
-            let x = data as! [String: [String]]
-            self.trackLike = x.sorted { $0.value.count > $1.value.count }
-            self.tableView.reloadData()
+            self.refVote?.getDocument(completion: { (data, err) in
+                guard let data = data?.data() else  { return }
+                let x = data as! [String: [String]]
+                self.trackLike = x.sorted { $0.value.count > $1.value.count }
+                if flag == 1 {
+                    self.tableView.reloadData()
+                    flag = 0
+                } else { flag = 1}
+            })
         })
     }
     

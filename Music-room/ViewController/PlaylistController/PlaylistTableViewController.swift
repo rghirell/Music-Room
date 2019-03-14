@@ -16,9 +16,7 @@ import Firebase
 class PlaylistTableViewController: UITableViewController, CLLocationManagerDelegate {
 
     var locManager = CLLocationManager()
-    var currentLocation: CLLocation!
     var player: PlayerViewController!
-    
     
     var playlistRes: [QueryDocumentSnapshot]?
     var eventRes: [QueryDocumentSnapshot]?
@@ -48,19 +46,23 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         return textField
     }()
     
+    
+    //MARK: -
+    //MARK: - View Setup
     override func viewDidLoad() {
         super.viewDidLoad()
-        setRef()
+        locManager.requestWhenInUseAuthorization()
+        locManager.delegate = self
+        locManager.desiredAccuracy = kCLLocationAccuracyBest
+        locManager.startUpdatingLocation()
         decode()
         setNavBarButton()
         title = "Playlist"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier.playlistCell)
-        locManager.requestWhenInUseAuthorization()
-        locManager.delegate = self
-        locManager.desiredAccuracy = kCLLocationAccuracyBest
         tableView.rowHeight = 80
     }
     
+
     private func setNavBarButton() {
         navigationItem.rightBarButtonItem = newButton
         accountButton.addTarget(self, action: #selector(showAccount), for: .touchUpInside)
@@ -72,13 +74,25 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     
     @objc func showAccount() {
         guard let provider = providerID else { return }
-//        let userAccountVC = UserAccountViewController()
         let userAccountVC = UserAccountViewController(nibName: "UserView", bundle: Bundle.main)
         userAccountVC.providerID = provider
         let nc = UINavigationController(rootViewController: userAccountVC)
         present(nc, animated: true, completion: nil)
     }
     
+    //MARK: -
+    //MARK: - Location Delegate
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        setRef()
+        locManager.stopUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        locManager.stopUpdatingLocation()
+    }
+
+    // MARK: -
+    // MARK: - Playlist Setup
     private func setRef() {
         let refEvent = Firestore.firestore().collection("event")
         refEvent.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).addSnapshotListener { (query, err) in
@@ -90,14 +104,6 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             self.playlistRes = query?.documents
             self.mergeResult()
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)        
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
     }
     
     @objc func addPlaylistHub() {
@@ -183,8 +189,6 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         }
     }
     
-    // MARK: - Table view data source
-    let dispatch = DispatchGroup()
     var finalResult: [Playlist]?
     var finalResultEvent: [Playlist]?
     
@@ -199,6 +203,8 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         
     }
     
+    // MARK: -
+    // MARK: - Table view data source
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -213,7 +219,6 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         return cell
     }
     
-
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if playlistResult[indexPath.row].data()["pos"] != nil {
             let vc = EventTrackTableViewController()
@@ -227,7 +232,6 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             vc.player = self.player
             vc.playlistID = playlistResult[indexPath.row].documentID
             vc.isInRadius = x.contains(center)
-            
             vc.trackArray = playlistResult[indexPath.row].data()["titles"] as? [[String: Any]]
             show(vc, sender: self)
         } else {
@@ -242,6 +246,9 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
 }
 
 extension PlaylistTableViewController {
+    
+    //MARK: -
+    //MARK: Convert JWT to readable data
     func decode()  {
         Auth.auth().currentUser?.getIDToken(completion: { (token, err) in
             if err != nil {
