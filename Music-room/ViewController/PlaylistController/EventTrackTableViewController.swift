@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import MapKit
+import JGProgressHUD
 
 class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, LikeDelegate, PreferenceDelegate {
 
@@ -27,8 +28,16 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupTableView()
     }
+    
+    let hud: JGProgressHUD = {
+        let hud = JGProgressHUD(style: .dark)
+        hud.interactionType = .blockAllTouches
+        hud.parallaxMode = .alwaysOff
+        return hud
+    }()
     
     fileprivate func setupTableView() {
         let displayWidth: CGFloat = self.view.frame.width
@@ -108,6 +117,7 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         var flag = 0
+        hud.show(in: view)
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
         ref = Firestore.firestore().collection("event").document(playlistID!)
         self.refListener =  self.ref?.addSnapshotListener({ (data, err) in
@@ -116,9 +126,10 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
                 let x = data!.get("titles") as! [[String: Any]]
                 self.trackArray = x
                 if flag == 1 {
-                    self.tableView.reloadData()
+                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                     flag = 0
-                } else { flag = 1}
+                    self.tableView.reloadData()
+                } else { flag = 1 }
             })
         })
         
@@ -129,8 +140,9 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
                 let x = data as! [String: [String]]
                 self.trackLike = x.sorted { $0.value.count > $1.value.count }
                 if flag == 1 {
-                    self.tableView.reloadData()
+                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                     flag = 0
+                    self.tableView.reloadData()
                 } else { flag = 1}
             })
         })

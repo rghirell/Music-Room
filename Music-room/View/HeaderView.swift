@@ -11,7 +11,7 @@ import UIKit
 class HeaderView: UICollectionReusableView {
     
     
-    let imageView: UIImageView = {
+    var imageView: UIImageView = {
         let iv = UIImageView()
         iv.clipsToBounds = true
         iv.contentMode = .scaleAspectFill

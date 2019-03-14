@@ -154,6 +154,7 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerId, for: indexPath) as! HeaderView
         let url = URL(string: headerImage!)
+        header.imageView.kf.indicatorType = .activity
         header.imageView.kf.setImage(with: url)
         return header
     }
@@ -187,6 +188,7 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! ArtistCollectionViewCell
         cell.coverCollectionView.image = nil
         let url = URL(string: albumResult![indexPath.row].cover_medium!)
+        cell.coverCollectionView.kf.indicatorType = .activity
         cell.coverCollectionView.kf.setImage(with: url)
         return cell
     }

@@ -39,7 +39,6 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
     let currentTrackLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-//        label.text = "erfgerferferbferhfvehrfvhrvfekfvrferfe"
         label.textAlignment = .center
         label.lineBreakMode = .byWordWrapping
         return label

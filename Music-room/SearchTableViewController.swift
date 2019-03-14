@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import JGProgressHUD
 
 //let myGroup = DispatchGroup()
 
@@ -56,6 +57,13 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         setupTableView()
     }
     
+    let hud: JGProgressHUD = {
+        let hud = JGProgressHUD(style: .dark)
+        hud.interactionType = .blockAllTouches
+        hud.parallaxMode = .alwaysOff
+        return hud
+    }()
+    
     func setupTableView() {
         let displayWidth: CGFloat = self.view.frame.width
         let displayHeight: CGFloat = self.view.frame.height
@@ -99,6 +107,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.search = searchBar.text!
         result = []
+        hud.show(in: view)
         dispatchGroup.enter()
         fetchFromAPI(searchType: "artist", cancelPreviousSearch: true)
         dispatchGroup.enter()
@@ -260,6 +269,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             fetchedTracks = nil
             fetchedAlbums = nil
             dispatchGroup.leave()
+            Helpers.dismissHud(hud, text: "", detailText: "", delay: 0)
             tableView.reloadData()
             return
         }
@@ -301,6 +311,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
                 return
             }
         } catch {
+            Helpers.dismissHud(hud, text: "", detailText: "", delay: 0)
             print(error)
         }
     }
@@ -409,6 +420,7 @@ extension SearchTableViewController {
         DispatchQueue.main.async {
             if runningGroup == self.runningGroup && self.search.count > 0 {
                 print(self.result)
+                Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                 self.tableView.reloadData()
             }
         }

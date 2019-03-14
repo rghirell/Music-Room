@@ -9,7 +9,7 @@
 import UIKit
 
 class ArtistCollectionViewCell: UICollectionViewCell {
-    let coverCollectionView: UIImageView = {
+    var coverCollectionView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit

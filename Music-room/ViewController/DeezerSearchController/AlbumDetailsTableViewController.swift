@@ -8,6 +8,7 @@
 
 import UIKit
 import Kingfisher
+import JGProgressHUD
 
 
 protocol AlbumLoadDelegate : class {
@@ -19,12 +20,21 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
     var albumTracks: TrackArray? {
         didSet {
             DispatchQueue.main.async {
+                self.x.label.text = self.albumName
+                Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                 self.tableView.reloadData()
             }
         }
     }
     
-
+    let hud: JGProgressHUD = {
+        let hud = JGProgressHUD(style: .dark)
+        hud.interactionType = .blockAllTouches
+        hud.parallaxMode = .alwaysOff
+        return hud
+    }()
+    
+    
     var albumLoadDelegate: AlbumLoadDelegate!
     var artistName: String?
     var albumCoverURL: String?
@@ -37,6 +47,7 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Album"
+        hud.show(in: view)
         prepareTableView()
     }
     
@@ -45,8 +56,8 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
         super.viewWillAppear(animated)
         let parallaxViewFrame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.width / 1.3)
         x = ParallaxHeaderView(frame: parallaxViewFrame)
-        x.label.text = albumName
         let url = URL(string: albumCoverURL!)
+        x.imageView.kf.indicatorType = .activity
         x.imageView.kf.setImage(with: url)
         self.tableView.tableHeaderView  = x
     }
@@ -113,7 +124,7 @@ final class ParallaxHeaderView: UIView {
         super.init(coder: aDecoder)
     }
 
-    let imageView: UIImageView = {
+    var imageView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit

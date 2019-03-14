@@ -19,7 +19,7 @@ class FriendPlaylistTableViewController: UITableViewController, CLLocationManage
     var uid: String!
     var type: String!
     var filtered = false
-    
+    var isFriend = false
     
     var playlistRes: [QueryDocumentSnapshot]?
     var eventRes: [QueryDocumentSnapshot]?
@@ -34,7 +34,7 @@ class FriendPlaylistTableViewController: UITableViewController, CLLocationManage
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setRef()
+        
         title = "Playlist"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier.playlistCell)
         locManager.requestWhenInUseAuthorization()
@@ -64,6 +64,18 @@ class FriendPlaylistTableViewController: UITableViewController, CLLocationManage
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        let ref = Firestore.firestore().collection("users").document(uid)
+        ref.getDocument { (doc, err) in
+            guard let doc = doc else { return }
+            guard let data = doc.data() else { return }
+            guard let friends =  data["friends"]  else { return }
+            let friendArray = friends as! [String]
+            guard let authUID = Auth.auth().currentUser?.uid else { return }
+            if friendArray.contains(authUID) {
+                self.isFriend = true
+            }
+            self.setRef()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -84,7 +96,6 @@ class FriendPlaylistTableViewController: UITableViewController, CLLocationManage
     var finalResultEvent: [Playlist]?
     
     private func mergeResult() {
-        
         if self.playlistRes != nil {
             playlistResult += playlistRes!
         }
@@ -114,7 +125,7 @@ class FriendPlaylistTableViewController: UITableViewController, CLLocationManage
         for el in playlistResult {
             let access = el.data()["accessibility"] as! [String: Bool]
             let result = access["public"]
-            if result == false {
+            if  result == false && !isFriend {
                 x.append(el)
             }
         }

@@ -71,8 +71,13 @@ class UserAccountViewController: UIViewController , CLLocationManagerDelegate, U
         self.ref = Firestore.firestore().collection("users").document(user.uid)
         ref.getDocument { (document, error) in
             if let document = document, document.exists {
-                self.isLinkedToGoogle =  document.data()!["is_linked_to_google"] as! Bool
-                self.isLinkedToFacebook = document.data()!["is_linked_to_facebook"] as! Bool
+                if let linkGoogle = document.data()!["is_linked_to_google"] {
+                    self.isLinkedToGoogle = linkGoogle as! Bool
+                } else { self.isLinkedToGoogle = false }
+                if let linkFacebook = document.data()!["is_linked_to_facebook"] {
+                     self.isLinkedToFacebook = linkFacebook as! Bool
+                } else { self.isLinkedToFacebook = false }
+               
             } else {
                 print("Document does not exist")
             }
@@ -276,6 +281,7 @@ extension UserAccountViewController {
     
     @objc func deezerLinkAction() {
         DeezerManager.sharedInstance.login()
+        ref.updateData(["is_linked_to_deezer": true])
     }
     
     private func createTextField(placeholder: String) -> UITextField {

@@ -11,19 +11,16 @@ import Firebase
 
 class AddToPlaylistTableViewController: UITableViewController {
 
-    var isEventPlaylist = true {
-        didSet{
-            getPlaylist()
-        }
-    }
+    var isEventPlaylist = true
     
-    var isRegularPlaylist = true {
+    var isRegularPlaylist = true
+    
+    var userUID: String! {
         didSet {
             getPlaylist()
         }
     }
     
-    var userUID: String!
     var track: [String: Any]?
     var playlistRes: [QueryDocumentSnapshot]?
     var eventRes: [QueryDocumentSnapshot]?
@@ -105,8 +102,6 @@ class AddToPlaylistTableViewController: UITableViewController {
     }
     
     fileprivate func getEventPlaylist() {
-        
-    
         let ref = Firestore.firestore().collection("event")
         ref.whereField("follower", arrayContains: userUID).getDocuments(completion: { (query, err) in
             if err != nil {

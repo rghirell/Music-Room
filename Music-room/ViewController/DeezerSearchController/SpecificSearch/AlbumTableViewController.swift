@@ -37,9 +37,10 @@ class AlbumTableViewController: ParentTableViewController {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         let albumView = AlbumDetailsTableViewController()
-        let pictureURL = result[indexPath.row]["cover_xl"] as? String
+        let pictureURL = result[indexPath.row]["cover_big"] as? String
         albumView.player = self.player
         albumView.albumCoverURL = pictureURL
         do {

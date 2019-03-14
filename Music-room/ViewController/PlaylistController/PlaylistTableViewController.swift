@@ -233,6 +233,7 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         if playlistResult[indexPath.row].data()["pos"] != nil {
             let vc = EventTrackTableViewController()
             let pos = playlistResult[indexPath.row].data()["pos"] as! [String: Any]

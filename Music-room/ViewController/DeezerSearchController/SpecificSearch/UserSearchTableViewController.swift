@@ -59,6 +59,7 @@ class UserSearchTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        tableView.deselectRow(at: indexPath, animated: true)
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
         cell.accessoryType = .disclosureIndicator
         cell.textLabel?.text = result![indexPath.row].get("displayName") as? String
