@@ -108,10 +108,6 @@ struct FirebaseManager {
                     return
                 }
                 guard let httpResponse = response as? HTTPURLResponse else { return }
-                let x = jsonHelper.convertJSONToObject(data: data)
-                if let _ = x {
-                    print(x!["message"])
-                }
                 result(httpResponse.statusCode)
             }
             task.resume()
@@ -140,7 +136,7 @@ struct FirebaseManager {
         
         Auth.auth().currentUser?.getIDToken(completion: { (tokenCb, err) in
             if err != nil {
-                print(err)
+                print(err!)
                 return
             } else {
                 let tokenBearer = "Bearer \(tokenCb!)"

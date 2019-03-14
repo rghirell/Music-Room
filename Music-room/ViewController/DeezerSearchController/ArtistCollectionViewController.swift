@@ -136,14 +136,14 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
                 print("\(httpResponse.statusCode)")
                 let result = jsonHelper.convertJSONToObject(data: data)
                 if let _ = result {
-                    print(result!["message"])
+                    print(result!["message"] as Any)
                 }
                 return
             }
+            guard let data = data else { return }
             do {
-                let result = try JSONDecoder().decode(AlbumArray.self, from: data!)
+                let result = try JSONDecoder().decode(AlbumArray.self, from: data)
                 self.albumResult = result.data
-                print(result)
             } catch {
                 print(error)
             }

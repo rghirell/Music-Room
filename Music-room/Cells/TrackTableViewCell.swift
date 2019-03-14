@@ -158,7 +158,7 @@ class TrackTableViewCell: SwipeTableViewCell {
         else {
             self.trackRequestDelegate.getTrack(id: self.id, completion: { (track, err) in
                 if err != nil {
-                    print(err)
+                    print(err!)
                     return
                 }
                 vc.track = track

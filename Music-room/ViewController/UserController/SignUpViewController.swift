@@ -99,16 +99,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
                     })
                     self.present(alert, animated: true)
                 } else {
-                    Auth.auth().currentUser?.getIDTokenForcingRefresh(true, completion: { (str, err) in
-                        print(str)
-                    })
-                     self.toUserHomeController()
-                    
+                    self.toUserHomeController()
                 }
             }
             UIViewController.removeSpinner(spinner: self.spinner!)
         }
-        
     }
     
     
@@ -122,7 +117,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         let user = User(email: emailTextField.text!, password: passwordTextField.text!, displayName: userNameTextField.text!)
         FirebaseManager.createUser(user: user) { (data, response, err) in
             if err != nil {
-                print("err ----> ", err)
+                print("err ----> ", err!)
                 UIViewController.removeSpinner(spinner: self.spinner!)
             }
             else if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
@@ -313,7 +308,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let user = Auth.auth().currentUser {
+        if let _ = Auth.auth().currentUser {
             toUserHomeController()
         }
     }

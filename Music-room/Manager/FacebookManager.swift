@@ -184,11 +184,11 @@ class FacebookManager {
         let docRef = Firestore.firestore().collection("users").document(uid)
         docRef.getDocument { (snapshot, err) in
             do {
-                if snapshot?.data() == nil {
-                     completion("Failed to get facebook user from snapshot.", nil, nil)
+                guard let data = snapshot?.data() else {
+                    completion("Failed to get facebook user from snapshot.", nil, nil)
                     return
                 }
-                let jsonData = try JSONSerialization.data(withJSONObject: snapshot?.data(), options: .prettyPrinted)
+                let jsonData = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
                 let facebookProfileContainer = try JSONDecoder().decode(FacebookProfileContainer.self, from: jsonData)
                 completion("Successfully fetched facebook user", nil, facebookProfileContainer.facebookProfile)
             } catch {

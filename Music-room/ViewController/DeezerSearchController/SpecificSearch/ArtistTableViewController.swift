@@ -39,6 +39,11 @@ class ArtistTableViewController: ParentTableViewController {
         vc.albumURL = "https://api.deezer.com/artist/\(result[indexPath.row]["id"] as! Int)/albums"
         vc.artistName = result[indexPath.row]["name"] as? String
         let pictureURL = result[indexPath.row]["picture_xl"] as? String
+        if pictureURL == nil {
+            let alert = Alert.errorAlert(title: "Error", message: "Wrong data were fetch from the server")
+            present(alert, animated: true, completion: nil)
+            return
+        }
         vc.headerImage = pictureURL
         vc.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight + 75, right: 0)
         show(vc, sender: self)

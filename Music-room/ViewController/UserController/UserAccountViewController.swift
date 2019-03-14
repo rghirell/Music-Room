@@ -324,6 +324,7 @@ extension UserAccountViewController {
         switch result {
         case .success:
             DeezerManager.sharedInstance.getMe { (user, err) in
+                // todo
                 print(user)
             }
         case .logout:

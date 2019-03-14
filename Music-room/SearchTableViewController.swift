@@ -275,7 +275,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if error != nil {
                 self.dispatchGroup.leave()
-                print(error?.localizedDescription)
+                print(error!.localizedDescription)
                 return
             }
             self.getResult(searchType: searchType, data: data)
@@ -301,7 +301,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
                 return
             }
         } catch {
-            print(searchType,error, data)
+            print(error)
         }
     }
     
@@ -366,6 +366,11 @@ extension SearchTableViewController {
         vc.albumURL = "https://api.deezer.com/artist/\(result[index]["id"] as! Int)/albums"
         vc.artistName = result[index]["name"] as? String
         let pictureURL = result[index]["picture_xl"] as? String
+        if pictureURL == nil {
+            let alert = Alert.errorAlert(title: "Error", message: "Wrong data were fetch from the server")
+            present(alert, animated: true, completion: nil)
+            return
+        }
         vc.headerImage = pictureURL
         vc.collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight + 75, right: 0)
         show(vc, sender: self)

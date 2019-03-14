@@ -23,6 +23,7 @@ class AddToPlaylistTableViewController: UITableViewController {
         }
     }
     
+    var userUID: String!
     var track: [String: Any]?
     var playlistRes: [QueryDocumentSnapshot]?
     var eventRes: [QueryDocumentSnapshot]?
@@ -39,6 +40,8 @@ class AddToPlaylistTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        guard let uid = Auth.auth().currentUser?.uid else { dismiss(animated: true, completion: nil); return }
+        userUID = uid
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier.playlistCell)
         tableView.rowHeight = 80
         navigationItem.leftBarButtonItem = cancelButton
@@ -51,12 +54,10 @@ class AddToPlaylistTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return playlistResult.count
     }
 
@@ -93,7 +94,7 @@ class AddToPlaylistTableViewController: UITableViewController {
     
     fileprivate func getRegularPlaylist() {
         let ref = Firestore.firestore().collection("playlist")
-        ref.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).getDocuments(completion: { (query, err) in
+        ref.whereField("follower", arrayContains: userUID).getDocuments(completion: { (query, err) in
             if err != nil {
                 self.dispatch.leave()
                 return
@@ -107,7 +108,7 @@ class AddToPlaylistTableViewController: UITableViewController {
         
     
         let ref = Firestore.firestore().collection("event")
-        ref.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).getDocuments(completion: { (query, err) in
+        ref.whereField("follower", arrayContains: userUID).getDocuments(completion: { (query, err) in
             if err != nil {
                 self.dispatch.leave()
                 return
@@ -122,8 +123,21 @@ class AddToPlaylistTableViewController: UITableViewController {
         if isEventPlaylist {
             ref = Firestore.firestore().collection("event").document(playlistResult[indexPath.row].documentID)
             let vote = Firestore.firestore().collection("vote").document(playlistResult[indexPath.row].documentID)
-            let x = String(track!["id"] as! Int)
-            vote.updateData([x: []])
+            guard let track = self.track, let x = track["id"] as? Int else { return }
+            let idTrack = String(x)
+            vote.updateData([idTrack: []]) { (err) in
+                if err != nil {
+                    let alert = Alert.errorAlert(title: "Error", message: err!.localizedDescription, cancelButton: true, completion: {
+                        DispatchQueue.main.async {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    })
+                    DispatchQueue.main.async {
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+            }
+            
         } else { ref = Firestore.firestore().collection("playlist").document(playlistResult[indexPath.row].documentID) }
         
         ref.updateData(["titles": FieldValue.arrayUnion([track!])]) { (err) in
@@ -137,6 +151,5 @@ class AddToPlaylistTableViewController: UITableViewController {
             self.dismiss(animated: true, completion: nil)
         }
     }
- 
 
 }

@@ -26,6 +26,7 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
             tableView.reloadData()
         }
     }
+    var userUID: String!
     
     lazy var newButton: UIBarButtonItem = {
         let button = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addPlaylistHub))
@@ -62,7 +63,6 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         tableView.rowHeight = 80
     }
     
-
     private func setNavBarButton() {
         navigationItem.rightBarButtonItem = newButton
         accountButton.addTarget(self, action: #selector(showAccount), for: .touchUpInside)
@@ -80,6 +80,19 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         present(nc, animated: true, completion: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        guard let userUID = Auth.auth().currentUser?.uid else {
+            do {
+                try Auth.auth().signOut()
+            } catch  {
+                print(error)
+            }
+            self.dismiss(animated: true, completion: nil)
+            return
+        }
+        self.userUID = userUID
+    }
+    
     //MARK: -
     //MARK: - Location Delegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -95,12 +108,12 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     // MARK: - Playlist Setup
     private func setRef() {
         let refEvent = Firestore.firestore().collection("event")
-        refEvent.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).addSnapshotListener { (query, err) in
+        refEvent.whereField("follower", arrayContains: userUID).addSnapshotListener { (query, err) in
             self.eventRes = query?.documents
             self.mergeResult()
         }
         let refPlaylist = Firestore.firestore().collection("playlist")
-        refPlaylist.whereField("follower", arrayContains: Auth.auth().currentUser?.uid).addSnapshotListener { (query, err) in
+        refPlaylist.whereField("follower", arrayContains: userUID).addSnapshotListener { (query, err) in
             self.playlistRes = query?.documents
             self.mergeResult()
         }

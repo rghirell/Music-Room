@@ -60,7 +60,6 @@
 		4AC3FE5521FB2291002E1BAB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AC3FE5321FB2291002E1BAB /* Main.storyboard */; };
 		4AC3FE5A21FB2294002E1BAB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4AC3FE5821FB2294002E1BAB /* LaunchScreen.storyboard */; };
 		4AC3FE6221FB22E2002E1BAB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4AC3FE6121FB22E2002E1BAB /* GoogleService-Info.plist */; };
-		4AC9D59322086CC300751FAA /* deezer.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4AC9D59222086CC300751FAA /* deezer.xcconfig */; };
 		4AC9D5D022089D9700751FAA /* libDeezer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC9D5AF22089D9700751FAA /* libDeezer.a */; };
 		4AC9D5D122089D9700751FAA /* DZRResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4AC9D5CF22089D9700751FAA /* DZRResources.bundle */; };
 		4AC9D5D52209965F00751FAA /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC9D5D42209965E00751FAA /* FirebaseManager.swift */; };
@@ -529,7 +528,6 @@
 				4AC3FE6221FB22E2002E1BAB /* GoogleService-Info.plist in Resources */,
 				4A079C832232B1CF005773CD /* PlaylistPreferenceViewController.xib in Resources */,
 				4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */,
-				4AC9D59322086CC300751FAA /* deezer.xcconfig in Resources */,
 				4A079C8D223452E0005773CD /* FriendsTableViewCell.xib in Resources */,
 				4A2070AE2238255300E3D55D /* UserView.xib in Resources */,
 			);
@@ -770,6 +768,7 @@
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -825,6 +824,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;

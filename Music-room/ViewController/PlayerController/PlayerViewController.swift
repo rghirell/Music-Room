@@ -232,7 +232,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         let url = URL(string: songArray[songIndex].preview)
         URLSession.shared.dataTask(with: url!) { (data, response, err) in
             if err != nil {
-                print(err)
+                print(err!)
                 return
             }
             DispatchQueue.main.async {
