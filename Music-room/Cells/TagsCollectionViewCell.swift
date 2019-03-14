@@ -20,6 +20,7 @@ class TagsCollectionViewCell: UICollectionViewCell {
         button.layer.borderColor = UIColor.lightGray.cgColor
         button.contentEdgeInsets = UIEdgeInsets(top: 5,left: 5,bottom: 5,right: 5)
         button.isUserInteractionEnabled = false
+        
         return button
     }()
     
@@ -31,12 +32,19 @@ class TagsCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    var buttonLeading: NSLayoutConstraint!
+    var buttonLeadingHidden: NSLayoutConstraint!
     override init(frame: CGRect) {
         super.init(frame: frame)
         layer.cornerRadius = 15
         clipsToBounds = true
         addSubview(label)
         addSubview(button)
+        buttonLeading = button.leadingAnchor.constraint(equalTo: label.trailingAnchor)
+        buttonLeading.priority = .defaultHigh
+        buttonLeadingHidden = button.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0)
+        buttonLeadingHidden.priority = .defaultHigh
+        
         NSLayoutConstraint.activate([
             label.heightAnchor.constraint(equalTo:heightAnchor),
             label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
@@ -44,9 +52,19 @@ class TagsCollectionViewCell: UICollectionViewCell {
             label.widthAnchor.constraint(equalToConstant: 15),
             button.heightAnchor.constraint(equalTo: heightAnchor),
             button.trailingAnchor.constraint(equalTo: trailingAnchor),
-            button.leadingAnchor.constraint(equalTo: label.trailingAnchor),
+
+            buttonLeading,
+            buttonLeadingHidden,
             button.centerYAnchor.constraint(equalTo: centerYAnchor),
             ])
+    }
+    
+    func isHidden(hide: Bool) {
+        if hide {
+            label.isHidden = true
+            buttonLeading.priority = .defaultLow
+            buttonLeadingHidden.priority = .defaultHigh
+        }
     }
     
 
