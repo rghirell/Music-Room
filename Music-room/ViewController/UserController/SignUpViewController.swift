@@ -265,7 +265,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     
     
     //MARK: -
-    //MARK: Google Register/Signin Handlers
+    //MARK: - Google Register/Signin Handlers
     @IBAction func googleSignIn(_ sender: UIButton) {
         GIDSignIn.sharedInstance()?.signIn()
     }
@@ -311,6 +311,28 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         if let _ = Auth.auth().currentUser {
             toUserHomeController()
         }
+    }
+    
+    
+    // MARK: -
+    // MARK: - Password reset
+    @IBAction func resetPassword(_ sender: UIButton) {
+        
+        let alert = Alert.alert(style: .alert, title: "Reset password", message: "Enter the e-mail address used to create your account", textFields: [UITextField()]) { (str) in
+            self.hud.show(in: self.view)
+            let auth = Auth.auth()
+            auth.sendPasswordReset(withEmail: str!.first!, completion: { (err) in
+                if err != nil {
+                    let alert = Alert.errorAlert(title: "Error", message: err!.localizedDescription)
+                    self.present(alert, animated: true, completion: nil)
+                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
+                    return
+                }
+                let alert = Alert.errorAlert(title: "Success", message: "An email has been sent to \(str!.first!)")
+                self.present(alert, animated: true, completion: nil)
+            })
+        }
+        present(alert, animated: true, completion: nil)
     }
     
 

@@ -123,6 +123,19 @@
                                     <action selector="googleSignIn:" destination="Ddz-NE-X2u" eventType="touchUpInside" id="Ods-kX-Paf"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Djf-rB-0Vg" userLabel="passwordEmail">
+                                <rect key="frame" x="12" y="588.66666666666663" width="351" height="10"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="10" id="nrN-U9-tCb"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="13"/>
+                                <state key="normal" title="Forgot password ?">
+                                    <color key="titleColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="resetPassword:" destination="Ddz-NE-X2u" eventType="touchUpInside" id="0ol-D8-IQq"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.2193390429" green="0.51816105840000004" blue="0.96867865320000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
@@ -135,12 +148,15 @@
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="CMy-56-AbD"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="top" secondItem="YUq-8o-2PR" secondAttribute="bottom" constant="12" id="DV3-8X-FVL"/>
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="bottom" secondItem="YUq-8o-2PR" secondAttribute="top" constant="-20" id="Oxg-uh-8YG"/>
+                            <constraint firstItem="Djf-rB-0Vg" firstAttribute="width" secondItem="5mz-hg-D3b" secondAttribute="width" id="TYF-Nu-m6r"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="width" secondItem="YUq-8o-2PR" secondAttribute="width" id="b9K-dj-rB4"/>
                             <constraint firstItem="zZf-cp-9vI" firstAttribute="width" secondItem="5mz-hg-D3b" secondAttribute="width" id="cjH-XQ-yQp"/>
+                            <constraint firstItem="Djf-rB-0Vg" firstAttribute="centerX" secondItem="5mz-hg-D3b" secondAttribute="centerX" id="dbP-G2-6hK"/>
                             <constraint firstItem="5mz-hg-D3b" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="hAB-Nl-DRo"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="height" secondItem="hrL-zw-HKW" secondAttribute="height" multiplier="0.3" id="kji-E3-1oY"/>
                             <constraint firstItem="zZf-cp-9vI" firstAttribute="height" secondItem="5mz-hg-D3b" secondAttribute="height" id="muE-KV-MCK"/>
                             <constraint firstItem="YUq-8o-2PR" firstAttribute="centerX" secondItem="hrL-zw-HKW" secondAttribute="centerX" id="nX5-B5-eJb"/>
+                            <constraint firstItem="Djf-rB-0Vg" firstAttribute="top" secondItem="5mz-hg-D3b" secondAttribute="bottom" constant="10" id="qh3-JF-P3j"/>
                             <constraint firstItem="VfE-Eq-noG" firstAttribute="width" secondItem="YUq-8o-2PR" secondAttribute="width" id="xGG-b6-qfG"/>
                             <constraint firstItem="zZf-cp-9vI" firstAttribute="centerX" secondItem="5mz-hg-D3b" secondAttribute="centerX" id="xSo-A2-GUq"/>
                             <constraint firstItem="Q34-pY-mK1" firstAttribute="width" secondItem="5mz-hg-D3b" secondAttribute="width" id="zHE-uZ-vCO"/>
