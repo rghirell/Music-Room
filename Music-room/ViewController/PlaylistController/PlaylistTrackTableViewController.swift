@@ -125,6 +125,7 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     }
     
     @objc private func displayPlaylistControls() {
+        
         let vc = PlaylistPreferenceViewController(nibName: "PlaylistPreferenceViewController", bundle: Bundle.main)
         vc.delegate = self
         self.addChild(vc)
@@ -136,6 +137,7 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     }
     
     func changeTableViewInteraction() {
+         navigationItem.rightBarButtonItem?.isEnabled = !navigationItem.rightBarButtonItem!.isEnabled
         tableView.isScrollEnabled = !tableView.isScrollEnabled
     }
     

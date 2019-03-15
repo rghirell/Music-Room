@@ -13,6 +13,7 @@
             <connections>
                 <outlet property="deleteButton" destination="gBc-86-1I5" id="8DM-UI-VEU"/>
                 <outlet property="followSwitch" destination="JPb-bn-fcq" id="PfQ-gQ-UHV"/>
+                <outlet property="playerDelegateButton" destination="Md3-A1-BEv" id="3s7-tW-g1b"/>
                 <outlet property="scroll" destination="pNt-jt-24h" id="5Uf-7G-EOC"/>
                 <outlet property="switchPublicPrivate" destination="2hr-cB-vDI" id="Z34-Q4-2eY"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -30,10 +31,10 @@
                             <rect key="frame" x="0.0" y="0.0" width="305" height="218"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gac-pt-zFd" userLabel="Content View">
-                                    <rect key="frame" x="0.0" y="0.0" width="305" height="305"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="305" height="218"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mGy-tG-gfG" userLabel="Add Friend">
-                                            <rect key="frame" x="106" y="19" width="92" height="30"/>
+                                            <rect key="frame" x="12" y="19" width="75" height="30"/>
                                             <state key="normal" title="Add Friend"/>
                                             <connections>
                                                 <action selector="do:" destination="-1" eventType="touchUpInside" id="HcJ-qA-gdv"/>
@@ -52,10 +53,10 @@
                                             </connections>
                                         </switch>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBc-86-1I5">
-                                            <rect key="frame" x="8" y="135" width="289" height="150"/>
+                                            <rect key="frame" x="8" y="135" width="289" height="30"/>
                                             <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="150" id="X6j-XV-Bcm"/>
+                                                <constraint firstAttribute="height" constant="30" id="X6j-XV-Bcm"/>
                                             </constraints>
                                             <state key="normal" title="Delete">
                                                 <color key="titleColor" red="0.98431372549999996" green="0.97647058819999999" blue="0.97254901959999995" alpha="1" colorSpace="calibratedRGB"/>
@@ -76,6 +77,13 @@
                                                 <action selector="changeFollowStatus:" destination="-1" eventType="valueChanged" id="NnA-B0-PcS"/>
                                             </connections>
                                         </switch>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Md3-A1-BEv">
+                                            <rect key="frame" x="173" y="19" width="120" height="30"/>
+                                            <state key="normal" title="Player Delegation"/>
+                                            <connections>
+                                                <action selector="addUserToPlayerControl:" destination="-1" eventType="touchUpInside" id="tWB-aj-9hd"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
@@ -86,15 +94,16 @@
                                         <constraint firstItem="SCU-7k-Cas" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="8" id="5rN-Xt-w7j"/>
                                         <constraint firstItem="pvJ-7a-a3h" firstAttribute="top" secondItem="SCU-7k-Cas" secondAttribute="bottom" constant="19" id="5v6-Mn-e62"/>
                                         <constraint firstItem="gBc-86-1I5" firstAttribute="top" secondItem="pvJ-7a-a3h" secondAttribute="bottom" constant="17" id="83t-qa-7sg"/>
-                                        <constraint firstItem="mGy-tG-gfG" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="106" id="97p-BN-FQV"/>
+                                        <constraint firstItem="mGy-tG-gfG" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="12" id="97p-BN-FQV"/>
                                         <constraint firstItem="pvJ-7a-a3h" firstAttribute="centerY" secondItem="2hr-cB-vDI" secondAttribute="centerY" id="Ecn-dc-5oX"/>
-                                        <constraint firstAttribute="trailing" secondItem="mGy-tG-gfG" secondAttribute="trailing" constant="107" id="FSv-s7-npK"/>
+                                        <constraint firstAttribute="trailing" secondItem="Md3-A1-BEv" secondAttribute="trailing" constant="12" id="VPm-Pi-tQY"/>
                                         <constraint firstItem="pvJ-7a-a3h" firstAttribute="leading" secondItem="gac-pt-zFd" secondAttribute="leading" constant="8" id="b8Q-QB-cw9"/>
                                         <constraint firstItem="mGy-tG-gfG" firstAttribute="top" secondItem="gac-pt-zFd" secondAttribute="top" constant="19" id="b95-Rx-9VF"/>
                                         <constraint firstAttribute="trailing" secondItem="2hr-cB-vDI" secondAttribute="trailing" constant="20" id="k9e-hC-G1J"/>
                                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="gBc-86-1I5" secondAttribute="bottom" constant="20" id="kTx-WG-YpK"/>
                                         <constraint firstItem="SCU-7k-Cas" firstAttribute="width" secondItem="pvJ-7a-a3h" secondAttribute="width" id="kb5-SA-fjy"/>
                                         <constraint firstItem="JPb-bn-fcq" firstAttribute="centerY" secondItem="SCU-7k-Cas" secondAttribute="centerY" id="rdq-JT-zF6"/>
+                                        <constraint firstItem="Md3-A1-BEv" firstAttribute="top" secondItem="gac-pt-zFd" secondAttribute="top" constant="19" id="tQ9-Ae-iUm"/>
                                     </constraints>
                                 </view>
                             </subviews>

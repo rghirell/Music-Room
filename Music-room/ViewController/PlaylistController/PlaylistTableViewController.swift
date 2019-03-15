@@ -235,13 +235,18 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if playlistResult[indexPath.row].data()["pos"] != nil {
+            guard let location = locManager.location else {
+                let alert = Alert.errorAlert(title: "Location Error", message: "Couldn't get your current position, make sure you have enable geolocation on your settings")
+                present(alert, animated: true, completion: nil)
+                return
+            }
             let vc = EventTrackTableViewController()
             let pos = playlistResult[indexPath.row].data()["pos"] as! [String: Any]
             let lat = pos["lat"] as! Double
             let lon = pos["lon"] as! Double
             let radius = playlistResult[indexPath.row].data()["distance"] as! Double
             let center = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-            let currentCenter = CLLocationCoordinate2D(latitude: self.locManager.location!.coordinate.latitude, longitude: self.locManager.location!.coordinate.longitude)
+            let currentCenter = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
             let x = CLCircularRegion(center: currentCenter, radius: radius * 1000, identifier: "europe")
             vc.player = self.player
             vc.playlistID = playlistResult[indexPath.row].documentID

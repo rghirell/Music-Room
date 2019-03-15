@@ -57,7 +57,6 @@ class Helpers {
     
     // MARK: -
     // MARK: dismiss hud
-    
     static func
         dismissHud(_ hud: JGProgressHUD, text: String, detailText: String, delay: TimeInterval) {
         DispatchQueue.main.async {

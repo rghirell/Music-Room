@@ -17,6 +17,7 @@ struct FirebaseManager {
         static let allPlaylist = "https://us-central1-music-room-42.cloudfunctions.net/getAllPlaylist"
         static let addPlaylist = "https://us-central1-music-room-42.cloudfunctions.net/createPlaylist"
         static let addEvent = "https://us-central1-music-room-42.cloudfunctions.net/createEvent"
+        static let addUserToPlayer = "https://us-central1-music-room-42.cloudfunctions.net/AddUserPlayer"
     }
     
     static var firestoreDatabase: Firestore = {

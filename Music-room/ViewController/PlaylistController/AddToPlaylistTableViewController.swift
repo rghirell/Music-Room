@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import JGProgressHUD
 
 class AddToPlaylistTableViewController: UITableViewController {
 
@@ -20,7 +21,14 @@ class AddToPlaylistTableViewController: UITableViewController {
             getPlaylist()
         }
     }
+    let hud: JGProgressHUD = {
+        let hud = JGProgressHUD(style: .dark)
+        hud.interactionType = .blockAllTouches
+        hud.parallaxMode = .alwaysOff
+        return hud
+    }()
     
+    var idTrack = 0
     var track: [String: Any]?
     var playlistRes: [QueryDocumentSnapshot]?
     var eventRes: [QueryDocumentSnapshot]?
@@ -115,12 +123,14 @@ class AddToPlaylistTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var ref: DocumentReference
+        hud.show(in: self.view)
         if isEventPlaylist {
             ref = Firestore.firestore().collection("event").document(playlistResult[indexPath.row].documentID)
             let vote = Firestore.firestore().collection("vote").document(playlistResult[indexPath.row].documentID)
             guard let track = self.track, let x = track["id"] as? Int else { return }
             let idTrack = String(x)
-            vote.updateData([idTrack: []]) { (err) in
+            self.idTrack = x
+            vote.updateData([idTrack: FieldValue.arrayUnion([])]) { (err) in
                 if err != nil {
                     let alert = Alert.errorAlert(title: "Error", message: err!.localizedDescription, cancelButton: true, completion: {
                         DispatchQueue.main.async {
@@ -135,16 +145,37 @@ class AddToPlaylistTableViewController: UITableViewController {
             
         } else { ref = Firestore.firestore().collection("playlist").document(playlistResult[indexPath.row].documentID) }
         
-        ref.updateData(["titles": FieldValue.arrayUnion([track!])]) { (err) in
+        ref.getDocument { (doc, err) in
             if err != nil {
-                let alert = Alert.errorAlert(title: "Error", message: "Couldn't add it to the playlist")
+                let alert = Alert.errorAlert(title: "Error", message: "error")
                 DispatchQueue.main.async {
                     self.present(alert, animated: true, completion: nil)
                 }
                 return
             }
-            self.dismiss(animated: true, completion: nil)
+            guard let doc = doc?.data()  else { return }
+            guard let titles = doc["titles"] as? [[String: Any]] else { return }
+            var flag = false
+            for element in titles {
+                if element["id"] as! Int == self.idTrack {
+                    flag = true
+                    break
+                }
+             }
+            if !flag {
+                ref.updateData(["titles": FieldValue.arrayUnion([self.track!])]) { (err) in
+                    if err != nil {
+                        let alert = Alert.errorAlert(title: "Error", message: "Couldn't add it to the playlist")
+                        DispatchQueue.main.async {
+                            self.present(alert, animated: true, completion: nil)
+                        }
+                        return
+                    }
+                    self.dismiss(animated: true, completion: nil)
+                }
+            } else { self.dismiss(animated: true, completion: nil) }
         }
+        
     }
 
 }

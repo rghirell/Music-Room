@@ -58,6 +58,9 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
     //MARK: View Setup
     override func viewDidLoad() {
         super.viewDidLoad()
+        if Auth.auth().currentUser == nil {
+            dismiss(animated: true, completion: nil)
+        }
         setupTabBars()
         
         setupCurrentTrackView()

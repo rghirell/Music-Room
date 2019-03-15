@@ -25,12 +25,62 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     var refVote: DocumentReference? = nil
     var refVoteListener: ListenerRegistration? = nil
     var playlistID: String!
+    var owner = false
+    var canPlay = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupTableView()
+        let ref = Firestore.firestore().collection("event").document(playlistID!)
+        ref.getDocument { (doc, err) in
+            guard let data = doc?.data() else {   return }
+            guard let owner = data["owner"] as? String else { return }
+            guard let canPlay = data["can_play"] as? [String] else { return }
+            guard let myId = Auth.auth().currentUser?.uid else { return }
+            if canPlay.contains(myId) {
+                self.canPlay = true
+            }
+            guard let myUID = Auth.auth().currentUser?.uid else { return }
+            if owner == myUID {
+                self.owner = true
+            }
+        }
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        var flag = 0
+        hud.show(in: view)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
+        ref = Firestore.firestore().collection("event").document(playlistID!)
+        self.refListener =  self.ref?.addSnapshotListener({ (data, err) in
+            self.ref?.getDocument(completion: { (data, err) in
+                if data?.data() == nil { return }
+                let x = data!.get("titles") as! [[String: Any]]
+                self.trackArray = x
+                if flag == 1 {
+                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
+                    flag = 0
+                    self.tableView.reloadData()
+                } else { flag = 1 }
+            })
+        })
+        
+        refVote = Firestore.firestore().collection("vote").document(playlistID)
+        refVoteListener = refVote?.addSnapshotListener({ (data, err) in
+            self.refVote?.getDocument(completion: { (data, err) in
+                guard let data = data?.data() else  { return }
+                let x = data as! [String: [String]]
+                self.trackLike = x.sorted { $0.value.count > $1.value.count }
+                if flag == 1 {
+                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
+                    flag = 0
+                    self.tableView.reloadData()
+                } else { flag = 1}
+            })
+        })
+    }
+
     
     let hud: JGProgressHUD = {
         let hud = JGProgressHUD(style: .dark)
@@ -114,40 +164,6 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
         task.resume()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        var flag = 0
-        hud.show(in: view)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
-        ref = Firestore.firestore().collection("event").document(playlistID!)
-        self.refListener =  self.ref?.addSnapshotListener({ (data, err) in
-            self.ref?.getDocument(completion: { (data, err) in
-                if data?.data() == nil { return }
-                let x = data!.get("titles") as! [[String: Any]]
-                self.trackArray = x
-                if flag == 1 {
-                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
-                    flag = 0
-                    self.tableView.reloadData()
-                } else { flag = 1 }
-            })
-        })
-        
-        refVote = Firestore.firestore().collection("vote").document(playlistID)
-        refVoteListener = refVote?.addSnapshotListener({ (data, err) in
-            self.refVote?.getDocument(completion: { (data, err) in
-                guard let data = data?.data() else  { return }
-                let x = data as! [String: [String]]
-                self.trackLike = x.sorted { $0.value.count > $1.value.count }
-                if flag == 1 {
-                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
-                    flag = 0
-                    self.tableView.reloadData()
-                } else { flag = 1}
-            })
-        })
-    }
-    
     @objc private func displayPlaylistControls() {
         let vc = PlaylistPreferenceViewController(nibName: "PlaylistPreferenceViewController", bundle: Bundle.main)
         vc.delegate = self
@@ -160,6 +176,7 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     func changeTableViewInteraction() {
+        navigationItem.rightBarButtonItem?.isEnabled = !navigationItem.rightBarButtonItem!.isEnabled
         tableView.isScrollEnabled = !tableView.isScrollEnabled
     }
     
@@ -195,6 +212,9 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if !owner && !canPlay {
+            return
+        }
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String

@@ -23,39 +23,33 @@ class PlaylistPreferenceViewController: UIViewController {
     private var isFollowing = true
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var switchPublicPrivate: UISwitch!
+    @IBOutlet weak var scroll: UIScrollView!
+    @IBOutlet weak var followSwitch: UISwitch!
+    @IBOutlet weak var playerDelegateButton: UIButton!
+    
     var delegate: PreferenceDelegate! {
         didSet{
             delegate.changeTableViewInteraction()
         }
     }
     
+    // MARK: -
+    // MARK: - View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         showAnimate()
+        if type == "playlist" {
+            playerDelegateButton.isHidden = true
+            playerDelegateButton.isEnabled = false
+        }
         // Do any additional setup after loading the view.
     }
 
-
-    @IBOutlet weak var scroll: UIScrollView!
-    @IBAction func `do`(_ sender: UIButton) {
-        let vc = AddFriendTableViewController()
-    
-        vc.playlistUID = self.playlistUID
-        vc.type = self.type
-        self.addChild(vc)
-        guard let vi = view.viewWithTag(1) else { return }
-        vc.view.frame = CGRect(x: 0, y: 0, width: vi.frame.width, height: vi.frame.height)
-        self.view.viewWithTag(1)!.addSubview(vc.view)
-        vc.didMove(toParent: self)
-       
-    }
-    
     @IBAction func close(_ sender: UIButton?) {
         delegate.changeTableViewInteraction()
         view.removeFromSuperview()
     }
-    
-    @IBOutlet weak var followSwitch: UISwitch!
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         ref = Firestore.firestore().collection(type).document(playlistUID)
@@ -74,13 +68,27 @@ class PlaylistPreferenceViewController: UIViewController {
                 self.switchPublicPrivate.isOn = false
             }
             if owner != Auth.auth().currentUser!.uid {
+                self.playerDelegateButton.isHidden = true
+                self.playerDelegateButton.isEnabled = false
                 self.switchPublicPrivate.isEnabled = false
                 self.hasRight = false
                 self.deleteButton.isEnabled = false
                 self.deleteButton.isHidden = true
             }
         }
-        
+    }
+    
+    // MARK: -
+    // MARK: - View Actions
+    @IBAction func `do`(_ sender: UIButton) {
+        let vc = AddFriendTableViewController()
+        vc.playlistUID = self.playlistUID
+        vc.type = self.type
+        self.addChild(vc)
+        guard let vi = view.viewWithTag(1) else { return }
+        vc.view.frame = CGRect(x: 0, y: 0, width: vi.frame.width, height: vi.frame.height)
+        self.view.viewWithTag(1)!.addSubview(vc.view)
+        vc.didMove(toParent: self)
     }
     
     @IBAction func changePlaylistVisibility(_ sender: UISwitch) {
@@ -113,6 +121,31 @@ class PlaylistPreferenceViewController: UIViewController {
             present(alert, animated: true, completion: nil)
         }
     }
+    
+    @IBAction func addUserToPlayerControl(_ sender: UIButton) {
+        let alert = Alert.alert(style: .alert, title: "Delegate Control Player", message: "Enter the email address to whom you want to grant player control", textFields: [UITextField()]) { (str) in
+            let queryItems = [
+                URLQueryItem(name: "emailUser", value: str?.first),
+                URLQueryItem(name: "eventUid", value: self.playlistUID)
+            ]
+            FirebaseManager.postRequestWithToken(url: FirebaseManager.PlaylistUrl.addUserToPlayer ,queryItem: queryItems, data: nil) { (statusCode) in
+                if statusCode != 200 {
+                    let alert = Alert.errorAlert(title: "Error", message: "Couldn't grant access to the entered user")
+                    DispatchQueue.main.async {
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    return
+                }
+                let alert = Alert.errorAlert(title: "Success", message: "User successfully added")
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
     
     func showAnimate() {
         self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
