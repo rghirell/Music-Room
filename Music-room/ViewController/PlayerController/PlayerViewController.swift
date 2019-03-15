@@ -49,9 +49,11 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     let nextButton : UIButton = {
         let button = UIButton()
+        button.tag = 10
         let image = UIImage(named: "skip_next_white")
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(prevNextAction), for: .touchUpInside)
         button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
@@ -64,6 +66,8 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     let prevButton : UIButton = {
         let button = UIButton()
+        button.tag = 11
+        button.addTarget(self, action: #selector(prevNextAction), for: .touchUpInside)
         let image = UIImage(named: "skip_previous_white")
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -228,7 +232,9 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     
+    
     fileprivate func downloadSong() {
+        playPauseButton.isEnabled = false
         let url = URL(string: songArray[songIndex].preview)
         URLSession.shared.dataTask(with: url!) { (data, response, err) in
             if err != nil {
@@ -236,6 +242,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
                 return
             }
             DispatchQueue.main.async {
+                self.playPauseButton.isEnabled = true
                 self.playSong(data: data!)
                 self.updateDuration()
             }
@@ -262,6 +269,21 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(refreshStatusBar), userInfo: nil, repeats: true)
             state = .play
         }
+    }
+    
+    @objc func prevNextAction(_ sender: UIButton) {
+        var index = songIndex
+        if sender.tag == 10 {
+            index = songIndex + 1
+        } else { index = songIndex - 1 }
+        if index < 0 {
+            index = 0
+        }
+        if index >= songArray.count {
+            return
+        }
+        loadAlbum(songIndex: index, cover: coverImage, albumName: albumName, songArray: songArray
+        )
     }
     
     fileprivate func playSong(data: Data) {
@@ -346,6 +368,9 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         state = .pause
         timeSlider.cancelTracking(with: nil)
         timer?.invalidate()
+        if songIndex < songArray.count - 1 {
+            loadAlbum(songIndex: songIndex + 1, cover: coverImage, albumName: albumName, songArray: songArray)
+        }
     }
     
     func loadTrack(songIndex: Int, cover: String?, songArray: [TrackCodable]) {
@@ -366,7 +391,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         self.collectionView.reloadData()
         tabBarDelegate.displayCurrentTrackView()
     }
-    
+
     
     
     
