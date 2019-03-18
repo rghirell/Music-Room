@@ -36,7 +36,6 @@
 		4A13468122312140004C4605 /* SearchTrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13468022312140004C4605 /* SearchTrackTableViewCell.swift */; };
 		4A134685223175D7004C4605 /* EventTrackTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A134684223175D7004C4605 /* EventTrackTableViewController.swift */; };
 		4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5A8220B67F80054A670 /* FacebookManager.swift */; };
-		4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AC220B67F80054A670 /* SparkExtensions.swift */; };
 		4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AD220B67F80054A670 /* Helpers.swift */; };
 		4A16E5B5220C95660054A670 /* SparkKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5B4220C95660054A670 /* SparkKeys.swift */; };
 		4A16E5BA220DB6340054A670 /* MixedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5B9220DB6340054A670 /* MixedModel.swift */; };
@@ -103,7 +102,6 @@
 		4A13468022312140004C4605 /* SearchTrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A134684223175D7004C4605 /* EventTrackTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTrackTableViewController.swift; sourceTree = "<group>"; };
 		4A16E5A8220B67F80054A670 /* FacebookManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookManager.swift; sourceTree = "<group>"; };
-		4A16E5AC220B67F80054A670 /* SparkExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkExtensions.swift; sourceTree = "<group>"; };
 		4A16E5AD220B67F80054A670 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		4A16E5B4220C95660054A670 /* SparkKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkKeys.swift; sourceTree = "<group>"; };
 		4A16E5B9220DB6340054A670 /* MixedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixedModel.swift; sourceTree = "<group>"; };
@@ -289,7 +287,6 @@
 		4A16E5A7220B67F80054A670 /* Spark */ = {
 			isa = PBXGroup;
 			children = (
-				4A16E5AC220B67F80054A670 /* SparkExtensions.swift */,
 				4A16E5B4220C95660054A670 /* SparkKeys.swift */,
 			);
 			path = Spark;
@@ -647,7 +644,6 @@
 			files = (
 				4AE5FDA121FB686E00F1FEF8 /* utils.swift in Sources */,
 				4A13463722246F3A004C4605 /* ParentTableViewController.swift in Sources */,
-				4A16E5B2220B67F80054A670 /* SparkExtensions.swift in Sources */,
 				4A32B8F2220F7F40000089A0 /* CoverCollectionViewCell.swift in Sources */,
 				4A4E76782216B7C80066D179 /* UserAccountViewController.swift in Sources */,
 				4A13467D2229AA29004C4605 /* TagsCollectionViewCell.swift in Sources */,

@@ -223,6 +223,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.row >= result.count {
             specialCell(type: (result.count + 5) - indexPath.row)
             return

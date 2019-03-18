@@ -127,6 +127,7 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
         collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
     }
     
+
     private func updateCustomNavBar() {
         navView.alpha = ratio
     }

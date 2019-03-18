@@ -37,12 +37,17 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
     var playlistUID: String!
     var type: String!
     
+    // MARK: -
+    // MARK: - VIEW setup
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         getFriends()
     }
     
+    func back() {
+        view.removeFromSuperview()
+    }
     
     fileprivate func setupTableView() {
         let header = HeadView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 100))
@@ -53,16 +58,7 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
         tableView.tableHeaderView = header
     }
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return friends.count
-    }
-    
+    // MARK: -
     private func getFriends() {
         Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).getDocument { (doc, err) in
             guard let doc = doc else { return }
@@ -71,15 +67,6 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
             self.friendsUID = friendsUID as! [String]
         }
     }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "custom", for: indexPath)
-        cell.textLabel?.text = friends[indexPath.row].name
-        cell.accessoryType = friends[indexPath.row].isSelected ? .checkmark : .none
-        return cell
-    }
-    
-    
     
     private func getDisplayName() {
         let dispatch = DispatchGroup()
@@ -99,10 +86,6 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
         }
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        friends[indexPath.row].isSelected = !friends[indexPath.row].isSelected
-    }
-    
     func save() {
         var selectedFriend = [String]()
         for friend in friends {
@@ -115,17 +98,37 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
         self.view.removeFromSuperview()
     }
     
-    func back() {
-        view.removeFromSuperview()
+    // MARK: -
+    // MARK: - Tableview datasource/delegate
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "custom", for: indexPath)
+        cell.textLabel?.text = friends[indexPath.row].name
+        cell.accessoryType = friends[indexPath.row].isSelected ? .checkmark : .none
+        return cell
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return friends.count
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        friends[indexPath.row].isSelected = !friends[indexPath.row].isSelected
     }
     
 }
 
+// MARK: -
 protocol HeadViewDelegate: class {
     func save()
     func back()
 }
 
+// MARK: -
+// MARK: - TableView headerView
 final fileprivate class HeadView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
