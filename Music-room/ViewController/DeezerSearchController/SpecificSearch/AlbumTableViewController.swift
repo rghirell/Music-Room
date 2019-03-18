@@ -54,7 +54,7 @@ class AlbumTableViewController: ParentTableViewController {
             print(error)
         }
         albumView.downloadTracks()
-        albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
+//        albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         self.show(albumView, sender: self)
         
         

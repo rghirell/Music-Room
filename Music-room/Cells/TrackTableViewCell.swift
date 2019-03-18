@@ -59,7 +59,6 @@ class TrackTableViewCell: SwipeTableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 1
         label.text = "Title "
-        
         return label
     }()
     

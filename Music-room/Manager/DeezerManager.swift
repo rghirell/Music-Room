@@ -234,11 +234,6 @@ extension DeezerManager {
         track.illustration(with: DZRRequestManager.default(), callback: callback)
     }
     
-}
-
-
-class DeezerManager1 {
-    
     static func search(searchType: String, query: String, index: String, completion: @escaping ([String: Any]? , Error?) -> ()) {
         var components = URLComponents(string: "https://api.deezer.com/search/\(searchType)")
         components?.queryItems = [
@@ -290,6 +285,8 @@ class DeezerManager1 {
         }
         task.resume()
     }
-
     
 }
+
+
+

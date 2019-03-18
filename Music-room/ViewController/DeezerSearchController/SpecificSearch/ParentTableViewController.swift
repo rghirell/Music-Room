@@ -55,7 +55,7 @@ class ParentTableViewController: UIViewController, UITableViewDelegate, UITableV
     }
         
     private func fetchFromApi() {
-        DeezerManager1.search(searchType: searchType, query: self.search, index: page.description) { (result, err) in
+        DeezerManager.search(searchType: searchType, query: self.search, index: page.description) { (result, err) in
             DispatchQueue.main.async {
                 Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
             }

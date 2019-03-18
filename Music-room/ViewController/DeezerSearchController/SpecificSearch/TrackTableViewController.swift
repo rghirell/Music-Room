@@ -18,7 +18,6 @@ class TrackTableViewController: ParentTableViewController {
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
         tableView.rowHeight = 120
         tableView.separatorStyle = .none
-//        tableView.separatorInset = UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 50)
         tableView.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 0, right: 20)
     }
 

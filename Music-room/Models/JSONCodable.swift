@@ -57,67 +57,85 @@ struct Accessibility : Codable {
     }
 }
 
-
-struct ArtistArray : Codable {
-    var data: [ArtistCodable]
+struct SearchRequest<T : Codable>: Codable {
+    let data: [T]
     var total: Int
 }
 
-struct ArtistCodable : Codable {
-    var name: String
-    var type: String
-    var link: String?
-    var picture: String?
-    var picture_small: String?
-    var picture_medium: String?
-    var picture_big: String?
-    var picture_xl: String?
-    var tracklist: String?
-    var id: Int
+struct ArtistCodable: Codable {
+    let name: String
+    let id: Int
+    let picture, link: String?
+    let pictureSmall, pictureMedium, pictureBig, pictureXl: String?
+    let nbAlbum, nbFan: Int?
+    let radio: Bool?
+    let tracklist: String
+    let type: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, link, picture
+        case pictureSmall = "picture_small"
+        case pictureMedium = "picture_medium"
+        case pictureBig = "picture_big"
+        case pictureXl = "picture_xl"
+        case nbAlbum = "nb_album"
+        case nbFan = "nb_fan"
+        case radio, tracklist, type
+    }
 }
 
-
-struct TrackArray : Codable {
-    var data : [TrackCodable]
-    var total : Int
+struct AlbumCodable: Codable {
+    let title: String?
+    let id: Int
+    let cover: String
+    let link: String?
+    let coverSmall, coverMedium, coverBig, coverXl: String?
+    let genreID, nbTracks: Int?
+    let recordType: String?
+    let tracklist: String
+    let explicitLyrics: Bool?
+    let artist: ArtistCodable?
+    let type: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title, link, cover
+        case coverSmall = "cover_small"
+        case coverMedium = "cover_medium"
+        case coverBig = "cover_big"
+        case coverXl = "cover_xl"
+        case genreID = "genre_id"
+        case nbTracks = "nb_tracks"
+        case recordType = "record_type"
+        case tracklist
+        case explicitLyrics = "explicit_lyrics"
+        case artist, type
+    }
 }
 
-struct TrackCodable : Codable {
-    var id: Int?
-    var title: String
-    var preview: String
-    var type : String
-    var album : AlbumCodable?
-    var artist : ArtistCodable
-    var duration : Int?
-    var explicit_content_cover: Int?
-    var explicit_content_lyrics: Int?
-    var explicit_lyrics: Bool?
-    var link: String?
-    var rank: Int?
-    var readable: Bool?
-    var title_short: String?
-    var title_version: String?
-}
-
-
-struct AlbumArray : Codable {
-    var data: [AlbumCodable]
-    var total: Int
-}
-
-struct AlbumCodable : Codable {
-    var title: String
-    var cover: String?
-    var cover_small: String?
-    var cover_xl: String?
-    var cover_medium: String?
-    var cover_big: String?
-    var id: Int?
-    var tracklist: String
-    var record_type: String?
-    var type: String
-    var artist: ArtistCodable?
+struct TrackCodable: Codable {
+    let id: Int
+    let readable: Bool?
+    let title, titleShort, titleVersion: String?
+    let link: String?
+    let rank: Int?
+    let duration: Int
+    let explicitLyrics: Bool?
+    let explicitContentLyrics, explicitContentCover: Int?
+    let preview: String
+    let artist: ArtistCodable?
+    let album: AlbumCodable?
+    let type: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id, readable, title
+        case titleShort = "title_short"
+        case titleVersion = "title_version"
+        case link, duration, rank
+        case explicitLyrics = "explicit_lyrics"
+        case explicitContentLyrics = "explicit_content_lyrics"
+        case explicitContentCover = "explicit_content_cover"
+        case preview, artist, album, type
+    }
 }
 
 

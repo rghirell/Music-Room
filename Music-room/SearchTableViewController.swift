@@ -22,9 +22,9 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     
     // MARK: -
     // MARK: API FETCH
-    var fetchedAlbums: AlbumArray?
-    var fetchedTracks: TrackArray?
-    var fetchedArtist: ArtistArray?
+    var fetchedAlbums: SearchRequest<AlbumCodable>?
+    var fetchedTracks: SearchRequest<TrackCodable>?
+    var fetchedArtist: SearchRequest<ArtistCodable>?
     var result: [[String: Any]] = [[String: Any]]()
     var trackDelegate: TrackDelegate!
     var player: PlayerViewController!
@@ -50,7 +50,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        self.navigationController!.navigationBar.topItem!.title = "Search"
     }
     
     func setupViews() {
@@ -185,10 +184,10 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.artistCell, for: indexPath) as! ArtistTableViewCell
             let pictureURL = result[indexPath.row]["picture_medium"] as? String
             cell.thumbnail.image = nil
-            let url = URL(string: pictureURL!)
-            cell.thumbnail.kf.setImage(with: url)
-          
             cell.artistLabel.text = result[indexPath.row]["name"] as? String
+            guard let picURL = pictureURL else { return cell }
+            let url = URL(string: picURL)
+            cell.thumbnail.kf.setImage(with: url)
             return cell
         case "track":
             let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
@@ -196,14 +195,14 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             let artistDic = result[indexPath.row]["artist"] as! NSDictionary
             let artist = artistDic["name"] as? String
             let albumDic = result[indexPath.row]["album"] as! NSDictionary
-            let albumURL = albumDic["cover_medium"] as! String
+            let albumURL = albumDic["cover_medium"] as? String
             cell.thumbnail.image = nil
-            let url = URL(string: albumURL)
-            cell.thumbnail.kf.setImage(with: url)
-          
             cell.delegateViewController = self
             cell.trackLabel.text = result[indexPath.row]["title"] as? String
             cell.trackPlaceholder.text = "Title • \(artist!)"
+            guard let picURL = albumURL else { return cell }
+            let url = URL(string: picURL)
+            cell.thumbnail.kf.setImage(with: url)
             return cell
         case "album":
             let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.albumCell, for: indexPath) as! AlbumTableViewCell
@@ -211,13 +210,12 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             let artist = artistDic["name"] as? String
             let albumName = result[indexPath.row]["record_type"] as? String
             let pictureURL = result[indexPath.row]["cover_medium"] as? String
-            cell.thumbnail.image = nil
-            cell.thumbnail.image = nil
-            let url = URL(string: pictureURL!)
-            cell.thumbnail.kf.setImage(with: url)
-        
             cell.albumLabel.text = result[indexPath.row]["title"] as? String
             cell.albumPlaceholder.text = "\(albumName!.capitalized) • \(artist!)"
+            cell.thumbnail.image = nil
+            guard let picURL = pictureURL else { return cell }
+            let url = URL(string: picURL)
+            cell.thumbnail.kf.setImage(with: url)
             return cell
         default:
             return UITableViewCell()
@@ -299,13 +297,13 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         do {
             switch searchType {
             case "artist":
-                let result = try JSONDecoder().decode(ArtistArray.self, from: data!)
+                let result = try JSONDecoder().decode(SearchRequest<ArtistCodable>.self, from: data!)
                 self.fetchedArtist = result
             case "track":
-                let result = try JSONDecoder().decode(TrackArray.self, from: data!)
+                let result = try JSONDecoder().decode(SearchRequest<TrackCodable>.self, from: data!)
                 self.fetchedTracks = result
             case "album":
-                let result = try JSONDecoder().decode(AlbumArray.self, from: data!)
+                let result = try JSONDecoder().decode(SearchRequest<AlbumCodable>.self, from: data!)
                 self.fetchedAlbums = result
             default:
                 return
@@ -366,8 +364,6 @@ extension SearchTableViewController {
         catch  {
             print(error)
         }
-        albumView.downloadTracks()
-        albumView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
         show(albumView, sender: self)
     }
     
@@ -419,7 +415,6 @@ extension SearchTableViewController {
         }
         DispatchQueue.main.async {
             if runningGroup == self.runningGroup && self.search.count > 0 {
-                print(self.result)
                 Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                 self.tableView.reloadData()
             }

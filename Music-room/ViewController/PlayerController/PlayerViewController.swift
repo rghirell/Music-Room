@@ -165,7 +165,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     fileprivate func stateChanged() {
-        print(state)
         switch state {
         case .play:
             notificationCenter.post(name: .songPlay, object: true)
@@ -320,7 +319,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     fileprivate func displayInfo() {
         albumLabel.text = songArray[songIndex].album?.title ?? albumName
-        artistLabel.text = songArray[songIndex].artist.name
+        artistLabel.text = songArray[songIndex].artist!.name
         trackLabel.text = songArray[songIndex].title
     }
     
@@ -352,14 +351,14 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     func updateDuration() {
-        guard let duration = songArray[songIndex].duration else { return }
+        let duration = songArray[songIndex].duration
         if duration > 30 {
             durationLabel.text = "0:30"
             timeSlider.maximumValue = 30.0
             return
         }
         var secStr = ""
-        let sec = songArray[songIndex].duration! % 60
+        let sec = songArray[songIndex].duration % 60
         if sec < 10 {
             secStr = "0\(Int(sec))"
         } else { secStr = "\(sec)" }

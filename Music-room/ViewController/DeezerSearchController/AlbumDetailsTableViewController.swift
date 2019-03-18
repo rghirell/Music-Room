@@ -15,9 +15,9 @@ protocol AlbumLoadDelegate : class {
     func loadAlbum(songIndex: Int, cover: UIImage?, albumName: String?, songArray: [TrackCodable])
 }
 
-class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelegate {
-
-    var albumTracks: TrackArray? {
+class AlbumDetailsTableViewController: UIViewController, TrackRequestDelegate, UITableViewDataSource, UITableViewDelegate {
+    
+    var albumTracks: SearchRequest<TrackCodable>? {
         didSet {
             DispatchQueue.main.async {
                 self.x.label.text = self.albumName
@@ -34,7 +34,7 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
         return hud
     }()
     
-    
+    var tableView: UITableView!
     var albumLoadDelegate: AlbumLoadDelegate!
     var artistName: String?
     var albumCoverURL: String?
@@ -47,16 +47,19 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Album"
-        hud.show(in: view)
+   
         prepareTableView()
     }
     
     var x: ParallaxHeaderView!
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        hud.show(in: view)
+        downloadTracks()
         let parallaxViewFrame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.width / 1.3)
         x = ParallaxHeaderView(frame: parallaxViewFrame)
-        let url = URL(string: albumCoverURL!)
+        guard let picURL = albumCoverURL else { self.tableView.tableHeaderView  = x; return }
+        let url = URL(string: picURL)
         x.imageView.kf.indicatorType = .activity
         x.imageView.kf.setImage(with: url)
         self.tableView.tableHeaderView  = x
@@ -65,7 +68,7 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
     func downloadTracks() {
         guard let x = tracklist else {  print("No url given"); return }
         let url = URL(string: x)
-        guard let urlTask = url else { print("wrong url"); return }
+        guard let urlTask = url else { print("wrong url"); navigationController?.popViewController(animated: true); return }
         let task = URLSession.shared.dataTask(with: urlTask) { (data, url, err) in
             if err != nil {
                 print(err!)
@@ -73,7 +76,7 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
             }
             guard let data = data else {  print("invalid data"); return }
             do {
-                self.albumTracks = try JSONDecoder().decode(TrackArray.self, from: data)
+                self.albumTracks = try JSONDecoder().decode(SearchRequest<TrackCodable>.self, from: data)
             } catch {
                 print(error)
             }
@@ -82,37 +85,45 @@ class AlbumDetailsTableViewController: UITableViewController, TrackRequestDelega
     }
     
     fileprivate func prepareTableView() {
+        let displayWidth: CGFloat = self.view.frame.width
+        let displayHeight: CGFloat = self.view.frame.height
+        tableView = UITableView(frame: CGRect(x: 0, y: 0, width: displayWidth, height: displayHeight))
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: trackCellIdentifier)
         tableView.rowHeight = 80
         tableView.separatorStyle = .none
         tableView.isUserInteractionEnabled = true
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
+        view.addSubview(tableView)
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: trackCellIdentifier, for: indexPath) as! TrackTableViewCell
         cell.hideImageView(isHidden: true)
         cell.delegateViewController = self
         cell.trackRequestDelegate = self
-        cell.id = (albumTracks?.data[indexPath.row].id)!
+        cell.id = albumTracks?.data[indexPath.row].id ?? 0
         cell.trackLabel.text = albumTracks?.data[indexPath.row].title
         cell.trackPlaceholder.text = artistName
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        player.loadAlbum(songIndex: indexPath.row, cover: albumCoverURL, albumName: albumName, songArray: (albumTracks?.data)!)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let tracks = albumTracks?.data else { return }
+        player.loadAlbum(songIndex: indexPath.row, cover: albumCoverURL, albumName: albumName, songArray: tracks)
     }
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return  albumTracks?.data.count ?? 0
     }
     
     func getTrack(id: Int, completion: @escaping ([String : Any]?, Error?) -> ()) {
-        DeezerManager1.search(id: "\(id)") { (track, err) in
+        DeezerManager.search(id: "\(id)") { (track, err) in
             completion(track, err)
         }
     }
