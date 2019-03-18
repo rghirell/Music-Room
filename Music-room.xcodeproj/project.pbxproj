@@ -12,7 +12,6 @@
 		4A079C822232B1CF005773CD /* PlaylistPreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A079C802232B1CF005773CD /* PlaylistPreferenceViewController.swift */; };
 		4A079C832232B1CF005773CD /* PlaylistPreferenceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A079C812232B1CF005773CD /* PlaylistPreferenceViewController.xib */; };
 		4A079C852232B88A005773CD /* AddFriendTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A079C842232B88A005773CD /* AddFriendTableViewController.swift */; };
-		4A079C8722343C8D005773CD /* FriendView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A079C8622343C8D005773CD /* FriendView.xib */; };
 		4A079C8922344C3E005773CD /* FriendPlaylistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A079C8822344C3E005773CD /* FriendPlaylistTableViewController.swift */; };
 		4A079C8C223452E0005773CD /* FriendsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A079C8A223452E0005773CD /* FriendsTableViewCell.swift */; };
 		4A079C8D223452E0005773CD /* FriendsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A079C8B223452E0005773CD /* FriendsTableViewCell.xib */; };
@@ -80,7 +79,6 @@
 		4A079C802232B1CF005773CD /* PlaylistPreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistPreferenceViewController.swift; sourceTree = "<group>"; };
 		4A079C812232B1CF005773CD /* PlaylistPreferenceViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlaylistPreferenceViewController.xib; sourceTree = "<group>"; };
 		4A079C842232B88A005773CD /* AddFriendTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendTableViewController.swift; sourceTree = "<group>"; };
-		4A079C8622343C8D005773CD /* FriendView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FriendView.xib; sourceTree = "<group>"; };
 		4A079C8822344C3E005773CD /* FriendPlaylistTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendPlaylistTableViewController.swift; sourceTree = "<group>"; };
 		4A079C8A223452E0005773CD /* FriendsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsTableViewCell.swift; sourceTree = "<group>"; };
 		4A079C8B223452E0005773CD /* FriendsTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FriendsTableViewCell.xib; sourceTree = "<group>"; };
@@ -261,7 +259,6 @@
 				4A079C8B223452E0005773CD /* FriendsTableViewCell.xib */,
 				4A2070AD2238255300E3D55D /* UserView.xib */,
 				4A079C812232B1CF005773CD /* PlaylistPreferenceViewController.xib */,
-				4A079C8622343C8D005773CD /* FriendView.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -523,7 +520,6 @@
 			files = (
 				4AC3FE5A21FB2294002E1BAB /* LaunchScreen.storyboard in Resources */,
 				4AC9D5D122089D9700751FAA /* DZRResources.bundle in Resources */,
-				4A079C8722343C8D005773CD /* FriendView.xib in Resources */,
 				4AC3FE5521FB2291002E1BAB /* Main.storyboard in Resources */,
 				4AC3FE6221FB22E2002E1BAB /* GoogleService-Info.plist in Resources */,
 				4A079C832232B1CF005773CD /* PlaylistPreferenceViewController.xib in Resources */,

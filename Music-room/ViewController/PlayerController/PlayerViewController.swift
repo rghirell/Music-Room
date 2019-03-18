@@ -44,9 +44,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     private let notificationCenter: NotificationCenter = .default
     
     // MARK: -
-    // MARK: View Element
-    
-    
+    // MARK: - View Element
     let nextButton : UIButton = {
         let button = UIButton()
         button.tag = 10
@@ -62,6 +60,15 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         let view = UIView()
         view.backgroundColor = .black
         return view
+    }()
+    
+    let hideViewButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(#imageLiteral(resourceName: "downArrow"), for: .normal)
+        button.addTarget(self, action: #selector(swipeDown), for: .touchUpInside)
+        button.imageView?.contentMode = .scaleAspectFit
+        return button
     }()
     
     let prevButton : UIButton = {
@@ -93,7 +100,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     let artistLabel: UILabel = {
         let label = UILabel()
-        label.textAlignment = .center
         label.font = label.font.withSize(16)
         label.textColor = UIColor.gray
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -103,7 +109,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     let trackLabel: UILabel = {
         let label = UILabel()
-        label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 24)
         label.textColor = .white
         label.text = "track"
@@ -392,9 +397,6 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         tabBarDelegate.displayCurrentTrackView()
     }
 
-    
-    
-    
     fileprivate func setupLayout() {
         view.layer.cornerRadius = 8
         view.clipsToBounds = true
@@ -411,7 +413,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         timeSlider.minimumTrackTintColor = .white
         timeSlider.setThumbImage(UIImage(named: "icon"), for: .normal)
         
-     allViews = [blurryLayer,currentDurationLabel, durationLabel, albumLabel, trackLabel, artistLabel, timeSlider, playPauseButton, prevButton, nextButton, collectionView]
+        allViews = [blurryLayer,currentDurationLabel, durationLabel, albumLabel, trackLabel, artistLabel, timeSlider, playPauseButton, prevButton, nextButton, collectionView, hideViewButton]
         
         for x in allViews! {
             self.view.addSubview(x)
@@ -446,9 +448,11 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             trackLabel.bottomAnchor.constraint(equalTo: artistLabel.topAnchor, constant: -5),
             trackLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             trackLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
-            albumLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            albumLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -24),
+            albumLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            albumLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -60),
             albumLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hideViewButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            hideViewButton.topAnchor.constraint(equalTo: albumLabel.topAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1),
             collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: imageConstraintMultiplier),
@@ -461,8 +465,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     }
     
     //MARK: -
-    //MARK: CollectionView
-    
+    //MARK: - CollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return songArray.count
     }
