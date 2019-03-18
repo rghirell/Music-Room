@@ -293,7 +293,7 @@ extension UserAccountViewController {
     }
     
     @objc private func signOut() {
-        switch providerID! {
+        switch providerID {
         case "google.com":
             GIDSignIn.sharedInstance()?.signOut()
         default:
@@ -335,7 +335,7 @@ extension UserAccountViewController {
             }
         case .logout:
             break
-        case .error(let error):
+        case .error:
             print("error")
         }
     }

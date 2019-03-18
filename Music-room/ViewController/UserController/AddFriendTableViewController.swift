@@ -21,7 +21,7 @@ struct Friend {
 }
 
 class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
-
+    
     var friendsUID = [String]() {
         didSet {
             getDisplayName()
@@ -36,7 +36,7 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
     
     var playlistUID: String!
     var type: String!
- 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
@@ -52,12 +52,12 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "custom")
         tableView.tableHeaderView = header
     }
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return friends.count
@@ -79,7 +79,7 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
         return cell
     }
     
-
+    
     
     private func getDisplayName() {
         let dispatch = DispatchGroup()
@@ -119,8 +119,6 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
         view.removeFromSuperview()
     }
     
-    
-    
 }
 
 protocol HeadViewDelegate: class {
@@ -129,7 +127,6 @@ protocol HeadViewDelegate: class {
 }
 
 final fileprivate class HeadView: UIView {
-    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }

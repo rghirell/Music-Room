@@ -411,14 +411,13 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
       
         timeSlider.minimumTrackTintColor = .white
         timeSlider.setThumbImage(UIImage(named: "icon"), for: .normal)
-        
+    
         allViews = [blurryLayer,currentDurationLabel, durationLabel, albumLabel, trackLabel, artistLabel, timeSlider, playPauseButton, prevButton, nextButton, collectionView, hideViewButton]
         
         for x in allViews! {
             self.view.addSubview(x)
         }
-
-
+        
         if screenSize.height <= 700 {
             minimumSpaceConstant = screenSize.height * 0.04
             imageConstraintMultiplier = CGFloat(0.7)

@@ -26,6 +26,7 @@ class PlaylistPreferenceViewController: UIViewController {
     @IBOutlet weak var scroll: UIScrollView!
     @IBOutlet weak var followSwitch: UISwitch!
     @IBOutlet weak var playerDelegateButton: UIButton!
+    var myUID: String!
     
     var delegate: PreferenceDelegate! {
         didSet{
@@ -37,6 +38,10 @@ class PlaylistPreferenceViewController: UIViewController {
     // MARK: - View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        if Auth.auth().currentUser?.uid == nil {
+            delegate.dismissController()
+        }
+        myUID = Auth.auth().currentUser!.uid
         showAnimate()
         if type == "playlist" {
             playerDelegateButton.isHidden = true
@@ -60,14 +65,14 @@ class PlaylistPreferenceViewController: UIViewController {
             guard let playlistStatus = accessibility["public"] else { self.close(nil); return }
             guard let follower = data["follower"] as? [String] else{ self.close(nil); return }
             
-            if !follower.contains(Auth.auth().currentUser!.uid) {
+            if !follower.contains(self.myUID) {
                 self.isFollowing = false
                 self.followSwitch.isOn = false
             }
             if playlistStatus {
                 self.switchPublicPrivate.isOn = false
             }
-            if owner != Auth.auth().currentUser!.uid {
+            if owner != self.myUID {
                 self.playerDelegateButton.isHidden = true
                 self.playerDelegateButton.isEnabled = false
                 self.switchPublicPrivate.isEnabled = false
@@ -100,9 +105,9 @@ class PlaylistPreferenceViewController: UIViewController {
    
     @IBAction func changeFollowStatus(_ sender: UISwitch) {
         if sender.isOn {
-            ref.updateData(["follower": FieldValue.arrayUnion([Auth.auth().currentUser!.uid])])
+            ref.updateData(["follower": FieldValue.arrayUnion([myUID])])
         } else {
-            ref.updateData(["follower": FieldValue.arrayRemove([Auth.auth().currentUser!.uid])])
+            ref.updateData(["follower": FieldValue.arrayRemove([myUID])])
         }
     }
     
@@ -144,8 +149,6 @@ class PlaylistPreferenceViewController: UIViewController {
         }
         present(alert, animated: true, completion: nil)
     }
-    
-    
     
     func showAnimate() {
         self.view.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
