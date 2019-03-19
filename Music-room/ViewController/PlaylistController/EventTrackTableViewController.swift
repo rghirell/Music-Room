@@ -27,6 +27,7 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     var playlistID: String!
     var owner = false
     var canPlay = false
+    var trackOrder = [Int]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,9 +48,9 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
         }
     }
     
+    var flag = 0
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        var flag = 0
         hud.show(in: view)
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
         ref = Firestore.firestore().collection("event").document(playlistID!)
@@ -58,14 +59,9 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
                 if data?.data() == nil { return }
                 let x = data!.get("titles") as! [[String: Any]]
                 self.trackArray = x
-                if flag == 1 {
-                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
-                    flag = 0
-                    if self.trackArray!.count != self.trackLike.count {
-                        self.dismissController()
-                    }
-                    self.tableView.reloadData()
-                } else { flag = 1 }
+                if self.flag == 1 {
+                    self.reloadData()
+                } else { self.flag = 1 }
             })
         })
         
@@ -75,16 +71,21 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
                 guard let data = data?.data() else  { return }
                 let x = data as! [String: [String]]
                 self.trackLike = x.sorted { $0.value.count > $1.value.count }
-                if flag == 1 {
-                    Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
-                    flag = 0
-                    if self.trackArray!.count != self.trackLike.count {
-                        self.dismissController()
-                    }
-                    self.tableView.reloadData()
-                } else { flag = 1}
+                if self.flag == 1 {
+                   self.reloadData()
+                } else { self.flag = 1}
             })
         })
+    }
+    
+    private func reloadData() {
+        Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
+        flag = 0
+        if self.trackArray!.count != self.trackLike.count {
+            self.dismissController()
+        }
+        self.trackOrder.removeAll()
+        self.tableView.reloadData()
     }
 
     
@@ -131,10 +132,16 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
         if indexPath.row >= trackLike.count {
             index = indexPath.row
         } else {
-            index = trackArray.firstIndex(where: { (y) -> Bool in
+            let tmp = trackArray.firstIndex(where: { (y) -> Bool in
                 return y["id"] as? Int == Int(trackLike[indexPath.row].key)
-            })!
+            })
+            if tmp == nil {
+                dismissController()
+            } else {
+                index = tmp!
+            }
         }
+        trackOrder.append(index)
         cell.liked = trackLike[indexPath.row].value.contains(Auth.auth().currentUser!.uid)
         cell.likeDelegate = self
         cell.currentTrack = trackArray[index]
@@ -228,7 +235,7 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
         if !owner && !canPlay {
             return
         }
-        let index = indexPath.row
+        let index = trackOrder[indexPath.row]
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as? String ?? ""
         tableView.deselectRow(at: indexPath, animated: true)
