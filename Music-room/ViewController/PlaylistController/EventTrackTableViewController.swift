@@ -61,6 +61,9 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
                 if flag == 1 {
                     Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                     flag = 0
+                    if self.trackArray!.count != self.trackLike.count {
+                        self.dismissController()
+                    }
                     self.tableView.reloadData()
                 } else { flag = 1 }
             })
@@ -75,6 +78,9 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
                 if flag == 1 {
                     Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                     flag = 0
+                    if self.trackArray!.count != self.trackLike.count {
+                        self.dismissController()
+                    }
                     self.tableView.reloadData()
                 } else { flag = 1}
             })
@@ -133,30 +139,37 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
         cell.likeDelegate = self
         cell.currentTrack = trackArray[index]
         cell.hideThumbButton(isHidden: false)
-        let artistDic = trackArray[index]["artist"] as! NSDictionary
-        let artist = artistDic["name"] as? String
-        let albumDic = trackArray[index]["album"] as! NSDictionary
-        let albumURL = albumDic["cover_xl"] as! String
-        downloadImage(urlImage: albumURL) { (image) in
-            cell.thumbnail.image = nil
-            cell.thumbnail.image = image
+        let artistDic = trackArray[index]["artist"] as? NSDictionary
+        var artist = ""
+        if artistDic != nil && artistDic!["name"] as? String != nil {
+            artist = artistDic!["name"] as? String ?? ""
         }
         cell.delegateViewController = self
-        cell.trackLabel.text = trackArray[index]["title"] as? String
-        cell.trackPlaceholder.text = "Title • \(artist!)"
+        cell.trackLabel.text = trackArray[index]["title"] as? String ?? ""
+        cell.trackPlaceholder.text = "Title • \(artist)"
+        cell.thumbnail.image = nil 
+        let albumDic = trackArray[index]["album"] as? NSDictionary
+        var albumURL = ""
+        if albumDic != nil {
+            albumURL = albumDic!["cover_xl"] as? String ?? ""
+        }
+        downloadImage(urlImage: albumURL) { (image) in
+            cell.thumbnail.image = image
+        }
         return cell
     }
     
-    fileprivate func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
+    fileprivate func downloadImage(urlImage: String, completion: @escaping (UIImage) -> ())  {
         if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
             completion(imageFromCache)
             return
         }
-        let url = URL(string: urlImage!)
-        let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
+        let ur = URL(string: urlImage)
+        guard let url = ur else { return }
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             DispatchQueue.main.async {
                 if let data = data, let image = UIImage(data: data) {
-                    self.imageCache.setObject(image, forKey: urlImage! as AnyObject)
+                    self.imageCache.setObject(image, forKey: urlImage as AnyObject)
                     completion(image)
                 }
             }
@@ -217,7 +230,7 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
         }
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
-        let albumURL = albumDic["cover_xl"] as! String
+        let albumURL = albumDic["cover_xl"] as? String ?? ""
         tableView.deselectRow(at: indexPath, animated: true)
         do {
             let x = try JSONSerialization.data(withJSONObject: self.trackArray![index])

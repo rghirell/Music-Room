@@ -9,13 +9,6 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
-//let myGroup = DispatchGroup()
-
-
-//protocol TrackDelegate: class {
-//    func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
-//}
-
 class SearchTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,  UISearchBarDelegate {
    
     let dispatchGroup = DispatchGroup()
@@ -32,7 +25,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     
     fileprivate var tasks = [URLSessionTask]()
     fileprivate var APItasks = [URLSessionTask]()
-    fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     private var tableView: UITableView!
     
     // MARK: -
@@ -287,6 +279,7 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
                 print(error!.localizedDescription)
                 return
             }
+            guard let data = data else { self.dispatchGroup.leave() ;return}
             self.getResult(searchType: searchType, data: data)
             self.dispatchGroup.leave()
         }
@@ -294,17 +287,17 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         APItasks.append(task)
     }
     
-    func getResult(searchType: String, data: Data?) {
+    func getResult(searchType: String, data: Data) {
         do {
             switch searchType {
             case "artist":
-                let result = try JSONDecoder().decode(SearchRequest<ArtistCodable>.self, from: data!)
+                let result = try JSONDecoder().decode(SearchRequest<ArtistCodable>.self, from: data)
                 self.fetchedArtist = result
             case "track":
-                let result = try JSONDecoder().decode(SearchRequest<TrackCodable>.self, from: data!)
+                let result = try JSONDecoder().decode(SearchRequest<TrackCodable>.self, from: data)
                 self.fetchedTracks = result
             case "album":
-                let result = try JSONDecoder().decode(SearchRequest<AlbumCodable>.self, from: data!)
+                let result = try JSONDecoder().decode(SearchRequest<AlbumCodable>.self, from: data)
                 self.fetchedAlbums = result
             default:
                 return
@@ -314,31 +307,13 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
             print(error)
         }
     }
-    
-    fileprivate func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
-        if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
-            completion(imageFromCache)
-            return
-        }
-        let url = URL(string: urlImage!)
-        let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
-            // Perform UI changes only on main thread.
-            DispatchQueue.main.async {
-                if let data = data, let image = UIImage(data: data) {
-                    self.imageCache.setObject(image, forKey: urlImage! as AnyObject)
-                    completion(image)
-                }
-            }
-        }
-        task.resume()
-    }
 }
 
 extension SearchTableViewController {
     
     func playTracks(index: Int) {
-        let albumDic = result[index]["album"] as! NSDictionary
-        let albumURL = albumDic["cover_xl"] as! String
+        guard let albumDic = result[index]["album"] as? NSDictionary else { return }
+        let albumURL = albumDic["cover_xl"] as? String  ?? ""
         do {
             let x = try JSONSerialization.data(withJSONObject: self.result[index])
             let track = try JSONDecoder().decode(TrackCodable.self, from: x)
@@ -347,7 +322,6 @@ extension SearchTableViewController {
         catch  {
             print(error)
         }
-
     }
     
     func displayAlbum(index: Int) {
@@ -371,7 +345,7 @@ extension SearchTableViewController {
     func displayArtist(index: Int) {
         let vc = ArtistCollectionViewController(collectionViewLayout: StrechyHeader())
         vc.player = player
-        vc.albumURL = "https://api.deezer.com/artist/\(result[index]["id"] as! Int)/albums"
+        vc.albumURL = "https://api.deezer.com/artist/\(result[index]["id"] as? Int ?? 0)/albums"
         vc.artistName = result[index]["name"] as? String
         let pictureURL = result[index]["picture_xl"] as? String
         if pictureURL == nil {
@@ -396,27 +370,36 @@ extension SearchTableViewController {
     
     
     func createResultArray(runningGroup: Int) {
-        for (index, element) in (fetchedArtist?.data)!.enumerated() {
-            result.append(element.dictionary)
-            if index > 2 {
-                break
+        if let artistData = fetchedArtist?.data {
+            for (index, element) in artistData.enumerated() {
+                result.append(element.dictionary)
+                if index > 2 {
+                    break
+                }
             }
         }
-        for (index, element) in (fetchedTracks?.data)!.enumerated() {
-            result.append(element.dictionary)
-            if index > 2 {
-                break
+        if let trackData = fetchedTracks?.data {
+            for (index, element) in trackData.enumerated() {
+                result.append(element.dictionary)
+                if index > 2 {
+                    break
+                }
             }
         }
-        for (index, element) in (fetchedAlbums?.data)!.enumerated() {
-            result.append(element.dictionary)
-            if index > 2 {
-                break
+        if let albumData = fetchedAlbums?.data {
+            for (index, element) in albumData.enumerated() {
+                result.append(element.dictionary)
+                if index > 2 {
+                    break
+                }
             }
         }
         DispatchQueue.main.async {
             if runningGroup == self.runningGroup && self.search.count > 0 {
                 Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
+                self.fetchedAlbums = nil
+                self.fetchedTracks = nil
+                self.fetchedArtist = nil
                 self.tableView.reloadData()
             }
         }

@@ -82,10 +82,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
                 let alert = Alert.errorAlert(title: "Couln't connect", message: err?.localizedDescription)
                 self.present(alert, animated: true)
             } else {
-                if !((data?.user.isEmailVerified)!) {
+                guard let data = data else { return }
+                if !data.user.isEmailVerified {
                     let alert = Alert.errorAlert(title: "Email needs to be verified", message: "Check your inbox or resend an email", cancelButton: true, completion: {
-                        data?.user.sendEmailVerification(completion: { (err) in
-                            var message, title: String?
+                        data.user.sendEmailVerification(completion: { (err) in
+                            var message, title: String
                             if err != nil {
                                 message = "Couldn't send email verification"
                                 title = "Email verification"
@@ -93,7 +94,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
                                 title = "Email sent"
                                 message = "Email has been succesfully sent"
                             }
-                            let alert = Alert.errorAlert(title: title!, message: message!)
+                            let alert = Alert.errorAlert(title: title, message: message)
                             self.present(alert, animated: true)
                         })
                     })
@@ -205,10 +206,12 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
     private func moveView() {
         let screenSize = UIScreen.main.bounds
         let screenHeight = screenSize.height
+        guard let originY = originY  else { return }
         if (isKeyboardActive) {
-            view.frame.origin.y = originY! - (keyboardHeight! - (screenHeight - registerButton.frame.maxY) + 10)
+            guard let keyboardHeight = keyboardHeight else { return }
+            view.frame.origin.y = originY - (keyboardHeight - (screenHeight - registerButton.frame.maxY) + 10)
         } else {
-            view.frame.origin.y = originY!
+            view.frame.origin.y = originY
         }
     }
     

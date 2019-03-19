@@ -23,17 +23,23 @@ class AlbumTableViewController: ParentTableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.albumCell, for: indexPath) as! AlbumTableViewCell
-        let artistDic = result[indexPath.row]["artist"] as! NSDictionary
-        let artist = artistDic["name"] as? String
+        
+        
+        let artistDic = result[indexPath.row]["artist"] as? NSDictionary
+        var artist = ""
+        if artistDic != nil && artistDic!["name"] as? String != nil {
+            artist = artistDic!["name"] as? String ?? ""
+        }
+        
+        cell.albumLabel.text = result[indexPath.row]["title"] as? String ?? ""
         let albumName = result[indexPath.row]["record_type"] as? String
+        cell.albumPlaceholder.text = "\(albumName!.capitalized) • \(artist)"
         let pictureURL = result[indexPath.row]["cover_medium"] as? String
         cell.thumbnail.image = nil
         if pictureURL != nil {
             let url = URL(string: pictureURL!)
             cell.thumbnail.kf.setImage(with: url)
         }
-        cell.albumLabel.text = result[indexPath.row]["title"] as? String
-        cell.albumPlaceholder.text = "\(albumName!.capitalized) • \(artist!)"
         return cell
     }
     

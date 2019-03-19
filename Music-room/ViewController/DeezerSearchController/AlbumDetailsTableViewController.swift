@@ -161,7 +161,7 @@ final class ParallaxHeaderView: UIView {
             imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
             label.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
-            label.widthAnchor.constraint(equalTo: widthAnchor, constant: 24),
+            label.widthAnchor.constraint(equalTo: widthAnchor, constant: -24),
             ])
     }
 

@@ -26,7 +26,7 @@ class ArtistTableViewController: ParentTableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.artistCell, for: indexPath) as! ArtistTableViewCell
         let pictureURL = result[indexPath.row]["picture_medium"] as? String
         cell.thumbnail.image = nil
-        let url = URL(string: pictureURL!)
+        let url = URL(string: pictureURL ?? "")
         cell.thumbnail.kf.setImage(with: url)
         cell.artistLabel.text = result[indexPath.row]["name"] as? String
         cell.layoutIfNeeded()
@@ -37,7 +37,8 @@ class ArtistTableViewController: ParentTableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let vc = ArtistCollectionViewController(collectionViewLayout: StrechyHeader())
         vc.player = player
-        vc.albumURL = "https://api.deezer.com/artist/\(result[indexPath.row]["id"] as! Int)/albums"
+        guard let id =  result[indexPath.row]["id"] else { return }
+        vc.albumURL = "https://api.deezer.com/artist/\(id as? Int)/albums"
         vc.artistName = result[indexPath.row]["name"] as? String
         let pictureURL = result[indexPath.row]["picture_xl"] as? String
         if pictureURL == nil {

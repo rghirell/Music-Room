@@ -42,7 +42,6 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
         tableView.separatorStyle = .none
         let xib = UINib(nibName: "FriendsTableViewCell", bundle: nil)
         tableView.register(xib, forCellReuseIdentifier: CellIdentifier.friendCell)
-        
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {

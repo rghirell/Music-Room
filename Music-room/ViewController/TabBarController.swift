@@ -178,9 +178,9 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
     
     func changeCurrentTrackViewDisplay() {
         let track = vc.songArray[vc.songIndex]
-        let attributedText = NSMutableAttributedString(string: "\(track.title!) • ", attributes: [.font: UIFont.boldSystemFont(ofSize: 12), .foregroundColor: UIColor.white])
-        attributedText.append(NSAttributedString(string: "\(track.artist!.name)", attributes: [.font: UIFont.boldSystemFont(ofSize: 12),.foregroundColor: UIColor.gray]))
-        let url = URL(string: vc.coverImage!)
+        let attributedText = NSMutableAttributedString(string: "\(track.title ?? "") • ", attributes: [.font: UIFont.boldSystemFont(ofSize: 12), .foregroundColor: UIColor.white])
+        attributedText.append(NSAttributedString(string: "\(track.artist?.name ?? "")", attributes: [.font: UIFont.boldSystemFont(ofSize: 12),.foregroundColor: UIColor.gray]))
+        let url = URL(string: vc.coverImage ?? "")
         currentTrackIV.kf.setImage(with: url)
         currentTrackIV.layer.masksToBounds = true
         currentTrackIV.layer.cornerRadius = CGFloat(roundf(Float(currentTrackIV.frame.size.width/2.0)))

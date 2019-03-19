@@ -240,8 +240,9 @@ extension DeezerManager {
             URLQueryItem(name: "q", value: query),
             URLQueryItem(name: "index", value: index)
         ]
-        let url = components?.url
-        var request = URLRequest(url: url!)
+        let ur = components?.url
+        guard let url = ur else { return }
+        var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "GET"
         
@@ -264,8 +265,9 @@ extension DeezerManager {
     
     
     static func search(id: String, completion: @escaping ([String: Any]? , Error?) -> ()) {
-        let url = URL(string: "https://api.deezer.com/track/\(id)")
-        var request = URLRequest(url: url!)
+        let ur = URL(string: "https://api.deezer.com/track/\(id)")
+        guard let url = ur else { return }
+        var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "GET"
         

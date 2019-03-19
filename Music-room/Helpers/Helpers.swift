@@ -21,3 +21,13 @@ class Helpers {
     }
 }
 
+struct SparkKeys {
+    
+    struct CollectionPath {
+        static let users = "users"
+    }
+    
+    struct StorageFolder {
+        static let profileImages = "profileImages"
+    }
+}

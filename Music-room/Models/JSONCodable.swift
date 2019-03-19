@@ -46,7 +46,6 @@ struct EventPlaylistCreation : Codable {
     var distance: Int
 }
 
-
 struct Accessibility : Codable {
     var permission: Bool
     var friends: Bool?

@@ -28,10 +28,6 @@ struct FirebaseManager {
         return db
     }()
     
-//    static var playListRequest: URLRequest = {
-//
-//    }()
-    
     
     fileprivate static func requestCompletion(data: Data?, response: URLResponse?, err: Error?) -> [String: Any]? {
         if err != nil {
@@ -90,7 +86,7 @@ struct FirebaseManager {
     static func postRequestWithToken(url: String, queryItem: [URLQueryItem]?, data: Data?, result: @escaping (Int) -> ()) {
         var urlComponents = URLComponents(string: url)
         urlComponents?.queryItems = queryItem
-        let url = urlComponents?.url!
+        let url = urlComponents?.url
         guard let urlRequest = url else {
             print("wrong url")
             return
@@ -118,7 +114,8 @@ struct FirebaseManager {
 
     
     static func createUser(user: User, cb: @escaping (Data?, URLResponse?, Error?) -> Void) {
-        let url = URL(string: "https://us-central1-music-room-42.cloudfunctions.net/createUser")!
+        let ur = URL(string: "https://us-central1-music-room-42.cloudfunctions.net/createUser")
+        guard let url = ur else { return }
         var request = URLRequest(url: url)
         let encodedData = try? JSONEncoder().encode(user)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -131,7 +128,8 @@ struct FirebaseManager {
     }
     
     static func getPublicPlaylists(cb: @escaping ([Playlist]) -> Void) {
-        let url = URL(string: "https://us-central1-music-room-42.cloudfunctions.net/getAllPlaylist")!
+        let ur = URL(string: "https://us-central1-music-room-42.cloudfunctions.net/getAllPlaylist")
+        guard let url = ur else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
@@ -140,8 +138,8 @@ struct FirebaseManager {
                 print(err!)
                 return
             } else {
-                let tokenBearer = "Bearer \(tokenCb!)"
-                print(tokenBearer)
+                guard let tokenCb = tokenCb else { return }
+                let tokenBearer = "Bearer \(tokenCb)"
                 request.setValue(tokenBearer , forHTTPHeaderField: "Authorization")
                 
                 let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
@@ -150,7 +148,8 @@ struct FirebaseManager {
                         return
                     }
                     do {
-                        let playlist = try JSONDecoder().decode([Playlist].self, from: data!)
+                        guard let data = data else { return }
+                        let playlist = try JSONDecoder().decode([Playlist].self, from: data)
                         cb(playlist)
                     } catch {
                         print(error)

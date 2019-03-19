@@ -18,7 +18,6 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     
     var trackArray: [[String: Any]]?
     var trackLike = [(key: String, value: [String])]()
-    fileprivate let imageCache = NSCache<AnyObject, AnyObject>()
     var player: PlayerViewController!
     var ref: DocumentReference? = nil
     var refVote: DocumentReference? = nil
@@ -45,7 +44,6 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     }
 
     // MARK: - Table view data source
-
      func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -59,18 +57,22 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
         guard let trackArray = self.trackArray else { return UITableViewCell() }
         cell.currentTrack = trackArray[indexPath.row]
-        let artistDic = trackArray[indexPath.row]["artist"] as! NSDictionary
-        let artist = artistDic["name"] as? String
-        let albumDic = trackArray[indexPath.row]["album"] as! NSDictionary
-        let albumURL = albumDic["cover_xl"] as! String
-        downloadImage(urlImage: albumURL) { (image) in
-            cell.thumbnail.image = nil
-            cell.thumbnail.image = image
+        let artistDic = trackArray[indexPath.row]["artist"] as? NSDictionary
+        var artist = ""
+        if artistDic != nil && artistDic!["name"] as? String != nil {
+            artist = artistDic!["name"] as? String ?? ""
         }
         cell.delegateViewController = self
-        cell.trackLabel.text = trackArray[indexPath.row]["title"] as? String
-        cell.trackPlaceholder.text = "Title • \(artist!)"
-        cell.delegate = self
+        cell.trackLabel.text = trackArray[indexPath.row]["title"] as? String ?? ""
+        cell.trackPlaceholder.text = "Title • \(artist)"
+        cell.thumbnail.image = nil
+        let albumDic = trackArray[indexPath.row]["album"] as? NSDictionary
+        var albumURL = ""
+        if albumDic != nil {
+            albumURL = albumDic!["cover_xl"] as? String ?? ""
+        }
+        let url = URL(string: albumURL)
+        cell.thumbnail.kf.setImage(with: url)
         return cell
     }
     
@@ -89,24 +91,6 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
         var options = SwipeOptions()
         options.expansionStyle = .destructive
         return options
-    }
-    
-    
-    fileprivate func downloadImage(urlImage: String?, completion: @escaping (UIImage) -> ())  {
-        if let imageFromCache = imageCache.object(forKey: urlImage as AnyObject) as? UIImage {
-            completion(imageFromCache)
-            return
-        }
-        let url = URL(string: urlImage!)
-        let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
-            DispatchQueue.main.async {
-                if let data = data, let image = UIImage(data: data) {
-                    self.imageCache.setObject(image, forKey: urlImage! as AnyObject)
-                    completion(image)
-                }
-            }
-        }
-        task.resume()
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -24,23 +24,35 @@ class TrackTableViewController: ParentTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
         cell.currentTrack = result[indexPath.row]
-        let artistDic = result[indexPath.row]["artist"] as! NSDictionary
-        let artist = artistDic["name"] as? String
-        let albumDic = result[indexPath.row]["album"] as! NSDictionary
-        let albumURL = albumDic["cover_medium"] as! String
+        
+        let artistDic = result[indexPath.row]["artist"] as? NSDictionary
+        var artist = ""
+        if artistDic != nil && artistDic!["name"] as? String != nil {
+            artist = artistDic!["name"] as? String ?? ""
+        }
+        
+        cell.trackLabel.text = result[indexPath.row]["title"] as? String ?? ""
+        cell.trackPlaceholder.text = "Title • \(artist)"
+     
+        let albumDic = result[indexPath.row]["album"] as? NSDictionary
+        var albumURL = ""
+        if albumDic != nil {
+            albumURL = albumDic!["cover_medium"] as? String ?? ""
+        }
+  
         cell.thumbnail.image = nil
-        let url = URL(string: albumURL)
-        cell.thumbnail.kf.setImage(with: url)
         cell.delegateViewController = self
         cell.trackLabel.text = result[indexPath.row]["title"] as? String
-        cell.trackPlaceholder.text = "Title • \(artist!)"
+
+        let url = URL(string: albumURL)
+        cell.thumbnail.kf.setImage(with: url)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let albumDic = result[indexPath.row]["album"] as! NSDictionary
-        let albumURL = albumDic["cover_xl"] as! String
+        guard let albumDic = result[indexPath.row]["album"] as? NSDictionary else { return }
+        guard let albumURL = albumDic["cover_xl"] as? String else { return }
         do {
             let x = try JSONSerialization.data(withJSONObject: self.result[indexPath.row])
             let track = try JSONDecoder().decode(TrackCodable.self, from: x)

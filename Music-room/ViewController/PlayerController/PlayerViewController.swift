@@ -239,15 +239,17 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     fileprivate func downloadSong() {
         playPauseButton.isEnabled = false
-        let url = URL(string: songArray[songIndex].preview)
-        URLSession.shared.dataTask(with: url!) { (data, response, err) in
+        let ur = URL(string: songArray[songIndex].preview)
+        guard let url = ur else { return }
+        URLSession.shared.dataTask(with: url) { (data, response, err) in
             if err != nil {
                 print(err!)
                 return
             }
             DispatchQueue.main.async {
+                guard let data = data else { return }
                 self.playPauseButton.isEnabled = true
-                self.playSong(data: data!)
+                self.playSong(data: data)
                 self.updateDuration()
             }
         }.resume()
@@ -319,7 +321,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     fileprivate func displayInfo() {
         albumLabel.text = songArray[songIndex].album?.title ?? albumName
-        artistLabel.text = songArray[songIndex].artist!.name
+        artistLabel.text = songArray[songIndex].artist?.name ?? ""
         trackLabel.text = songArray[songIndex].title
     }
     
@@ -470,7 +472,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! CoverCollectionViewCell
-        let url = URL(string: coverImage!)
+        let url = URL(string: coverImage ?? "")
         cell.coverCollectionView.kf.setImage(with: url)
         return cell
     }
