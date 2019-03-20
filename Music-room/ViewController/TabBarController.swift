@@ -62,6 +62,12 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
             dismiss(animated: true, completion: nil)
         }
         setupTabBars()
+        Auth.auth().addStateDidChangeListener { (Auth, user) in
+            print("hello")
+            if user == nil {
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
         
         setupCurrentTrackView()
         vc.view.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)

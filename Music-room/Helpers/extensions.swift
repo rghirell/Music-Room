@@ -91,13 +91,11 @@ extension PlayerViewController {
         imageView = UIImageView(frame: view.bounds)
         imageView.contentMode =  UIView.ContentMode.scaleAspectFill
         imageView.clipsToBounds = true
-//        imageView.image = background
         let blurEffect = UIBlurEffect(style: .prominent)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = imageView.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         imageView.addSubview(blurEffectView)
-//        imageView.center = view.center
         view.addSubview(imageView)
         view.sendSubviewToBack(imageView)
     }
@@ -121,7 +119,6 @@ extension UITableView {
     
     func restore() {
         self.backgroundView = nil
-//        self.separatorStyle = .singleLine
     }
 }
 

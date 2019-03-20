@@ -71,6 +71,15 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         return button
     }()
     
+    let addToPlaylistButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(#imageLiteral(resourceName: "moreWhite"), for: .normal)
+        button.addTarget(self, action: #selector(addToPlaylist), for: .touchUpInside)
+        button.imageView?.contentMode = .scaleAspectFit
+        return button
+    }()
+    
     let prevButton : UIButton = {
         let button = UIButton()
         button.tag = 11
@@ -234,6 +243,28 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             self.view.frame = CGRect(x: self.view.frame.minX, y: UIScreen.main.bounds.height, width: self.view.frame.width, height: self.view.frame.height)
         }
     }
+    
+    @objc private func addToPlaylist() {
+        let vc = AddToPlaylistTableViewController()
+        let nc = UINavigationController(rootViewController: vc)
+        vc.track = songArray[songIndex].dictionary
+        let alert = UIAlertController(title: "Add to Playlist", message: "Choose which kind of playlist you want to add your song to", preferredStyle: .actionSheet)
+        let eventAction = UIAlertAction(title: "Add to event playlist", style: .default) { (action) in
+            vc.isRegularPlaylist = false
+            self.present(nc, animated: true, completion: nil)
+        }
+        let playlistAction = UIAlertAction(title: "Add to my playlist", style: .default) { (action) in
+            vc.isEventPlaylist = false
+            self.present(nc, animated: true, completion: nil)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(cancel)
+        alert.addAction(eventAction)
+        alert.addAction(playlistAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+
     
     
     
@@ -414,7 +445,7 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
         timeSlider.minimumTrackTintColor = .white
         timeSlider.setThumbImage(UIImage(named: "icon"), for: .normal)
     
-        allViews = [blurryLayer,currentDurationLabel, durationLabel, albumLabel, trackLabel, artistLabel, timeSlider, playPauseButton, prevButton, nextButton, collectionView, hideViewButton]
+        allViews = [blurryLayer,currentDurationLabel, durationLabel, albumLabel, trackLabel, artistLabel, timeSlider, playPauseButton, prevButton, nextButton, collectionView, hideViewButton, addToPlaylistButton]
         
         for x in allViews! {
             self.view.addSubview(x)
@@ -453,6 +484,8 @@ class PlayerViewController: UIViewController , AVAudioPlayerDelegate, UICollecti
             albumLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             hideViewButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             hideViewButton.topAnchor.constraint(equalTo: albumLabel.topAnchor),
+            addToPlaylistButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            addToPlaylistButton.topAnchor.constraint(equalTo: albumLabel.topAnchor),
             collectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 1),
             collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: imageConstraintMultiplier),

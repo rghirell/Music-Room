@@ -13,7 +13,7 @@ import Firebase
 
 
 
-class PlaylistTableViewController: UITableViewController, CLLocationManagerDelegate {
+class PlaylistTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
 
     var locManager = CLLocationManager()
     var player: PlayerViewController!
@@ -23,6 +23,7 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     var providerID: String!
     var playlistResult = [QueryDocumentSnapshot]() {
         didSet {
+            hud.dismiss(animated: true)
             tableView.reloadData()
         }
     }
@@ -46,6 +47,7 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         textField.placeholder = "Playlist name"
         return textField
     }()
+    var tableView: UITableView!
     
     
     //MARK: -
@@ -55,12 +57,12 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         locManager.requestWhenInUseAuthorization()
         locManager.delegate = self
         locManager.desiredAccuracy = kCLLocationAccuracyBest
+       
         locManager.startUpdatingLocation()
         decode()
         setNavBarButton()
         title = "Playlist"
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier.playlistCell)
-        tableView.rowHeight = 80
+        setTableView()
     }
     
     private func setNavBarButton() {
@@ -72,6 +74,18 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
         navigationItem.leftBarButtonItem = barButton
     }
     
+    fileprivate func setTableView() {
+        let displayWidth: CGFloat = self.view.frame.width
+        let displayHeight: CGFloat = self.view.frame.height
+        tableView = UITableView(frame: CGRect(x: 0, y: 0, width: displayWidth, height: displayHeight))
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keys.currentTrackViewHeight, right: 0)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: CellIdentifier.playlistCell)
+        tableView.rowHeight = 80
+        view.addSubview(tableView)
+    }
+    
     @objc func showAccount() {
         guard let provider = providerID else { return }
         let userAccountVC = UserAccountViewController(nibName: "UserView", bundle: Bundle.main)
@@ -81,6 +95,7 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         guard let userUID = Auth.auth().currentUser?.uid else {
             do {
                 try Auth.auth().signOut()
@@ -101,20 +116,36 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        setRef()
         locManager.stopUpdatingLocation()
     }
 
     // MARK: -
     // MARK: - Playlist Setup
+    private var flag = 0
+    var eventIsFetching = false
+    var playlistIsFetching = false
     private func setRef() {
         let refEvent = Firestore.firestore().collection("event")
         refEvent.whereField("follower", arrayContains: userUID).addSnapshotListener { (query, err) in
+            self.eventIsFetching = true
+            self.hud.show(in: self.view)
             self.eventRes = query?.documents
+            self.eventIsFetching = false
+            if self.playlistIsFetching {
+                return
+            }
             self.mergeResult()
         }
         let refPlaylist = Firestore.firestore().collection("playlist")
         refPlaylist.whereField("follower", arrayContains: userUID).addSnapshotListener { (query, err) in
+            self.playlistIsFetching = true
+            self.hud.show(in: self.view)
             self.playlistRes = query?.documents
+            self.playlistIsFetching = false
+            if self.eventIsFetching {
+                return
+            }
             self.mergeResult()
         }
     }
@@ -206,33 +237,35 @@ class PlaylistTableViewController: UITableViewController, CLLocationManagerDeleg
     var finalResultEvent: [Playlist]?
     
     private func mergeResult() {
-        playlistResult = []
+        self.playlistIsFetching = false
+        self.eventIsFetching = false
+        var tmp = [QueryDocumentSnapshot]()
         if self.playlistRes != nil {
-            playlistResult += playlistRes!
+            tmp += playlistRes!
         }
         if self.eventRes != nil {
-            playlistResult +=  eventRes!
+            tmp +=  eventRes!
         }
-        
+        playlistResult = tmp
     }
     
     // MARK: -
     // MARK: - Table view data source
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return playlistResult.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.playlistCell, for: indexPath)
         cell.textLabel?.text = playlistResult[indexPath.row].get("Name") as? String
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if playlistResult[indexPath.row].data()["pos"] != nil {
             guard let location = locManager.location else {

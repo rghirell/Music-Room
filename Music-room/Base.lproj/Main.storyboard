@@ -23,7 +23,6 @@
                                     <segment title="Login"/>
                                     <segment title="Register"/>
                                 </segments>
-                                <color key="tintColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 <connections>
                                     <action selector="handleLoginRegisterSegment:" destination="Ddz-NE-X2u" eventType="valueChanged" id="66T-Xd-OIj"/>
                                 </connections>
@@ -138,6 +137,7 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.2193390429" green="0.51816105840000004" blue="0.96867865320000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Q34-pY-mK1" firstAttribute="height" secondItem="5mz-hg-D3b" secondAttribute="height" id="1c6-mq-bGE"/>
                             <constraint firstItem="zZf-cp-9vI" firstAttribute="bottom" secondItem="Q34-pY-mK1" secondAttribute="top" constant="-12" id="1i7-dw-f4J"/>

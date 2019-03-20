@@ -49,38 +49,46 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     var flag = 0
+    var eventIsFetching = false
+    var voteIsFetching = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         hud.show(in: view)
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
         ref = Firestore.firestore().collection("event").document(playlistID!)
-        self.refListener =  self.ref?.addSnapshotListener({ (data, err) in
+        self.refListener = self.ref?.addSnapshotListener({ (data, err) in
+            self.eventIsFetching = true
             self.ref?.getDocument(completion: { (data, err) in
                 if data?.data() == nil { return }
                 let x = data!.get("titles") as! [[String: Any]]
                 self.trackArray = x
-                if self.flag == 1 {
+                self.eventIsFetching = false
+                if !self.voteIsFetching {
                     self.reloadData()
-                } else { self.flag = 1 }
+                }
             })
         })
         
         refVote = Firestore.firestore().collection("vote").document(playlistID)
         refVoteListener = refVote?.addSnapshotListener({ (data, err) in
+            self.voteIsFetching = true
             self.refVote?.getDocument(completion: { (data, err) in
                 guard let data = data?.data() else  { return }
                 let x = data as! [String: [String]]
                 self.trackLike = x.sorted { $0.value.count > $1.value.count }
-                if self.flag == 1 {
-                   self.reloadData()
-                } else { self.flag = 1}
+                self.voteIsFetching = false
+                if !self.eventIsFetching {
+                    self.reloadData()
+                }
             })
         })
     }
     
     private func reloadData() {
         Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
-        flag = 0
+        
+        eventIsFetching = false
+        voteIsFetching = false
         if self.trackArray!.count != self.trackLike.count {
             self.dismissController()
         }

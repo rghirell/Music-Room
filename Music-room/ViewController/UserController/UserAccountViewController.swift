@@ -301,7 +301,7 @@ extension UserAccountViewController {
         }
         do {
             try Auth.auth().signOut()
-            self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+//            self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
         } catch  {
             let alert = Alert.errorAlert(title: "Error", message: "Couldn't log out")
             present(alert, animated: true, completion: nil)

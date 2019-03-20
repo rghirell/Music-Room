@@ -37,22 +37,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         return hud
     }()
     
-    @IBAction func handleLoginRegisterSegment(_ sender: UISegmentedControl) {
-        print(sender.selectedSegmentIndex)
-        UIView.animate(withDuration: 0.20) {
-            self.navigationController?.navigationBar.topItem?.title = sender.selectedSegmentIndex == 0 ? "Login" : "Register"
-            let buttonTitle = sender.selectedSegmentIndex == 0 ? "Login" : "Register"
-            self.registerButton.setTitle(buttonTitle, for: .normal)
-            self.userNameTextField.isHidden = sender.selectedSegmentIndex == 0 ? true : false
-            let newMultiplier:CGFloat =  sender.selectedSegmentIndex == 0 ? 0.33 / 2 : 0.3
-            self.stackViewContainerHeight = self.stackViewContainerHeight.setMultiplier(multiplier: newMultiplier)
-        }
-        if (self.isKeyboardActive) {
-            self.moveView()
-        }
-    }
     
-    
+    //MARK: -
+    //MARK: - Facebook Register/Signin Handlers
     @IBAction func fbLogin(_ sender: UIButton) {
         hud.textLabel.text = "Signing in with Facebook..."
         hud.show(in: view)
@@ -75,6 +62,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         }
     }
     
+    //MARK: -
+    //MARK: - Firebase Login
     func login() {
         Auth.auth().signIn(withEmail: emailTextField.text!, password: passwordTextField.text!) { (data, err) in
             if err != nil {
@@ -107,7 +96,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         }
     }
     
-    
+    //MARK: -
+    //MARK: - Firebase Registration
     func register() {
         if !(isValidEmail(emailTextField.text!)) {
             let emailAlert =  Alert.errorAlert(title: "Invalid Email", message: "Email is invalid, please enter a valid email address")
@@ -151,125 +141,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         }
     }
     
-    @IBAction func signUp(_ sender: Any?) {
-        spinner = UIViewController.displaySpinner(onView: self.view)
-        if LoginRegisterSegment.selectedSegmentIndex == 0 {
-            login()
-        } else {
-            register()
-        }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        if let _ = Auth.auth().currentUser {
-            toUserHomeController()
-        }
-        GIDSignIn.sharedInstance().delegate = self
-        GIDSignIn.sharedInstance().uiDelegate = self
-        originY = view.frame.origin.y
-        textFieldArray = [userNameTextField, passwordTextField, emailTextField]
-        setUpLayers()
-        setTextFieldPadding()
-        userNameTextField.isHidden = true
-        let newMultiplier:CGFloat =  0.33 / 2
-        stackViewContainerHeight = stackViewContainerHeight.setMultiplier(multiplier: newMultiplier)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        navigationController?.navigationBar.topItem?.title = "Login"
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        userNameTextField.text = ""
-        passwordTextField.text = ""
-        emailTextField.text = ""
-    }
-    
-    @objc func keyboardWillChange(notification: Notification) {
-        print("Will show")
-        isKeyboardActive = true
-        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-            let keyboardRectangle = keyboardFrame.cgRectValue
-            keyboardHeight = keyboardRectangle.height
-            moveView()
-        }
-    }
-    
-    @objc func keyboardWillHide(notification: Notification) {
-        print("Will Hide")
-        isKeyboardActive = false
-        moveView()
-    }
-    
-    private func moveView() {
-        let screenSize = UIScreen.main.bounds
-        let screenHeight = screenSize.height
-        guard let originY = originY  else { return }
-        if (isKeyboardActive) {
-            guard let keyboardHeight = keyboardHeight else { return }
-            view.frame.origin.y = originY - (keyboardHeight - (screenHeight - registerButton.frame.maxY) + 10)
-        } else {
-            view.frame.origin.y = originY
-        }
-    }
-    
-    func setTextFieldPadding() {
-        userNameTextField.delegate = self
-        passwordTextField.delegate = self
-        emailTextField.delegate = self
-        textFieldArray?.forEach({ (textField) in
-            textField.setLeftPaddingPoints(5)
-        })
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if let nextField = textField.superview?.viewWithTag(textField.tag + 1) as? UITextField {
-            nextField.becomeFirstResponder()
-        } else {
-            textField.resignFirstResponder()
-            signUp(nil)
-        }
-        return true
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    func setUpLayers() {
-        stackViewContainer.layer.cornerRadius = 5
-        registerButton.layer.cornerRadius = 5
-        facebookLoginButton.layer.cornerRadius = 5
-        googleLoginButton.layer.cornerRadius = 5
-        let fbLogo = UIImage(named: "fbWhiteLogo")
-        let googleLogo = UIImage(named: "btn_google_light_normal_ios")
-        googleLoginButton.tintColor = .clear
-        googleLoginButton.layer.masksToBounds = true
-        googleLoginButton.setImage(googleLogo, for: .normal)
-        googleLoginButton.imageView?.contentMode = .scaleAspectFit
-        googleLoginButton.imageEdgeInsets = UIEdgeInsets(top: 2, left: -30 , bottom: 2, right: 0)
-        googleLoginButton.layer.masksToBounds = true
-        facebookLoginButton.setImage(fbLogo, for: .normal)
-        facebookLoginButton.imageView?.contentMode = .scaleAspectFit
-        facebookLoginButton.imageEdgeInsets = UIEdgeInsets(top: 5, left: -20 , bottom: 5, right: 0)
-        facebookLoginButton.layer.masksToBounds = true
-    }
-    
-    func isValidEmail(_ testStr : String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailTest.evaluate(with: testStr)
-    }
-    
-    private func toUserHomeController() {
-        let vc = TabBarController()
-        present(vc, animated: true, completion: nil)
-    }
-    
-    
     //MARK: -
     //MARK: - Google Register/Signin Handlers
     @IBAction func googleSignIn(_ sender: UIButton) {
@@ -312,18 +183,153 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
             completion(true)
         }
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-//        if let _ = Auth.auth().currentUser {
-//            toUserHomeController()
-//        }
+    
+    @IBAction func signUp(_ sender: Any?) {
+        spinner = UIViewController.displaySpinner(onView: self.view)
+        if LoginRegisterSegment.selectedSegmentIndex == 0 {
+            login()
+        } else {
+            register()
+        }
+    }
+    
+    // MARK: -
+    // MARK: - View cycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        if let _ = Auth.auth().currentUser {
+            toUserHomeController()
+        }
+        GIDSignIn.sharedInstance().delegate = self
+        GIDSignIn.sharedInstance().uiDelegate = self
+        originY = view.frame.origin.y
+        textFieldArray = [userNameTextField, passwordTextField, emailTextField]
+        setUpLayers()
+        setTextFieldPadding()
+        userNameTextField.isHidden = true
+        let newMultiplier:CGFloat =  0.33 / 2
+        stackViewContainerHeight = stackViewContainerHeight.setMultiplier(multiplier: newMultiplier)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        navigationController?.navigationBar.topItem?.title = "Login"
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        userNameTextField.text = ""
+        passwordTextField.text = ""
+        emailTextField.text = ""
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    // MARK: -
+    // MARK: - View setup
+    func setTextFieldPadding() {
+        userNameTextField.delegate = self
+        passwordTextField.delegate = self
+        emailTextField.delegate = self
+        textFieldArray?.forEach({ (textField) in
+            textField.setLeftPaddingPoints(5)
+        })
+    }
+    
+    
+    func setUpLayers() {
+        stackViewContainer.layer.cornerRadius = 5
+        registerButton.layer.cornerRadius = 5
+        facebookLoginButton.layer.cornerRadius = 5
+        googleLoginButton.layer.cornerRadius = 5
+        let fbLogo = UIImage(named: "fbWhiteLogo")
+        let googleLogo = UIImage(named: "btn_google_light_normal_ios")
+        googleLoginButton.tintColor = .clear
+        googleLoginButton.layer.masksToBounds = true
+        googleLoginButton.setImage(googleLogo, for: .normal)
+        googleLoginButton.imageView?.contentMode = .scaleAspectFit
+        googleLoginButton.imageEdgeInsets = UIEdgeInsets(top: 2, left: -30 , bottom: 2, right: 0)
+        googleLoginButton.layer.masksToBounds = true
+        facebookLoginButton.setImage(fbLogo, for: .normal)
+        facebookLoginButton.imageView?.contentMode = .scaleAspectFit
+        facebookLoginButton.imageEdgeInsets = UIEdgeInsets(top: 5, left: -20 , bottom: 5, right: 0)
+        facebookLoginButton.layer.masksToBounds = true
+    }
+    
+    // MARK: -
+    // MARK: - KeyBoard observers
+    @objc func keyboardWillChange(notification: Notification) {
+        print("Will show")
+        isKeyboardActive = true
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            keyboardHeight = keyboardRectangle.height
+            moveView()
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: Notification) {
+        print("Will Hide")
+        isKeyboardActive = false
+        moveView()
+    }
+    
+    // MARK: -
+    private func moveView() {
+        let screenSize = UIScreen.main.bounds
+        let screenHeight = screenSize.height
+        guard let originY = originY  else { return }
+        if (isKeyboardActive) {
+            guard let keyboardHeight = keyboardHeight else { return }
+            view.frame.origin.y = originY - (keyboardHeight - (screenHeight - registerButton.frame.maxY) + 10)
+        } else {
+            view.frame.origin.y = originY
+        }
+    }
+    
+    @IBAction func handleLoginRegisterSegment(_ sender: UISegmentedControl) {
+        print(sender.selectedSegmentIndex)
+        UIView.animate(withDuration: 0.20) {
+            self.navigationController?.navigationBar.topItem?.title = sender.selectedSegmentIndex == 0 ? "Login" : "Register"
+            let buttonTitle = sender.selectedSegmentIndex == 0 ? "Login" : "Register"
+            self.registerButton.setTitle(buttonTitle, for: .normal)
+            self.userNameTextField.isHidden = sender.selectedSegmentIndex == 0 ? true : false
+            let newMultiplier:CGFloat =  sender.selectedSegmentIndex == 0 ? 0.33 / 2 : 0.3
+            self.stackViewContainerHeight = self.stackViewContainerHeight.setMultiplier(multiplier: newMultiplier)
+        }
+        if (self.isKeyboardActive) {
+            self.moveView()
+        }
+    }
+    
+    // MARK: -
+    // MARK: - Textfield delegate
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if let nextField = textField.superview?.viewWithTag(textField.tag + 1) as? UITextField {
+            nextField.becomeFirstResponder()
+        } else {
+            textField.resignFirstResponder()
+            signUp(nil)
+        }
+        return true
+    }
+    
+    func isValidEmail(_ testStr : String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluate(with: testStr)
+    }
+    
+    private func toUserHomeController() {
+        let vc = TabBarController()
+        present(vc, animated: true, completion: nil)
     }
     
     
     // MARK: -
     // MARK: - Password reset
     @IBAction func resetPassword(_ sender: UIButton) {
-        
         let alert = Alert.alert(style: .alert, title: "Reset password", message: "Enter the e-mail address used to create your account", textFields: [UITextField()]) { (str) in
             self.hud.show(in: self.view)
             let auth = Auth.auth()
@@ -340,7 +346,4 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         }
         present(alert, animated: true, completion: nil)
     }
-    
-
-    
 }
