@@ -38,7 +38,7 @@ class ArtistTableViewController: ParentTableViewController {
         let vc = ArtistCollectionViewController(collectionViewLayout: StrechyHeader())
         vc.player = player
         guard let id =  result[indexPath.row]["id"] else { return }
-        vc.albumURL = "https://api.deezer.com/artist/\(id as? Int)/albums"
+        vc.albumURL = "https://api.deezer.com/artist/\(id as? Int ?? 0)/albums"
         vc.artistName = result[indexPath.row]["name"] as? String
         let pictureURL = result[indexPath.row]["picture_xl"] as? String
         if pictureURL == nil {

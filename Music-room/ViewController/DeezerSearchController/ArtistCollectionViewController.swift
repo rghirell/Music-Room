@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import JGProgressHUD
 
 class ArtistCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
@@ -15,7 +16,11 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     fileprivate let padding: CGFloat = 16
     fileprivate var ratio: CGFloat = 0
  
-    var artistName: String?
+    var artistName: String? {
+        didSet {
+            artistLabel.text = artistName
+        }
+    }
     var player: PlayerViewController!
     
     var albumURL: String? {
@@ -31,6 +36,13 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
             }
         }
     }
+    
+    let hud: JGProgressHUD = {
+        let hud = JGProgressHUD(style: .dark)
+        hud.interactionType = .blockAllTouches
+        hud.parallaxMode = .alwaysOff
+        return hud
+    }()
     
     var headerImage: String?
     let navView: UIView = {
@@ -60,7 +72,6 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     // MARK: - View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        artistLabel.text = artistName
         setupCollectionViewLayout()
         setupCollectionView()
         setupView()
@@ -102,7 +113,7 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
             navView.topAnchor.constraint(equalTo: view.topAnchor),
             navView.heightAnchor.constraint(equalToConstant: navHeight),
             navView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            artistLabel.centerXAnchor.constraint(equalTo: navView.centerXAnchor),
+//            artistLabel.centerXAnchor.constraint(equalTo: navView.centerXAnchor),
             artistLabel.trailingAnchor.constraint(equalTo: navView.trailingAnchor, constant: -20),
             artistLabel.leadingAnchor.constraint(equalTo: backButton.trailingAnchor, constant: -20),
             artistLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
@@ -141,15 +152,18 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
     
     // MARK: -
     fileprivate func downloadAlbums() {
-        guard let albumURL = self.albumURL else { return }
-        let url = URL(string: albumURL)
-        guard let request = url else { return }
+        hud.show(in: self.collectionView)
+        guard let album = self.albumURL else { hud.dismiss(); return }
+        let url = URL(string: album)
+        guard let request = url else { hud.dismiss(); return }
         let task = URLSession.shared.dataTask(with: request) { (data, response, err) in
             if err != nil {
                 print(err!)
+                self.dismissHud()
                 return
             }
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                self.dismissHud()
                 print("\(httpResponse.statusCode)")
                 let result = jsonHelper.convertJSONToObject(data: data)
                 if let _ = result {
@@ -157,18 +171,26 @@ class ArtistCollectionViewController: UICollectionViewController, UICollectionVi
                 }
                 return
             }
-            guard let data = data else { return }
+            guard let data = data else { self.hud.dismiss(); return }
             do {
                 let result = try JSONDecoder().decode(SearchRequest<AlbumCodable>.self, from: data)
+                self.dismissHud()
                 self.albumResult = result.data
             } catch {
+                self.dismissHud()
                 print(error)
             }
         }
         task.resume()
     }
+    
+    
+    private func dismissHud() {
+        DispatchQueue.main.async {
+            self.hud.dismiss()
+        }
+    }
 }
-
 
 extension ArtistCollectionViewController {
     // MARK: -

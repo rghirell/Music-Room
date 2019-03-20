@@ -350,7 +350,6 @@ extension SearchTableViewController {
         return 120
     }
     
-    
     func createResultArray(runningGroup: Int) {
         if let artistData = fetchedArtist?.data {
             for (index, element) in artistData.enumerated() {
