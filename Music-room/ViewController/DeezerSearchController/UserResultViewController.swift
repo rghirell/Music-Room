@@ -37,7 +37,7 @@ class UserResultViewController: UIViewController,  UICollectionViewDelegate, UIC
     }
 
     // MARK: -
-    // MARK: - View setup
+    // MARK: - View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setCornerLayer(viewArray: [addFriendButton, showFriendButton, publicEventButton, publicPlaylistButton])
@@ -49,6 +49,18 @@ class UserResultViewController: UIViewController,  UICollectionViewDelegate, UIC
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        ref = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
+        ref.getDocument { (doc, err) in
+            guard let doc = doc else { return }
+            guard let data = doc.data() else { return }
+            guard let friends =  data["friends"] else { return }
+            self.friendsArray = friends as! [String]
+        }
+    }
+    
+    // MARK: -
+    // MARK: - View setup
     private func setCornerLayer(viewArray: [UIView]) {
         for element in viewArray {
             element.layer.cornerRadius = 5
@@ -73,16 +85,6 @@ class UserResultViewController: UIViewController,  UICollectionViewDelegate, UIC
         return button
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        ref = Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid)
-        ref.getDocument { (doc, err) in
-            guard let doc = doc else { return }
-            guard let data = doc.data() else { return }
-            guard let friends =  data["friends"] else { return }
-            self.friendsArray = friends as! [String]
-        }
-    }
-
     @IBAction func showFriend(_ sender: UIButton) {
         let vc = FriendListTableViewController()
         vc.userUID = uid

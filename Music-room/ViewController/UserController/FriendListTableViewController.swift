@@ -30,12 +30,14 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
     var playlistUID: String!
     var type: String!
     
+    
+    // MARK: -
+    // MARK: - View setup
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         getFriends()
     }
-    
     
     fileprivate func setupTableView() {
         tableView.rowHeight = 80
@@ -44,13 +46,12 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
         tableView.register(xib, forCellReuseIdentifier: CellIdentifier.friendCell)
     }
     
+    // MARK: - TableView delegate/data
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         if friends.count <= 0 {
             tableView.setEmptyMessage("No results")
         }else {
@@ -58,7 +59,19 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
         }
         return friends.count
     }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.friendCell, for: indexPath) as! FriendsTableViewCell
+        cell.displayName.text = friends[indexPath.row].name
+        cell.delegate = self
+        cell.isFriend = userFriendsUID.contains(friends[indexPath.row].uid)
+        cell.index = indexPath.row
+        cell.accessoryType = friends[indexPath.row].isSelected ? .checkmark : .none
+        return cell
+    }
     
+    // MARK: -
+    // MARK: - Firebase logic
     private func getFriends() {
         Firestore.firestore().collection("users").document(userUID).getDocument { (doc, err) in
             guard let doc = doc else { return }
@@ -68,7 +81,6 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
         }
     }
     
-    
     private func getUserFriends() {
         Firestore.firestore().collection("users").document(Auth.auth().currentUser!.uid).getDocument { (doc, err) in
             guard let doc = doc else { return }
@@ -76,16 +88,6 @@ class FriendListTableViewController: UITableViewController, FriendCellDelegate {
             guard let friendsUID =  data["friends"] else { return }
             self.userFriendsUID = friendsUID as! [String]
         }
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.friendCell, for: indexPath) as! FriendsTableViewCell
-        cell.displayName.text = friends[indexPath.row].name
-        cell.delegate = self
-        cell.isFriend = userFriendsUID.contains(friends[indexPath.row].uid)
-        cell.index = indexPath.row
-        cell.accessoryType = friends[indexPath.row].isSelected ? .checkmark : .none
-        return cell
     }
     
     private func getDisplayName() {

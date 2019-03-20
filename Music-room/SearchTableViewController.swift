@@ -33,19 +33,11 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     var runningGroup = 0
     
     // MARK: -
-    // MARK: View Layout
+    // MARK: View setup
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews()
-        setUpSearchBar()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
-    func setupViews() {
         setupTableView()
+        setUpSearchBar()
     }
     
     let hud: JGProgressHUD = {
@@ -77,8 +69,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
         searchBar.sizeToFit()
         navigationItem.titleView = searchBar
     }
-    
-
     
     // MARK: -
     // MARK: - Table view data source
@@ -235,14 +225,6 @@ class SearchTableViewController: UIViewController, UITableViewDataSource, UITabl
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
          searchBar.resignFirstResponder()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
-   override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
     }
     
     // MARK: -

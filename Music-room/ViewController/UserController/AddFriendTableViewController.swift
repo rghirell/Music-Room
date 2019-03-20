@@ -38,7 +38,7 @@ class AddFriendTableViewController: UITableViewController, HeadViewDelegate {
     var type: String!
     
     // MARK: -
-    // MARK: - VIEW setup
+    // MARK: - View setup
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()

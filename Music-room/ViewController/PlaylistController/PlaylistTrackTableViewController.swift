@@ -24,11 +24,30 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     var playlistID: String!
     var tableView: UITableView!
     
+    // MARK: -
+    // MARK: - View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
+        ref = Firestore.firestore().collection("playlist").document(playlistID!)
+        ref?.addSnapshotListener({ (data, err) in
+            if data?.data() == nil { return }
+            let x = data!.get("titles") as! [[String: Any]]
+            self.trackArray = x
+        })
+    }
+    
+    func dismissController() {
+        navigationController!.popViewController(animated: true)
+    }
+    
+    // MARK: -
+    // MARK: - TableView setup
     fileprivate func setupTableView() {
         let displayWidth: CGFloat = self.view.frame.width
         let displayHeight: CGFloat = self.view.frame.height
@@ -42,18 +61,19 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
         tableView.register(TrackTableViewCell.self, forCellReuseIdentifier: CellIdentifier.trackCell)
         view.addSubview(tableView)
     }
-
+    
+    // MARK: -
     // MARK: - Table view data source
-     func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
-     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return trackArray?.count ?? 0
     }
-
     
-     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CellIdentifier.trackCell, for: indexPath) as! TrackTableViewCell
         guard let trackArray = self.trackArray else { return UITableViewCell() }
         cell.currentTrack = trackArray[indexPath.row]
@@ -93,23 +113,7 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
         return options
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-          navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "more_vert"), style: .plain, target: self, action: #selector(displayPlaylistControls))
-        ref = Firestore.firestore().collection("playlist").document(playlistID!)
-        ref?.addSnapshotListener({ (data, err) in
-            if data?.data() == nil { return }
-            let x = data!.get("titles") as! [[String: Any]]
-            self.trackArray = x
-        })
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-    
     @objc private func displayPlaylistControls() {
-        
         let vc = PlaylistPreferenceViewController(nibName: "PlaylistPreferenceViewController", bundle: Bundle.main)
         vc.delegate = self
         self.addChild(vc)
@@ -121,15 +125,11 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     }
     
     func changeTableViewInteraction() {
-         navigationItem.rightBarButtonItem?.isEnabled = !navigationItem.rightBarButtonItem!.isEnabled
+        navigationItem.rightBarButtonItem?.isEnabled = !navigationItem.rightBarButtonItem!.isEnabled
         tableView.isScrollEnabled = !tableView.isScrollEnabled
     }
     
-    func dismissController() {
-        navigationController!.popViewController(animated: true)
-    }
-    
-     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         let albumDic = trackArray![index]["album"] as! NSDictionary
         let albumURL = albumDic["cover_xl"] as! String

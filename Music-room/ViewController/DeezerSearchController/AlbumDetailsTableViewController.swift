@@ -44,6 +44,8 @@ class AlbumDetailsTableViewController: UIViewController, TrackRequestDelegate, U
     let imageView = UIImageView()
     var player: PlayerViewController!
     
+    // MARK: -
+    // MARK: - View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Album"
@@ -65,25 +67,8 @@ class AlbumDetailsTableViewController: UIViewController, TrackRequestDelegate, U
         self.tableView.tableHeaderView  = x
     }
     
-    func downloadTracks() {
-        guard let x = tracklist else {  print("No url given"); return }
-        let url = URL(string: x)
-        guard let urlTask = url else { print("wrong url"); navigationController?.popViewController(animated: true); return }
-        let task = URLSession.shared.dataTask(with: urlTask) { (data, url, err) in
-            if err != nil {
-                print(err!)
-                return
-            }
-            guard let data = data else {  print("invalid data"); return }
-            do {
-                self.albumTracks = try JSONDecoder().decode(SearchRequest<TrackCodable>.self, from: data)
-            } catch {
-                print(error)
-            }
-        }
-        task.resume()
-    }
-    
+    // MARK: -
+    // MARK: - tableView setup
     fileprivate func prepareTableView() {
         let displayWidth: CGFloat = self.view.frame.width
         let displayHeight: CGFloat = self.view.frame.height
@@ -98,6 +83,8 @@ class AlbumDetailsTableViewController: UIViewController, TrackRequestDelegate, U
         view.addSubview(tableView)
     }
     
+    // MARK: -
+    // MARK: - TableView delegates/datas
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: trackCellIdentifier, for: indexPath) as! TrackTableViewCell
         cell.hideImageView(isHidden: true)
@@ -120,6 +107,27 @@ class AlbumDetailsTableViewController: UIViewController, TrackRequestDelegate, U
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return  albumTracks?.data.count ?? 0
+    }
+    
+    // MARK: -
+    // MARK: - Fetching tracks
+    func downloadTracks() {
+        guard let x = tracklist else {  print("No url given"); return }
+        let url = URL(string: x)
+        guard let urlTask = url else { print("wrong url"); navigationController?.popViewController(animated: true); return }
+        let task = URLSession.shared.dataTask(with: urlTask) { (data, url, err) in
+            if err != nil {
+                print(err!)
+                return
+            }
+            guard let data = data else {  print("invalid data"); return }
+            do {
+                self.albumTracks = try JSONDecoder().decode(SearchRequest<TrackCodable>.self, from: data)
+            } catch {
+                print(error)
+            }
+        }
+        task.resume()
     }
     
     func getTrack(id: Int, completion: @escaping ([String : Any]?, Error?) -> ()) {
