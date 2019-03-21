@@ -106,6 +106,8 @@ class FacebookManager {
             }
             
             guard let fetchedFacebookUser = fetchedFacebookUser else {
+                let ref = Firestore.firestore().collection("hash_users")
+                ref.document(facebookUser.email).setData(["uid": Auth.auth().currentUser!.uid])
                 saveFacebookUser(profileImageData: profileImageData, facebookUser: facebookUser, firebaseUID: firebaseUID, completion: completion)
                 return
             }

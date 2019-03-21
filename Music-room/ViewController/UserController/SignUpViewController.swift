@@ -161,7 +161,10 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
             }
             self.checkIfGoogleDataExist(completion: { (exist) in
                 if !exist {
+                    
                     let registerData = RegisterData(accessibility: Accessibility(permission: false, friends: false), displayName: user.profile.name, friends: [String](), is_linked_to_deezer: false, is_linked_to_facebook: false, is_linked_to_google: false, pref_music: [String]())
+                    let ref = Firestore.firestore().collection("hash_users")
+                    ref.document(user.profile.email).setData(["uid": Auth.auth().currentUser!.uid])
                     FirebaseManager.Firestore_Users_Collection.document(Auth.auth().currentUser!.uid).setData(registerData.dictionary, completion: { (err) in
                         if let err = err { print(err); return }
                     })
@@ -346,7 +349,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
                     Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
                     return
                 }
-                let alert = Alert.errorAlert(title: "Success", message: "An email has been sent to \(str!.first!)")
+                
+                
+                let alert = Alert.errorAlert(title: "Success", message: "An email has been sent to \(str!.first!)",cancelButton: false) {
+                     Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
+                }
                 self.present(alert, animated: true, completion: nil)
             })
         }

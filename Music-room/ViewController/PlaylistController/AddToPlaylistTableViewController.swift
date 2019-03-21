@@ -175,7 +175,5 @@ class AddToPlaylistTableViewController: UITableViewController {
                 }
             } else { self.dismiss(animated: true, completion: nil) }
         }
-        
     }
-
 }

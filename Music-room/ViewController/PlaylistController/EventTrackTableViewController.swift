@@ -85,7 +85,7 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     private func reloadData() {
-        Helpers.dismissHud(self.hud, text: "", detailText: "", delay: 0)
+        hud.dismiss()
         
         eventIsFetching = false
         voteIsFetching = false
@@ -124,6 +124,12 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if trackArray?.count ?? 0 <= 0  {
+            tableView.setEmptyMessage("No songs in events")
+        } else {
+            self.tableView.restore()
+        }
         return trackArray?.count ?? 0
     }
     
@@ -209,16 +215,13 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     func dismissController() {
-        navigationController!.popViewController(animated: true)
-    }
-    
-    deinit {
-        refListener?.remove()
-        refVoteListener?.remove()
+        navigationController?.popViewController(animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        refListener?.remove()
+        refVoteListener?.remove()
     }
     
     func updatelikes(track: [String : Any], like: Bool) {

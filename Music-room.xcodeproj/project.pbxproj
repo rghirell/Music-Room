@@ -35,6 +35,7 @@
 		4A13467F222EE952004C4605 /* PlaylistTrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */; };
 		4A13468122312140004C4605 /* SearchTrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A13468022312140004C4605 /* SearchTrackTableViewCell.swift */; };
 		4A134685223175D7004C4605 /* EventTrackTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A134684223175D7004C4605 /* EventTrackTableViewController.swift */; };
+		4A15BD6822439B4900930097 /* FriendView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A15BD6722439B4900930097 /* FriendView.xib */; };
 		4A16E5AE220B67F80054A670 /* FacebookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5A8220B67F80054A670 /* FacebookManager.swift */; };
 		4A16E5B3220B67F80054A670 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5AD220B67F80054A670 /* Helpers.swift */; };
 		4A16E5BC220DBD8C0054A670 /* TrackTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */; };
@@ -99,6 +100,7 @@
 		4A13467E222EE952004C4605 /* PlaylistTrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistTrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A13468022312140004C4605 /* SearchTrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTrackTableViewCell.swift; sourceTree = "<group>"; };
 		4A134684223175D7004C4605 /* EventTrackTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTrackTableViewController.swift; sourceTree = "<group>"; };
+		4A15BD6722439B4900930097 /* FriendView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FriendView.xib; sourceTree = "<group>"; };
 		4A16E5A8220B67F80054A670 /* FacebookManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookManager.swift; sourceTree = "<group>"; };
 		4A16E5AD220B67F80054A670 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		4A16E5BB220DBD8C0054A670 /* TrackTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackTableViewCell.swift; sourceTree = "<group>"; };
@@ -252,6 +254,7 @@
 				4A097E83221C776700FC0239 /* StrechyHeader.swift */,
 				4A079C8B223452E0005773CD /* FriendsTableViewCell.xib */,
 				4A2070AD2238255300E3D55D /* UserView.xib */,
+				4A15BD6722439B4900930097 /* FriendView.xib */,
 				4A079C812232B1CF005773CD /* PlaylistPreferenceViewController.xib */,
 			);
 			path = View;
@@ -504,6 +507,7 @@
 				4AC3FE5A21FB2294002E1BAB /* LaunchScreen.storyboard in Resources */,
 				4AC9D5D122089D9700751FAA /* DZRResources.bundle in Resources */,
 				4AC3FE5521FB2291002E1BAB /* Main.storyboard in Resources */,
+				4A15BD6822439B4900930097 /* FriendView.xib in Resources */,
 				4AC3FE6221FB22E2002E1BAB /* GoogleService-Info.plist in Resources */,
 				4A079C832232B1CF005773CD /* PlaylistPreferenceViewController.xib in Resources */,
 				4A3F320C220F6446003F7E40 /* Assets.xcassets in Resources */,

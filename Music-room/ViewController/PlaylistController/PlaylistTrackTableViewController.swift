@@ -9,6 +9,7 @@
 import UIKit
 import Firebase
 import SwipeCellKit
+import JGProgressHUD
 
 protocol TrackDelegate: class {
     func loadTrack(songIndex: Int, cover: UIImage?, songArray: [TrackCodable])
@@ -23,6 +24,12 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     var refVote: DocumentReference? = nil
     var playlistID: String!
     var tableView: UITableView!
+    let hud: JGProgressHUD = {
+        let hud = JGProgressHUD(style: .dark)
+        hud.interactionType = .blockAllTouches
+        hud.parallaxMode = .alwaysOff
+        return hud
+    }()
     
     // MARK: -
     // MARK: - View cycle
@@ -69,6 +76,11 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if trackArray?.count ?? 0 <= 0  && !hud.isVisible {
+            tableView.setEmptyMessage("No songs in playlist")
+        } else {
+            self.tableView.restore()
+        }
         return trackArray?.count ?? 0
     }
     
