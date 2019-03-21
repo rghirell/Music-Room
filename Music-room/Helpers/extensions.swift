@@ -28,7 +28,6 @@ extension UIViewController {
                 default:                return "\(textLabel.text!)"
                 }
             }
-            print("in")
             textLabel.text = string
         }
         

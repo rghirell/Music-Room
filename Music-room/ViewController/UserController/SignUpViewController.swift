@@ -200,6 +200,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         if let _ = Auth.auth().currentUser {
             toUserHomeController()
         }
+        let tap = UITapGestureRecognizer(target: self, action: #selector(resignKeyboard))
+        view.addGestureRecognizer(tap)
         GIDSignIn.sharedInstance().delegate = self
         GIDSignIn.sharedInstance().uiDelegate = self
         originY = view.frame.origin.y
@@ -273,6 +275,10 @@ class SignUpViewController: UIViewController, UITextFieldDelegate, GIDSignInUIDe
         print("Will Hide")
         isKeyboardActive = false
         moveView()
+    }
+    
+    @objc fileprivate func resignKeyboard() {
+        view.endEditing(true)
     }
     
     // MARK: -
