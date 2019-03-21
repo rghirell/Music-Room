@@ -183,6 +183,9 @@ class TabBarController: UITabBarController, PlayerTabBarDelegate {
     }
     
     func changeCurrentTrackViewDisplay() {
+        if vc.songIndex >= vc.songArray.count {
+            return
+        }
         let track = vc.songArray[vc.songIndex]
         let attributedText = NSMutableAttributedString(string: "\(track.title ?? "") • ", attributes: [.font: UIFont.boldSystemFont(ofSize: 12), .foregroundColor: UIColor.white])
         attributedText.append(NSAttributedString(string: "\(track.artist?.name ?? "")", attributes: [.font: UIFont.boldSystemFont(ofSize: 12),.foregroundColor: UIColor.gray]))

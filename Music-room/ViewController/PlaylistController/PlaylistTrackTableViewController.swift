@@ -17,7 +17,13 @@ protocol TrackDelegate: class {
 
 class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, SwipeTableViewCellDelegate, PreferenceDelegate {
     
-    var trackArray: [[String: Any]]?
+    var trackArray: [[String: Any]]? {
+        didSet {
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+    }
     var trackLike = [(key: String, value: [String])]()
     var player: PlayerViewController!
     var ref: DocumentReference? = nil
@@ -95,6 +101,7 @@ class PlaylistTrackTableViewController: UIViewController, UITableViewDelegate, U
             artist = artistDic!["name"] as? String ?? ""
         }
         cell.delegateViewController = self
+        cell.delegate = self
         cell.trackLabel.text = trackArray[indexPath.row]["title"] as? String ?? ""
         cell.trackPlaceholder.text = "Title • \(artist)"
         cell.thumbnail.image = nil

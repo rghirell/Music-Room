@@ -247,7 +247,7 @@ class EventTrackTableViewController: UIViewController, UITableViewDelegate, UITa
             return
         }
         let index = trackOrder[indexPath.row]
-        let albumDic = trackArray![index]["album"] as! NSDictionary
+        let albumDic = trackArray![index]["album"] as? NSDictionary ?? NSDictionary()
         let albumURL = albumDic["cover_xl"] as? String ?? ""
         tableView.deselectRow(at: indexPath, animated: true)
         do {
